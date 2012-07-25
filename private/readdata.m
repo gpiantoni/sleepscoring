@@ -1,49 +1,74 @@
-function dat = readdata(cfg, opt)
+function dat = readdata2(cfg, opt)
 
 %-------------------------------------%
+%-read channels and references
 chan = arrayfun(@(x) x.chan, opt.changrp, 'uni', 0);
 chan = [chan{:}];
+ref = arrayfun(@(x) x.ref, opt.changrp, 'uni', 0);
+ref = [ref{:}];
+
+%-----------------%
+%-channels in raw
+chan_raw = unique([chan ref]);
+[~, i_raw] = intersect(cfg.label, chan_raw);
+[i_raw, si_raw] = sort(i_raw);
+chan_raw = chan_raw(si_raw);
+%-----------------%
+
+raw = ft_read_data(cfg.dataset, 'header', cfg.hdr, ...
+  'begsample', opt.begsample, 'endsample', opt.endsample, 'chanindx', i_raw, ...
+  'cache', false); % cache true might be faster but it does not read the whole dataset
+%-------------------------------------%
+
+%-------------------------------------%
+%-create dat (which is used for plotting)
 nSamples = opt.endsample - opt.begsample + 1;
 dat = zeros(numel(chan), nSamples);
 
 for i = 1:numel(opt.changrp)
   
-  [changrp, i_raw] = intersect(cfg.label, opt.changrp(i).chan); % reorder alphabetically
-  [i_raw, j] = sort(i_raw); % ft_read_data sorts the channels automatically, so we need to keep it into account
-  chan_raw = changrp(j); % CHANNELS as in matrix RAW
-  
-  raw = ft_read_data(cfg.dataset, 'header', cfg.hdr, ...
-    'begsample', opt.begsample, 'endsample', opt.endsample, 'chanindx', i_raw, ...
-    'checkboundary', false); % for MEG data
-  
-  [rchangrp, ri_raw] = intersect(cfg.label, opt.changrp(i).ref); % reorder alphabetically
-  [ri_raw, rj] = sort(ri_raw); % ft_read_data sorts the channels automatically, so we need to keep it into account
-  rchan_raw = changrp(rj); % CHANNELS as in matrix RAW
-  
-  rraw = ft_read_data(cfg.dataset, 'header', cfg.hdr, ...
-    'begsample', opt.begsample, 'endsample', opt.endsample, 'chanindx', ri_raw, ...
-    'checkboundary', false); % for MEG data
-  
-  if isempty(rchan_raw)
-    ref = raw;
+  %-----------------%
+  %-reference data
+  r_chan = ismember(chan_raw, opt.changrp(i).chan);
+  if ~isempty(opt.changrp(i).ref)
+    r_ref = ismember(chan_raw, opt.changrp(i).ref);
   else
-    ref = ft_preproc_rereference([raw; rraw], numel(chan_raw) + (1:numel(rchan_raw)));
+    r_ref = false(size(chan_raw));
   end
-
-  [~,i1, i2] = intersect(chan, chan_raw);
-  % dat(i1, :) = raw(i2, :);
   
-  Fhp = []; opt.changrp(i).Fhp;
-  Flp = []; opt.changrp(i).Flp;
+  r = r_chan | r_ref;
+  chan_in_reref = ismember(find(r), find(r_chan));
+  ref_in_reref = ismember(find(r), find(r_ref));
+  
+  chan_reref = chan_raw(r); % channels in reref
+  reref = raw(r,:);
+  %-----------------%
+  
+  %-----------------%
+  %-reref
+  if any(r_ref)
+    reref = ft_preproc_rereference(reref, ref_in_reref);
+  end
+  
+  reref = reref(chan_in_reref,:) * opt.changrp(i).scaling; % reassignment of REREF with only channels of interest
+  %-----------------%
+  
+  %-----------------%
+  %-filtering
+  Fhp = opt.changrp(i).Fhp;
+  Flp = opt.changrp(i).Flp;
   
   if ~isempty(Fhp)
-    ref = ft_preproc_highpassfilter(ref, cfg.hdr.Fs, Fhp, 2); % TODO: it's not very efficient, it's computing bandpass even on reference channel
+    reref = ft_preproc_highpassfilter(reref, cfg.hdr.Fs, Fhp, 2);
   end
   
   if ~isempty(Flp)
-    ref = ft_preproc_lowpassfilter(ref, cfg.hdr.Fs, Flp);
+    reref = ft_preproc_lowpassfilter(reref, cfg.hdr.Fs, Flp);
   end
+  %-----------------%
   
-  dat(i1, :) = ref(i2, :) * opt.changrp(i).scaling;
+  [dat_chan] = ismember(chan, opt.changrp(i).chan);
+  dat(dat_chan, :) = reref; % TODO: This only works because chan and chan_reref are sorting in the same way
+  
 end
 %-------------------------------------%
