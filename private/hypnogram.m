@@ -6,6 +6,8 @@ function hypnogram(opt, score)
 % OPT
 %  .hypnogrid: distance of the grid in minutes (put a grid and label every ... minutes) 
 %
+%  .epoch: the epoch to highlight (optional)
+%
 %  .stage has subfields (see opt_default for more info)
 %    .code: the number saved in score{1,1}
 %    .label: the corresponding state
@@ -53,6 +55,15 @@ end
 %-----------------%
 
 %-----------------%
+if isfield(opt, 'epoch')
+  epochpos = [(opt.epoch - 0.5) * score{3,1} (opt.epoch + 0.5) * score{3,1}];
+  xfill = [epochpos mean(epochpos)];
+  yfill = st_h(end) + [1 1 0];
+  fill(xfill, yfill, opt.arrowcolor)
+end
+%-----------------%
+
+%-----------------%
 %-expand to full figure
-set(gca,'Unit','normalized','Position',[0.05 0.1 .9 .9])
+set(gca, 'Unit','normalized','Position',[0.05 0.1 .9 .9])
 %-----------------%

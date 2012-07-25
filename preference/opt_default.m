@@ -67,6 +67,7 @@ stage(7).height = 1;
 
 opt.stage = stage;
 opt.hypnogrid = 30; % will create a grid every XX minutes
+opt.arrowcolor = 'r'; % color of the arrow indicating the hypnogram
 %-------------------------------------%
 
 %-------------------------------------%

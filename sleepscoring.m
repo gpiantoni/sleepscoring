@@ -1,17 +1,15 @@
 function sleepscoring(cfg)
 %TODO:
 % - powerspectrum
-% - click on hypnogram
 % - modify scoring
 % - multiple windows
 % - automatic detection of SW and spindles
 % - automatic scoring
 % - shortcuts
 % - read time from hdr-orig
-% - toggle between raters
-% - The beginning of the sleep scoring need not coincide with the beginning of the recordings
-% - save cfg/score
-
+% - The beginning of the sleep scoring need not coincide with the beginning
+% of the recordings (fix cb_currentpoint as well)
+% - save cfg/score (and info panel should show: saving info in...)
 
 %-------------------------------------%
 h = findobj('tag', 'sleepscoring');
@@ -129,6 +127,11 @@ if isfield(cfg, 'dataset')
   
   cb_readplotdata
 end
+%-------------------------------------%
+
+%-------------------------------------%
+%-get point
+set(h, 'windowbuttonDownFcn', @cb_currentpoint)
 %-------------------------------------%
 
 %---------------------------------------------------------%
@@ -321,18 +324,6 @@ cfg.rater = newrater;
 setappdata(0, 'cfg', cfg)
 update_rater()
 %-----------------%
-%-------------------------------------%
-
-%-------------------------------------%
-%-callback: read and replot data
-function cb_readplotdata(h, eventdata)
-
-cfg = getappdata(0, 'cfg');
-opt = getappdata(0, 'opt');
-dat = readdata(cfg, opt);
-setappdata(0, 'dat', dat);
-
-cb_plotdata
 %-------------------------------------%
 
 %-------------------------------------%

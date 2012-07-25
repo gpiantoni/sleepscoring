@@ -1,4 +1,6 @@
 function plotdata(cfg, opt, dat)
+
+
 % All the options should be specified in opt
 timescale = (opt.begsample:opt.endsample)/cfg.hdr.Fs;
 p75 = 75 * ones(size(timescale));
