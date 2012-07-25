@@ -24,6 +24,14 @@ for i = 1:numel(opt.changrp)
       'height', 2, 'vlim', opt.ylim, 'vpos', -1 * cnt); % with height you can control distance between lines
     
     %-----------------%
+    %-line at zero
+    if opt.grid0
+      ft_plot_vector(timescale, zeros(size(timescale)), 'color', linecolor, 'style', ':', ...
+        'height', 2, 'vlim', opt.ylim, 'vpos', -1 * cnt);
+    end
+    %-----------------%
+    
+    %-----------------%
     %- +/- 75uV grid
     if strcmp(opt.changrp(i).chantype, 'eeg') && opt.grid75
       ft_plot_vector(timescale, p75, 'color', linecolor, 'style', '--', ...

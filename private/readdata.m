@@ -1,4 +1,4 @@
-function dat = readdata2(cfg, opt)
+function dat = readdata(cfg, opt)
 
 %-------------------------------------%
 %-read channels and references

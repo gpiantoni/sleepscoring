@@ -77,6 +77,7 @@ opt.scoreheight = 0.1; % height of the scoring color in the main window
 
 opt.ylim = [-1 1] * 150; % default size of the height
 
+opt.grid0  = true;  % grid at zero
 opt.grid75 = true;  % +- 75 uV grid
 opt.grid1s = false; % one second grid
 %-------------------------------------%
