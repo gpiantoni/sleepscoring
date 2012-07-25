@@ -21,13 +21,13 @@ end
 
 %-----------------%
 %-OPT
-% .epoch and .begsample seems to give overlapping info, but .epoch refers
-% to the sleep scoring epoch while .begsample refers to the data sample.
-% The beginning of the sleep scoring need not coincide with the beginning
-% of the recordings
 opt.epoch = 1;
-opt.begsample = 1;
-opt.endsample = opt.begsample + cfg.hdr.Fs * cfg.wndw - 1;
+
+if ~isempty(cfg.score)
+  opt.recbegin = cfg.score{4, cfg.rater}(1);
+else
+  opt.recbegin = 1/cfg.hdr.Fs;
+end
 
 for i = 1:numel(opt.changrp)
   [~, chanidx] = intersect(cfg.label, opt.changrp(i).chan);

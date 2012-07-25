@@ -16,6 +16,8 @@ function hypnogram(opt, score)
 %
 % SCORE as one-column cell from FASST
 
+% TODO: mark non-scored period before and after
+
 hold on
 
 %-----------------%

@@ -14,7 +14,7 @@ if ~isempty(cfg.score)
   
   delete(findobj('tag', 'a_hypno'))
   axes('parent', findobj('tag', 'p_hypno'), 'tag', 'a_hypno');
-  hypnogram(opt, cfg.score(:,cfg.rater))
+  hypnogram(opt, cfg.score(:, cfg.rater))
   
 end
 %-------------------------------------%

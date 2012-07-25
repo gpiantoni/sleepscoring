@@ -9,7 +9,7 @@ if strcmp(tag, 'a_dat')
   %-main data
   if strcmp(get(h,'SelectionType'),'normal')
     
-    set(h, 'WindowButtonMotionFcn', {@cb_motion, pos})
+    set(h, 'WindowButtonMotionFcn', {@cb_box, pos})
     set(h, 'WindowButtonUpFcn', @cb_wbup)
     
   else
@@ -53,7 +53,8 @@ end
 %-CALLBACKS
 %-------------------------------------%
 %-callback: when mouse is moving
-function cb_motion(hObject, eventdata, pos1)
+function cb_box(hObject, eventdata, pos1)
+% TODO: this does not take into account the scaling
 
 opt = getappdata(0, 'opt');
 pos2 = get(gca, 'CurrentPoint');
@@ -82,3 +83,5 @@ if strcmp(get(h, 'SelectionType'), 'normal')
   set(h,'WindowButtonUpFcn', '')
   
 end
+%-------------------------------------%
+%---------------------------------------------------------%

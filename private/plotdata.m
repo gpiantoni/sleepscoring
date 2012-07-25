@@ -1,8 +1,10 @@
 function plotdata(cfg, opt, dat)
 
-
 % All the options should be specified in opt
-timescale = (opt.begsample:opt.endsample)/cfg.hdr.Fs;
+epoch_beg = (opt.epoch - 1) * cfg.wndw + opt.recbegin; % add the beginning of the scoring period
+epoch_end = epoch_beg + cfg.wndw - 1/cfg.hdr.Fs; % add length of time window and remove one sample
+timescale = epoch_beg : 1/cfg.hdr.Fs : epoch_end;
+
 p75 = 75 * ones(size(timescale));
 d75 = -75 * ones(size(timescale));
 
@@ -46,6 +48,11 @@ for i = 1:numel(opt.changrp)
   label = [label opt.changrp(i).chan];  
   
 end
+
+%-----------------%
+%-x axes
+xlim(timescale([1 end]))
+%-----------------%
 
 %-----------------%
 %-y axes

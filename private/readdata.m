@@ -1,4 +1,4 @@
-function dat = readdata(cfg, opt)
+function dat = readdata(cfg, opt, begsample, endsample)
 
 %-------------------------------------%
 %-read channels and references
@@ -16,13 +16,13 @@ chan_raw = chan_raw(si_raw);
 %-----------------%
 
 raw = ft_read_data(cfg.dataset, 'header', cfg.hdr, ...
-  'begsample', opt.begsample, 'endsample', opt.endsample, 'chanindx', i_raw, ...
+  'begsample', begsample, 'endsample', endsample, 'chanindx', i_raw, ...
   'cache', false); % cache true might be faster but it does not read the whole dataset
 %-------------------------------------%
 
 %-------------------------------------%
 %-create dat (which is used for plotting)
-nSamples = opt.endsample - opt.begsample + 1;
+nSamples = endsample - begsample + 1;
 dat = zeros(numel(chan), nSamples);
 
 for i = 1:numel(opt.changrp)

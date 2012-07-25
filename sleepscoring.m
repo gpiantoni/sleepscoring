@@ -62,17 +62,23 @@ uipanel('Title', 'PowerSpectrum', 'FontSize', 12, 'tag', 'p_fft', ...
 
 %-----------------%
 uicontrol(findobj('tag', 'p_info'), 'sty', 'push', 'uni', 'norm', ...
-  'pos', [.05 .5 .4 .1], 'str', '<<', ...
+  'pos', [.05 .5 .25 .1], 'str', '<<', ...
   'call', @cb_bb);
+uicontrol(findobj('tag', 'p_info'), 'sty', 'edit', 'uni', 'norm', ...
+  'pos', [.35 .5 .30 .1], 'str', '', 'tag', 'epochnumber', ...
+  'call', @cb_epoch); 
 uicontrol(findobj('tag', 'p_info'), 'sty', 'push', 'uni', 'norm', ...
-  'pos', [.55 .5 .4 .1], 'str', '>>', ...
+  'pos', [.70 .5 .25 .1], 'str', '>>', ...
   'call', @cb_ff);
 
 uicontrol(findobj('tag', 'p_info'), 'sty', 'push', 'uni', 'norm', ...
-  'pos', [.05 .35 .4 .1], 'str', '+', ...
+  'pos', [.05 .35 .25 .1], 'str', '+', ...
   'call', @cb_yu);
+uicontrol(findobj('tag', 'p_info'), 'sty', 'edit', 'uni', 'norm', ...
+  'pos', [.35 .35 .30 .1], 'str', num2str(opt.ylim(2)), 'tag', 'ylimval', ...
+  'call', @cb_ylim);
 uicontrol(findobj('tag', 'p_info'), 'sty', 'push', 'uni', 'norm', ...
-  'pos', [.55 .35 .4 .1], 'str', '-', ...
+  'pos', [.70 .35 .25 .1], 'str', '-', ...
   'call', @cb_yd);
 
 uicontrol(findobj('tag', 'p_info'), 'sty', 'toggle', 'uni', 'norm', ...
@@ -125,7 +131,7 @@ if isfield(cfg, 'dataset')
   setappdata(0, 'cfg', cfg)
   setappdata(0, 'opt', opt)
   
-  cb_readplotdata
+  cb_readplotdata()
 end
 %-------------------------------------%
 
@@ -157,7 +163,7 @@ set(findobj('tag', 'p_data'), 'Title', filename)
 setappdata(0, 'cfg', cfg)
 setappdata(0, 'opt', opt)
 
-cb_readplotdata
+cb_readplotdata()
 %-------------------------------------%
 
 %-------------------------------------%
@@ -183,7 +189,7 @@ opt.changrp(changrp).chan = label(chanindx)';
 
 setappdata(0, 'opt', opt);
 
-cb_readplotdata
+cb_readplotdata()
 %-------------------------------------%
 
 %-------------------------------------%
@@ -203,7 +209,7 @@ opt.changrp(changrp).ref = cfg.label(chanindx)';
 
 setappdata(0, 'opt', opt);
 
-cb_readplotdata
+cb_readplotdata()
 %-------------------------------------%
 
 %-------------------------------------%
@@ -322,6 +328,7 @@ cfg.score{7,newrater} = [];
 %-update cfg
 cfg.rater = newrater;
 setappdata(0, 'cfg', cfg)
+%TODO: call sleepscoring_init?
 update_rater()
 %-----------------%
 %-------------------------------------%
@@ -330,37 +337,32 @@ update_rater()
 %-callback: go back
 function cb_bb(h, eventdata)
 
-cfg = getappdata(0, 'cfg');
 opt = getappdata(0, 'opt');
-opt.begsample = opt.begsample - cfg.wndw * cfg.hdr.Fs;
-opt.endsample = opt.endsample - cfg.wndw * cfg.hdr.Fs;
 opt.epoch = opt.epoch - 1;
-
-if opt.begsample <= 0 
-  opt.begsample = 1; % TODO: should be manually-specified beginning of the recording
-  opt.endsample = opt.begsample + cfg.hdr.Fs * cfg.wndw - 1;
-end
-
 setappdata(0, 'opt', opt);
-cb_readplotdata;
+
+cb_readplotdata()
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: go forward
 function cb_ff(h, eventdata)
-
-cfg = getappdata(0, 'cfg');
 opt = getappdata(0, 'opt');
-opt.begsample = opt.begsample + cfg.wndw * cfg.hdr.Fs;
-opt.endsample = opt.endsample + cfg.wndw * cfg.hdr.Fs;
 opt.epoch = opt.epoch + 1;
-
-if opt.endsample > cfg.hdr.nSamples * cfg.hdr.nTrials
-  opt.endsample = cfg.hdr.nSamples * cfg.hdr.nTrials;
-  opt.begsample = cfg.endsample - cfg.hdr.Fs * cfg.wndw + 1; % TODO: should be manually-specified end of the recording (in 30s epochs)
-end
 setappdata(0, 'opt', opt);
-cb_readplotdata
+
+cb_readplotdata()
+%-------------------------------------%
+
+%-------------------------------------%
+%-callback: change epoch
+function cb_epoch(h, eventdata)
+
+opt = getappdata(0, 'opt');
+opt.epoch = str2double(get(h, 'str'));
+setappdata(0, 'opt', opt)
+
+cb_readplotdata()
 %-------------------------------------%
 
 %-------------------------------------%
@@ -369,7 +371,9 @@ function cb_yu(h, eventdata)
 opt = getappdata(0, 'opt');
 opt.ylim = opt.ylim / 1.1;
 setappdata(0, 'opt', opt);
-cb_plotdata
+
+cb_ylim()
+cb_plotdata()
 %-------------------------------------%
 
 %-------------------------------------%
@@ -378,7 +382,27 @@ function cb_yd(h, eventdata)
 opt = getappdata(0, 'opt');
 opt.ylim = opt.ylim * 1.1;
 setappdata(0, 'opt', opt);
-cb_plotdata
+
+cb_ylim()
+cb_plotdata()
+%-------------------------------------%
+
+%-------------------------------------%
+%-callback: adjust scale
+function cb_ylim(h, eventdata)
+
+opt = getappdata(0, 'opt');
+
+if nargin > 0
+  
+  opt.ylim = [-1 1] * str2double(get(h, 'str'));
+  setappdata(0, 'opt', opt);
+  cb_plotdata()
+  
+else
+  set(findobj('tag', 'ylimval'), 'str', num2str(opt.ylim(2)));
+  
+end
 %-------------------------------------%
 
 %-------------------------------------%
