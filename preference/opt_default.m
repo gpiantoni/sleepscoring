@@ -65,21 +65,39 @@ stage(7).code = 4;
 stage(7).color = [0.1 0.1 0.45];
 stage(7).height = 1;
 
+stage(8).label = 'NOT SCORED';
+stage(8).code = NaN; % remember that == does not work with NaN
+stage(8).color = [1 1 1];
+stage(8).height = 0;
+
 opt.stage = stage;
 opt.hypnogrid = 30; % will create a grid every XX minutes
 opt.arrowcolor = 'r'; % color of the arrow indicating the hypnogram
 %-------------------------------------%
 
 %-------------------------------------%
+%-MARKERS
+%-------------------------------------%
+opt.marker = {'artifacts' 'sleep scoring begins (!)' 'sleep scoring ends (!)'};
+% TODO: add color
+%-------------------------------------%
+
+%-------------------------------------%
 %-VISUALIZATION
 %-------------------------------------%
+%-----------------%
+% (cannot be modified in GUI)
 opt.scoreheight = 0.1; % height of the scoring color in the main window
+%-----------------%
 
+%-----------------%
+% (can be modified in GUI)
 opt.ylim = [-1 1] * 150; % default size of the height
 
 opt.grid0  = true;  % grid at zero
 opt.grid75 = true;  % +- 75 uV grid
 opt.grid1s = false; % one second grid
+%-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
@@ -87,15 +105,15 @@ opt.grid1s = false; % one second grid
 %-------------------------------------%
 %-the same channel cannot belong to two groups at the same time
 opt.changrp(1).chantype = 'eeg';
-opt.changrp(1).chan = {'E41' 'E214' 'E59' 'E124' 'E149' 'E183'};
-opt.changrp(1).ref = {'E94' 'E190'};
+opt.changrp(1).chan = {'F3' 'F4' 'C3' 'C4' 'O3' 'O4'};
+opt.changrp(1).ref = {'LM' 'RM'};
 opt.changrp(1).Fhp = 0.3;
 opt.changrp(1).Flp = 35;
 opt.changrp(1).linecolor = 'k';
 opt.changrp(1).scaling = 1;
 
 opt.changrp(2).chantype = 'eog';
-opt.changrp(2).chan = {'E234'};
+opt.changrp(2).chan = {'REOG'};
 opt.changrp(2).ref = {'LEOG'};
 opt.changrp(2).Fhp = 0.1;
 opt.changrp(2).Flp = 12;
@@ -103,7 +121,7 @@ opt.changrp(2).linecolor = 'r';
 opt.changrp(2).scaling = 1;
 
 opt.changrp(3).chantype = 'emg';
-opt.changrp(3).chan = {'E165'};
+opt.changrp(3).chan = {'EMG'};
 opt.changrp(3).ref = [];
 opt.changrp(3).Fhp = 0.3;
 opt.changrp(3).Flp = 35;
