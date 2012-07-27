@@ -51,14 +51,23 @@ for i = 1:numel(opt.stage)
   epochs = find(score{1,1} == opt.stage(i).code);
   
   if ~isempty(epochs)
-    bar(epochs * score{3,1}, ones(size(epochs)) * opt.stage(i).height,  1, 'LineStyle', 'none', 'FaceColor', opt.stage(i).color)
+    
+    %-------%
+    %-ugly hack to deal with bar. I don't understand why, if values are not
+    % consecutive, it messes up the proportions
+    bar_y = [ones(size(epochs)) * opt.stage(i).height NaN];
+    epochs(end+1) = epochs(end) + 1;
+    bar_x= epochs * score{3,1} - score{3,1}/2; % convert into s
+    %-------%
+    
+     bar(bar_x, bar_y, 1, 'LineStyle', 'none', 'FaceColor', opt.stage(i).color)
   end
 end
 %-----------------%
 
 %-----------------%
 if isfield(opt, 'epoch')
-  epochpos = [(opt.epoch - 0.5) * score{3,1} (opt.epoch + 0.5) * score{3,1}];
+  epochpos = [(opt.epoch - 1) * score{3,1} (opt.epoch) * score{3,1}];
   xfill = [epochpos mean(epochpos)];
   yfill = st_h(end) + [1 1 0];
   fill(xfill, yfill, opt.arrowcolor)
