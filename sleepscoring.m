@@ -1,7 +1,33 @@
 function sleepscoring(cfg)
+%SLEEPSCORING do sleep scoring on EGI data
+% This function takes one optional CFG argument. If no input, go to
+% "File" >> "Load MFF" and select the .mff folder with the sleep data.
+% To start a new sleep score, go to "Sleep Score" >> "New Score" and add
+% the relevant information.
+% 
+% The optional CFG input argument has the following fields:
+%   .dataset: the absolute path to the MFF file
+%   .hdr: the header of the MFF file (use ft_read_header). If .hdr is not
+%         present, it'll be read from .dataset
+%
+%   .default.channame: if you want to rename some channels, you can use
+%                      this function. By default, it uses CHANNAME. You can
+%                      use any other function, based on channame.m
+%
+%   .default.opt: all the optional information, for example the default
+%                 channels and visualization properties. By default, it
+%                 uses OPT_DEFAULT. If you want to edit the optional
+%                 information, create a new file based on "opt_default.m"
+%                 and change the parameter. Then .default.opt should
+%                 contain the name of the new file.
+%  
+% SLEEPSCORING can only run in one window at the time. If you want to run
+% two sessions at the same time, open a new Matlab.
+%    
+
 %TODO:
 % - powerspectrum
-% - modify scoring
+% - marker (beginning of recordings: are you sure you want to modify sleep scoring?)
 % - multiple windows
 % - automatic detection of SW and spindles
 % - automatic scoring
@@ -10,82 +36,92 @@ function sleepscoring(cfg)
 % - The beginning of the sleep scoring need not coincide with the beginning
 % of the recordings (fix cb_currentpoint as well)
 % - save cfg/score (and info panel should show: saving info in...)
+% - when sleep scoring, enter beginning of sleep
 
-%-------------------------------------%
-h = findobj('tag', 'sleepscoring');
-if h
-  delete(h)
-end
-
-h = figure;
-set(h, 'tag', 'sleepscoring')
-%-------------------------------------%
+%---------------------------------------------------------%
+%-GUI FUNCTION
+%---------------------------------------------------------%
 
 %-------------------------------------%
 %-CFG input options (user-specific)
 addpath([fileparts(mfilename('fullpath')) filesep 'preference'])
 
-cfg.default.chan = 'channame';
-cfg.default.opt = 'opt_default'; % function with opt 
-%-------------------------------------%
+if nargin == 0
+  cfg = [];
+end
 
-%-------------------------------------%
-%-CFG: stable info
-setappdata(0, 'cfg', cfg)
+cfg.default = ft_getopt(cfg, 'default', []);
+cfg.default.chan = ft_getopt(cfg.default, 'chan', 'channame');
+cfg.default.opt = ft_getopt(cfg.default, 'opt', 'opt_default');
 %-------------------------------------%
 
 %-------------------------------------%
 %-OPT: preferences
 opt = feval(cfg.default.opt);
-setappdata(0, 'opt', opt)
+%-------------------------------------%
+
+%-------------------------------------%
+%-create new figure
+h = findobj('tag', 'sleepscoring');
+if h; delete(h); end
+opt.h.main = figure;
+set(opt.h.main, 'tag', 'sleepscoring')
 %-------------------------------------%
 
 %-------------------------------------%
 %-PANELS
 %-----------------%
-%-create panels
-uipanel('Title', 'Sleep Data', 'FontSize', 12, 'tag', 'p_data', ... % rename with name of subject
+%-create main panels
+opt.h.data = uipanel('Title', 'Sleep Data', 'FontSize', 12, 'tag', 'p_data', ... % rename with name of subject
   'BackgroundColor','white', ...
   'Position', [opt.marg_l opt.marg_u opt.width_l opt.height_u]);
 
-uipanel('Title', 'Hypnogram', 'FontSize', 12, 'tag', 'p_hypno',...
+opt.h.hypno = uipanel('Title', 'Hypnogram', 'FontSize', 12, 'tag', 'p_hypno',...
   'BackgroundColor','white', ...
   'Position', [opt.marg_l opt.marg_d opt.width_l opt.height_d]);
 
-uipanel('Title', 'Information', 'FontSize', 12, 'tag', 'p_info',...
+opt.h.info = uipanel('Title', 'Information', 'FontSize', 12, 'tag', 'p_info',...
   'Position', [opt.marg_r opt.marg_u opt.width_r opt.height_u]);
 
-uipanel('Title', 'PowerSpectrum', 'FontSize', 12, 'tag', 'p_fft', ...
+opt.h.fft = uipanel('Title', 'PowerSpectrum', 'FontSize', 12, 'tag', 'p_fft', ...
   'BackgroundColor','white', ...
   'Position', [opt.marg_r opt.marg_d opt.width_r opt.height_d]);
+
+%-------%
+%-create axes
+opt.axis.data = axes('parent', opt.h.data, 'vis', 'off');
+opt.axis.hypno = axes('parent', opt.h.hypno, 'vis', 'off');
+opt.axis.fft = axes('parent', opt.h.fft, 'vis', 'off');
+%-------%
 %-----------------%
 
 %-----------------%
-uicontrol(findobj('tag', 'p_info'), 'sty', 'push', 'uni', 'norm', ...
+%-create button and various items in the information panel
+uicontrol(opt.h.info, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.05 .5 .25 .1], 'str', '<<', ...
   'call', @cb_bb);
-uicontrol(findobj('tag', 'p_info'), 'sty', 'edit', 'uni', 'norm', ...
+uicontrol(opt.h.info, 'sty', 'edit', 'uni', 'norm', ...
   'pos', [.35 .5 .30 .1], 'str', '', 'tag', 'epochnumber', ...
   'call', @cb_epoch); 
-uicontrol(findobj('tag', 'p_info'), 'sty', 'push', 'uni', 'norm', ...
+uicontrol(opt.h.info, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.70 .5 .25 .1], 'str', '>>', ...
   'call', @cb_ff);
 
-uicontrol(findobj('tag', 'p_info'), 'sty', 'push', 'uni', 'norm', ...
+uicontrol(opt.h.info, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.05 .35 .25 .1], 'str', '+', ...
   'call', @cb_yu);
-uicontrol(findobj('tag', 'p_info'), 'sty', 'edit', 'uni', 'norm', ...
+uicontrol(opt.h.info, 'sty', 'edit', 'uni', 'norm', ...
   'pos', [.35 .35 .30 .1], 'str', num2str(opt.ylim(2)), 'tag', 'ylimval', ...
   'call', @cb_ylim);
-uicontrol(findobj('tag', 'p_info'), 'sty', 'push', 'uni', 'norm', ...
+uicontrol(opt.h.info, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.70 .35 .25 .1], 'str', '-', ...
   'call', @cb_yd);
 
-uicontrol(findobj('tag', 'p_info'), 'sty', 'toggle', 'uni', 'norm', ...
+uicontrol(opt.h.info, 'sty', 'toggle', 'uni', 'norm', ...
   'pos', [.05 .2 .4 .1], 'str', '75uV', ...
   'val', opt.grid75, 'call', @cb_grid75);
 
-uicontrol(findobj('tag', 'p_info'), 'sty', 'toggle', 'uni', 'norm', ...
+uicontrol(opt.h.info, 'sty', 'toggle', 'uni', 'norm', ...
   'pos', [.55 .2 .4 .1], 'str', '1s', ...
   'val', opt.grid1s, 'call', @cb_grid1s);
 %-----------------%  
@@ -93,26 +129,26 @@ uicontrol(findobj('tag', 'p_info'), 'sty', 'toggle', 'uni', 'norm', ...
 
 %-------------------------------------%
 %-Menu bar
-set(h, 'Menubar', 'none')
-m_file = uimenu(h, 'label', 'File');
+set(opt.h.main, 'Menubar', 'none')
+m_file = uimenu(opt.h.main, 'label', 'File');
 uimenu(m_file, 'label', 'Load MFF', 'call', @cb_loadmff);
 
-m_chan = uimenu(h, 'label', 'Channel Selection');
+m_chan = uimenu(opt.h.main, 'label', 'Channel Selection');
 for i = 1:numel(opt.changrp)
   uimenu(m_chan, 'label', opt.changrp(i).chantype, 'call', @cb_selchan);
 end
 
-m_filt = uimenu(h, 'label', 'Filter');
+m_filt = uimenu(opt.h.main, 'label', 'Filter');
 for i = 1:numel(opt.changrp)
   uimenu(m_filt, 'label', opt.changrp(i).chantype, 'call', @cb_filt);
 end
 
-m_ref = uimenu(h, 'label', 'Reference');
+m_ref = uimenu(opt.h.main, 'label', 'Reference');
 for i = 1:numel(opt.changrp)
   uimenu(m_ref, 'label', opt.changrp(i).chantype, 'call', @cb_ref);
 end
 
-m_score = uimenu(h, 'label', 'Sleep Score');
+m_score = uimenu(opt.h.main, 'label', 'Sleep Score');
 uimenu(m_score, 'label', 'New Score', 'call', @cb_newrater)
 uimenu(m_score, 'label', 'Load Score', 'call', @cb_loadscore)
 uimenu(m_score, 'label', 'Import Score from FASST', 'call', @cb_importscore)
@@ -122,81 +158,74 @@ uimenu(m_score, 'label', 'New Rater', 'call', @cb_newrater)
 
 %-------------------------------------%
 %-read the data if present in cfg
+setappdata(0, 'cfg', cfg)
+setappdata(0, 'opt', opt)
+
 if isfield(cfg, 'dataset') 
   if ~isfield(cfg, 'hdr')
     cfg.hdr = ft_read_header(cfg.dataset);
   end
 
-  [cfg opt] = sleepscoring_init(cfg, opt);
-  setappdata(0, 'cfg', cfg)
-  setappdata(0, 'opt', opt)
-  
+  sleepscoring_init()
   cb_readplotdata()
+  
 end
 %-------------------------------------%
-
-%-------------------------------------%
-%-get point
-set(h, 'windowbuttonDownFcn', @cb_currentpoint)
-%-------------------------------------%
+%---------------------------------------------------------%
 
 %---------------------------------------------------------%
 %-CALLBACKS
+%---------------------------------------------------------%
+
 %-------------------------------------%
 %-callback: load dataset
-function cb_loadmff(h, eventdata)
+function cb_loadmff(h0, eventdata)
 
 cfg = getappdata(0, 'cfg');
 opt = getappdata(0, 'opt');
-dirname = uigetdir;
 
+dirname = uigetdir;
 if exist(dirname, 'dir')
   cfg.dataset = dirname;
   cfg.hdr = ft_read_header(dirname);
 end
-setappdata(0, 'cfg', cfg)
 
-[~, filename] = fileparts(dirname);
-set(findobj('tag', 'p_data'), 'Title', filename)
-
-[cfg opt] = sleepscoring_init(cfg);
-setappdata(0, 'cfg', cfg)
-setappdata(0, 'opt', opt)
-
+sleepscoring_init()
 cb_readplotdata()
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: select channels
-function cb_selchan(h, eventdata)
+function cb_selchan(h0, eventdata)
 
-chantype = get(h, 'label');
+chantype = get(h0, 'label');
 
 cfg = getappdata(0, 'cfg');
 opt = getappdata(0, 'opt');
 
 changrp = strcmp(chantype, {opt.changrp.chantype});
 
+%-------%
 %-don't show labels belonging to another chantype
 nolabel = arrayfun(@(x) x.chan, opt.changrp(~changrp), 'uni', 0);
 nolabel = [nolabel{:}];
 [~, ilabel] = setdiff(cfg.label, nolabel);
 label = cfg.label(sort(ilabel));
+%-------%
 
 [~, chanindx] = intersect(label, opt.changrp(changrp).chan);
 chanindx = select_channel_list(label, sort(chanindx)); % fieldtrip/private function
 opt.changrp(changrp).chan = label(chanindx)';
 
 setappdata(0, 'opt', opt);
-
 cb_readplotdata()
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: select channels
-function cb_ref(h, eventdata)
+function cb_ref(h0, eventdata)
 
-chantype = get(h, 'label');
+chantype = get(h0, 'label');
 
 cfg = getappdata(0, 'cfg');
 opt = getappdata(0, 'opt');
@@ -208,15 +237,14 @@ chanindx = select_channel_list(cfg.label, sort(chanindx)); % fieldtrip/private f
 opt.changrp(changrp).ref = cfg.label(chanindx)';
 
 setappdata(0, 'opt', opt);
-
 cb_readplotdata()
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: filter information
-function cb_filt(h, eventdata)
+function cb_filt(h0, eventdata)
 
-chantype = get(h, 'label');
+chantype = get(h0, 'label');
 
 opt = getappdata(0, 'opt');
 
@@ -233,36 +261,43 @@ defaultanswer = {sprintf(' %1g', Fhp) sprintf(' %1g', Flp)};
 answer = inputdlg(prompt, name, numlines, defaultanswer);
 
 if ~isempty(answer) % cancel button
+  
+  %-------%
+  %-highpass filter
   if ~isempty(answer{1})
     Fhp = textscan(answer{1}, '%f');
     opt.changrp(changrp).Fhp = Fhp{1};
   else
     opt.changrp(changrp).Fhp = [];
   end
+  %-------%
   
+  %-------%
+  %-lowpass filter
   if ~isempty(answer{2})
     Flp = textscan(answer{2}, '%f');
     opt.changrp(changrp).Flp = Flp{1};
   else
     opt.changrp(changrp).Flp = [];
   end
+  %-------%
   
   setappdata(0, 'opt', opt);
+  cb_readplotdata()
   
-  cb_readplotdata
 end
 %-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: load sleep score
-function cb_loadscore(h, eventdata)
+function cb_loadscore(h0, eventdata)
 
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: load sleep score
-function cb_importscore(h, eventdata)
+function cb_importscore(h0, eventdata)
 %TODO: indicate that this will overwrite current score
 %TODO: check that the length is consistent
 
@@ -274,19 +309,29 @@ warning on
 cfg = getappdata(0, 'cfg');
 if isfield(D.other, 'CRC') && isfield(D.other.CRC, 'score')
   cfg.score = D.other.CRC.score;
-end
-cfg.rater = 1;
 
-setappdata(0, 'cfg', cfg)
-update_rater()
+  cfg.rater = 1;
+  setappdata(0, 'cfg', cfg)
+  update_rater()
+end
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: load sleep score
-function cb_newrater(h, eventdata)
+function cb_newrater(h0, eventdata)
 
 %-----------------%
 cfg = getappdata(0, 'cfg');
+
+if strcmp(get(h0, 'label'), 'New Score')
+  ConfirmDel = questdlg('Are you sure that you want to delete the current scoring?', ...
+    'Replace Score', ...
+    'Yes', 'No', 'Yes');
+  if strcmp(ConfirmDel, 'No'); return; end
+  
+  cfg.score = [];
+end
+
 if isempty(cfg.score)
   newrater = 1;
 else
@@ -328,14 +373,15 @@ cfg.score{7,newrater} = [];
 %-update cfg
 cfg.rater = newrater;
 setappdata(0, 'cfg', cfg)
-%TODO: call sleepscoring_init?
+
+sleepscoring_init()
 update_rater()
 %-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: go back
-function cb_bb(h, eventdata)
+function cb_bb(h0, eventdata)
 
 opt = getappdata(0, 'opt');
 opt.epoch = opt.epoch - 1;
@@ -346,7 +392,8 @@ cb_readplotdata()
 
 %-------------------------------------%
 %-callback: go forward
-function cb_ff(h, eventdata)
+function cb_ff(h0, eventdata)
+
 opt = getappdata(0, 'opt');
 opt.epoch = opt.epoch + 1;
 setappdata(0, 'opt', opt);
@@ -356,10 +403,10 @@ cb_readplotdata()
 
 %-------------------------------------%
 %-callback: change epoch
-function cb_epoch(h, eventdata)
+function cb_epoch(h0, eventdata)
 
 opt = getappdata(0, 'opt');
-opt.epoch = str2double(get(h, 'str'));
+opt.epoch = str2double(get(h0, 'str'));
 setappdata(0, 'opt', opt)
 
 cb_readplotdata()
@@ -367,7 +414,8 @@ cb_readplotdata()
 
 %-------------------------------------%
 %-callback: smaller scale
-function cb_yu(h, eventdata)
+function cb_yu(h0, eventdata)
+
 opt = getappdata(0, 'opt');
 opt.ylim = opt.ylim / 1.1;
 setappdata(0, 'opt', opt);
@@ -378,7 +426,8 @@ cb_plotdata()
 
 %-------------------------------------%
 %-callback: larger scale
-function cb_yd(h, eventdata)
+function cb_yd(h0, eventdata)
+
 opt = getappdata(0, 'opt');
 opt.ylim = opt.ylim * 1.1;
 setappdata(0, 'opt', opt);
@@ -389,13 +438,13 @@ cb_plotdata()
 
 %-------------------------------------%
 %-callback: adjust scale
-function cb_ylim(h, eventdata)
+function cb_ylim(h0, eventdata)
 
 opt = getappdata(0, 'opt');
 
 if nargin > 0
   
-  opt.ylim = [-1 1] * str2double(get(h, 'str'));
+  opt.ylim = [-1 1] * str2double(get(h0, 'str'));
   setappdata(0, 'opt', opt);
   cb_plotdata()
   
@@ -407,23 +456,25 @@ end
 
 %-------------------------------------%
 %-callback: larger scale
-function cb_grid75(h, eventdata)
-opt = getappdata(0, 'opt');
+function cb_grid75(h0, eventdata)
 
+opt = getappdata(0, 'opt');
 opt.grid75 = ~opt.grid75;
 setappdata(0, 'opt', opt);
+
 set(findobj('str', '75uV'), 'val', opt.grid75)
-cb_plotdata
+cb_plotdata()
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: larger scale
-function cb_grid1s(h, eventdata)
-opt = getappdata(0, 'opt');
+function cb_grid1s(h0, eventdata)
 
+opt = getappdata(0, 'opt');
 opt.grid1s = ~opt.grid1s;
 setappdata(0, 'opt', opt);
+
 set(findobj('str', '1s'), 'val', opt.grid1s)
-cb_plotdata
+cb_plotdata()
 %-------------------------------------%
 %---------------------------------------------------------%
