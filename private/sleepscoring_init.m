@@ -1,13 +1,20 @@
-function [cfg opt] = sleepscoring_init(cfg, opt)
+function sleepscoring_init
 %SLEEPSCORING_INIT initialize sleep scoring when a new dataset has been
 % loaded
 
 %-----------------%
-%-CFG 
+cfg = getappdata(0, 'cfg');
+opt = getappdata(0, 'opt');
+%-----------------%
+
+%-----------------%
+%-CFG
 cfg.label = feval(cfg.default.chan, cfg.hdr.label);
 
 if isfield(cfg, 'score')
-  cfg.rater = 1;
+  if ~isfield(cfg, 'rater')
+    cfg.rater = 1;
+  end
 else
   cfg.score = [];
 end
@@ -21,7 +28,9 @@ end
 
 %-----------------%
 %-OPT
-opt.epoch = 1;
+if ~isfield(opt, 'epoch')
+  opt.epoch = 1;
+end
 
 if ~isempty(cfg.score)
   opt.recbegin = cfg.score{4, cfg.rater}(1);
@@ -42,4 +51,20 @@ for i = 1:numel(opt.changrp)
   
   opt.changrp(i).chan = cfg.label(sort(chanidx))';
 end
+%-----------------%
+
+%-----------------%
+%-adjustment to GUI
+[~, filename] = fileparts(cfg.dataset);
+set(findobj('tag', 'p_data'), 'Title', filename)
+
+set(opt.h.main, 'windowbuttonDownFcn', @cb_currentpoint)
+
+popup_score(cfg, opt)
+popup_marker(cfg, opt)
+%-----------------%
+
+%-----------------%
+setappdata(0, 'cfg', cfg)
+setappdata(0, 'opt', opt)
 %-----------------%
