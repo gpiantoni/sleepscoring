@@ -75,14 +75,12 @@ end
 if ~isempty(cfg.score)
   score = cfg.score{1,cfg.rater}(opt.epoch);
   
-  if ~isnan(score)
-    i_score = [opt.stage.code] == score;
-    ft_plot_box([ timescale([1 end]) -opt.scoreheight 0], 'FaceColor', opt.stage(i_score).color)
-    ft_plot_text(timescale(end/2), 0, opt.stage(i_score).label)
-  else
-    ft_plot_box([ timescale([1 end]) -opt.scoreheight 0], 'FaceColor', 'white')
-    ft_plot_text(timescale(end/2), 0, 'NOT SCORED')
+  i_score = find([opt.stage.code] == score);
+  if isempty(i_score)
+    i_score = find(isnan([opt.stage.code]));
   end
+  
+  ft_plot_box([ timescale([1 end]) -opt.scoreheight 0], 'FaceColor', opt.stage(i_score).color)
   
 end
 %-----------------%
