@@ -2,10 +2,8 @@ function dat = readdata(cfg, opt, begsample, endsample)
 
 %-------------------------------------%
 %-read channels and references
-chan = arrayfun(@(x) x.chan, opt.changrp, 'uni', 0);
-chan = [chan{:}];
-ref = arrayfun(@(x) x.ref, opt.changrp, 'uni', 0);
-ref = [ref{:}];
+chan = [opt.changrp.chan];
+ref = [opt.changrp.ref];
 
 %-----------------%
 %-channels in raw

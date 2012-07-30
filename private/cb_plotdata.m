@@ -10,10 +10,6 @@ delete(findobj('tag', 'a_dat'))
 axes('parent', opt.h.data, 'tag', 'a_dat');
 plotdata(cfg, opt, dat);
 
-delete(findobj('tag', 'a_fft'))
-axes('parent', opt.h.fft, 'tag', 'a_fft');
-plotfft()
-
 if ~isempty(cfg.score)
   
   delete(findobj('tag', 'a_hypno'))

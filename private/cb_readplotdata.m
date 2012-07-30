@@ -1,4 +1,4 @@
-function cb_readplotdata(h, eventdata)
+function cb_readplotdata(hObject, eventdata)
 %CB_READPLOTDATA: callback which reads data and plots them
 
 cfg = getappdata(0, 'cfg');
@@ -32,4 +32,6 @@ dat = readdata(cfg, opt, begsample, endsample);
 setappdata(0, 'dat', dat);
 
 cb_plotdata()
+
+plotfft()
 %-------------------------------------%

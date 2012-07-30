@@ -106,9 +106,10 @@ opt.grid1s = false; % one second grid
 %-------------------------------------%
 %-----------------%
 % (cannot be modified in GUI)
-
+opt.fft.welchdur = 2; % duration of welch's window in s (short -> more smoothing)
+opt.fft.xlim = [0 40];
+opt.fft.ylim = [1e-2 1e3];
 %-----------------%
-
 
 %-----------------%
 % (can be modified in GUI)

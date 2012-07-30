@@ -60,32 +60,54 @@ end
 function cb_box(hObject, eventdata, pos1)
 % TODO: this does not take into account the scaling
 
+cfg = getappdata(0, 'cfg');
 opt = getappdata(0, 'opt');
 pos2 = get(gca, 'CurrentPoint');
 
 delete(findobj('tag', 'Selecting'))
 
+%-----------------%
+%-black line
 p_l(1) = line( [pos1(1,1), pos1(1,1)], [pos1(1,2), pos2(1,2)]);
 p_l(2) = line( [pos1(1,1), pos2(1,1)], [pos1(1,2), pos1(1,2)]);
 p_l(3) = line( [pos2(1,1), pos2(1,1)], [pos1(1,2), pos2(1,2)]);
 p_l(4) = line( [pos1(1,1), pos2(1,1)], [pos2(1,2), pos2(1,2)]);
 set(p_l, 'tag', 'Selecting', 'Color', 'k', 'LineWidth', 2)
+%-----------------%
 
+%-----------------%
+%-text
 seltxt = sprintf('%1.2f s\n%1.1f uV', ...
                 abs(pos2(1,1) - pos1(1,1)), abs((pos2(1,2) - pos1(1,2)) * opt.ylim(2)));
 p_txt = ft_plot_text(pos1(1,1), pos1(1,2), seltxt);
 set(p_txt, 'tag', 'Selecting', 'BackgroundColor', [0 0 0], 'Color', [1 1 1])
+
+drawnow
+%-----------------%
+
+%-----------------%
+%-fft
+%-channel (TODO: check if correct)
+i_chan = -1 * round(pos1(1,2));
+
+%-time in sample
+epoch_beg = (opt.epoch - 1) * cfg.wndw + opt.beginsleep; % add the beginning of the scoring period
+i_dat = sort(round(([pos1(1,1) pos2(1,1)] - epoch_beg) * cfg.fsample));
+
+% plotfft(i_chan, i_dat); %TODO: too slow, why is the FASST implementation faster?
+%-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
-function cb_wbup(h, eventdata)
+function cb_wbup(hObject, eventdata)
 
-if strcmp(get(h, 'SelectionType'), 'normal')
+if strcmp(get(hObject, 'SelectionType'), 'normal')
   
   delete(findobj('tag', 'Selecting'))
-  set(h,'WindowButtonMotionFcn', '')
-  set(h,'WindowButtonUpFcn', '')
+  set(hObject,'WindowButtonMotionFcn', '')
+  set(hObject,'WindowButtonUpFcn', '')
   
+  plotfft()
 end
 %-------------------------------------%
 %---------------------------------------------------------%
