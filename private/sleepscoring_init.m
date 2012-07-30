@@ -33,9 +33,9 @@ if ~isfield(opt, 'epoch')
 end
 
 if ~isempty(cfg.score)
-  opt.recbegin = cfg.score{4, cfg.rater}(1);
+  opt.beginsleep = cfg.score{4, cfg.rater}(1);
 else
-  opt.recbegin = 1/cfg.hdr.Fs;
+  opt.beginsleep = 1/cfg.hdr.Fs;
 end
 
 for i = 1:numel(opt.changrp)
