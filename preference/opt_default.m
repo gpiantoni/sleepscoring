@@ -7,18 +7,18 @@ opt = [];
 %-------------------------------------%
 %-----------------%
 %-horizontal dimensions
-opt.marg_l = 0.025; % left margin
-opt.width_l = 0.7; % width of objects on the left
-opt.marg_r  = opt.marg_l + opt.width_l + 0.025; % margin between left and right
-opt.width_r = 1 - opt.marg_r - opt.marg_l; % width of objects on the right
+opt.marg.l = 0.025; % left margin
+opt.width.l = 0.7; % width of objects on the left
+opt.marg.r  = opt.marg.l + opt.width.l + 0.025; % margin between left and right
+opt.width.r = 1 - opt.marg.r - opt.marg.l; % width of objects on the right
 %-----------------%
 
 %-----------------%
 %-vertical dimensions
-opt.marg_d = 0.025; % margin below
-opt.height_d = 0.2; % height of objects below
-opt.marg_u  = opt.marg_d + opt.height_d + 0.025; % margin between up and down
-opt.height_u = 1 - opt.marg_u - opt.marg_d; % height of objects above
+opt.marg.d = 0.025; % margin below
+opt.height.d = 0.2; % height of objects below
+opt.marg.u  = opt.marg.d + opt.height.d + 0.025; % margin between up and down
+opt.height.u = 1 - opt.marg.u - opt.marg.d; % height of objects above
 %-----------------%
 %-------------------------------------%
 
@@ -71,7 +71,7 @@ stage(8).color = [1 1 1];
 stage(8).height = 0;
 
 opt.stage = stage;
-opt.hypnogrid = 30; % will create a grid every XX minutes
+opt.hypnogrid = 30; % will create a grid every X minutes in hypnogram
 opt.arrowcolor = 'r'; % color of the arrow indicating the hypnogram
 %-------------------------------------%
 
@@ -88,6 +88,7 @@ opt.marker = {'artifacts' 'sleep scoring begins (!)' 'sleep scoring ends (!)'};
 %-----------------%
 % (cannot be modified in GUI)
 opt.scoreheight = 0.1; % height of the scoring color in the main window
+opt.timegrid = 10; % time point every X s in plot
 %-----------------%
 
 %-----------------%
@@ -97,6 +98,22 @@ opt.ylim = [-1 1] * 150; % default size of the height
 opt.grid0  = true;  % grid at zero
 opt.grid75 = true;  % +- 75 uV grid
 opt.grid1s = false; % one second grid
+%-----------------%
+%-------------------------------------%
+
+%-------------------------------------%
+%-FFT
+%-------------------------------------%
+%-----------------%
+% (cannot be modified in GUI)
+
+%-----------------%
+
+
+%-----------------%
+% (can be modified in GUI)
+opt.fft.i_chan = 1;
+
 %-----------------%
 %-------------------------------------%
 
@@ -136,3 +153,5 @@ opt.changrp(3).scaling = 1;
 % opt.changrp(4).Flp = 35;
 % opt.changrp(4).linecolor = 'g';
 %-------------------------------------%
+
+

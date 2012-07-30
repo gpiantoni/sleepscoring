@@ -7,8 +7,12 @@ opt = getappdata(0, 'opt');
 dat = getappdata(0, 'dat');
 
 delete(findobj('tag', 'a_dat'))
-axes('parent', findobj('tag', 'p_data'), 'tag', 'a_dat');
+axes('parent', opt.h.data, 'tag', 'a_dat');
 plotdata(cfg, opt, dat);
+
+delete(findobj('tag', 'a_fft'))
+axes('parent', opt.h.fft, 'tag', 'a_fft');
+plotfft()
 
 if ~isempty(cfg.score)
   

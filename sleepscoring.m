@@ -32,7 +32,6 @@ function sleepscoring(cfg)
 % - automatic detection of SW and spindles
 % - automatic scoring
 % - shortcuts
-% - read time from hdr-orig
 % - The beginning of the sleep scoring need not coincide with the beginning
 % of the recordings (fix cb_currentpoint as well)
 % - save cfg/score (and info panel should show: saving info in...)
@@ -74,18 +73,18 @@ set(opt.h.main, 'tag', 'sleepscoring')
 %-create main panels
 opt.h.data = uipanel('Title', 'Sleep Data', 'FontSize', 12, 'tag', 'p_data', ... % rename with name of subject
   'BackgroundColor','white', ...
-  'Position', [opt.marg_l opt.marg_u opt.width_l opt.height_u]);
+  'Position', [opt.marg.l opt.marg.u opt.width.l opt.height.u]);
 
 opt.h.hypno = uipanel('Title', 'Hypnogram', 'FontSize', 12, 'tag', 'p_hypno',...
   'BackgroundColor','white', ...
-  'Position', [opt.marg_l opt.marg_d opt.width_l opt.height_d]);
+  'Position', [opt.marg.l opt.marg.d opt.width.l opt.height.d]);
 
 opt.h.info = uipanel('Title', 'Information', 'FontSize', 12, 'tag', 'p_info',...
-  'Position', [opt.marg_r opt.marg_u opt.width_r opt.height_u]);
+  'Position', [opt.marg.r opt.marg.u opt.width.r opt.height.u]);
 
 opt.h.fft = uipanel('Title', 'PowerSpectrum', 'FontSize', 12, 'tag', 'p_fft', ...
   'BackgroundColor','white', ...
-  'Position', [opt.marg_r opt.marg_d opt.width_r opt.height_d]);
+  'Position', [opt.marg.r opt.marg.d opt.width.r opt.height.d]);
 
 %-------%
 %-create axes
@@ -162,10 +161,15 @@ setappdata(0, 'cfg', cfg)
 setappdata(0, 'opt', opt)
 
 if isfield(cfg, 'dataset') 
+  
   if ~isfield(cfg, 'hdr')
-    cfg.hdr = ft_read_header(cfg.dataset);
+    cfg = mff_header(cfg, dirname);
+    setappdata(0, 'cfg', cfg)
   end
 
+  opt.beginrec = cfg.beginrec; %TODO: doc (or better handling)
+  setappdata(0, 'opt', opt)  
+  
   sleepscoring_init()
   cb_readplotdata()
   
@@ -185,13 +189,24 @@ cfg = getappdata(0, 'cfg');
 opt = getappdata(0, 'opt');
 
 dirname = uigetdir;
-if exist(dirname, 'dir')
+if exist(dirname, 'dir') % TODO: what if pressed cancel?
   cfg.dataset = dirname;
-  cfg.hdr = ft_read_header(dirname);
+  cfg = mff_header(cfg, dirname);
+  opt.beginrec = cfg.beginrec;
 end
 
+setappdata(0, 'cfg', cfg)
+setappdata(0, 'opt', opt)
 sleepscoring_init()
 cb_readplotdata()
+%-------------------------------------%
+
+%-------------------------------------%
+%-add hdr and rec time
+function cfg = mff_header(cfg, dirname)
+cfg.hdr = ft_read_header(dirname);
+cfg.fsample = cfg.hdr.Fs;
+cfg.beginrec = datenum(cfg.hdr.orig.xml.info.recordTime([1:10 12:19]), 'yyyy-mm-ddHH:MM:SS');
 %-------------------------------------%
 
 %-------------------------------------%

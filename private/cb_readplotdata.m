@@ -24,7 +24,7 @@ set(findobj('tag', 'epochnumber'), 'str', num2str(opt.epoch))
 setappdata(0, 'opt', opt);
 %-------%
 
-begsample = (opt.epoch - 1) * cfg.wndw * cfg.hdr.Fs + opt.recbegin * cfg.hdr.Fs;
+begsample = (opt.epoch - 1) * cfg.wndw * cfg.hdr.Fs + opt.beginsleep * cfg.hdr.Fs;
 endsample = begsample + cfg.wndw * cfg.hdr.Fs - 1;
 %-----------------%
 

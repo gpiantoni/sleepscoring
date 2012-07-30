@@ -1,7 +1,7 @@
 function plotdata(cfg, opt, dat)
 
 % All the options should be specified in opt
-epoch_beg = (opt.epoch - 1) * cfg.wndw + opt.recbegin; % add the beginning of the scoring period
+epoch_beg = (opt.epoch - 1) * cfg.wndw + opt.beginsleep; % add the beginning of the scoring period
 epoch_end = epoch_beg + cfg.wndw - 1/cfg.hdr.Fs; % add length of time window and remove one sample
 timescale = epoch_beg : 1/cfg.hdr.Fs : epoch_end;
 
@@ -52,6 +52,11 @@ end
 %-----------------%
 %-x axes
 xlim(timescale([1 end]))
+xspan = cfg.hdr.Fs * opt.timegrid;
+xgrid = timescale([1:xspan:end]);
+s2hhmm = @(x) datestr(x / 24 / 60 / 60 + cfg.beginrec, 'HH:MM:SS'); % convert from seconds to HH:MM format
+timelabel = cellfun(s2hhmm, num2cell(xgrid), 'uni', 0);
+set(gca, 'xtick', xgrid, 'xticklabel', timelabel)
 %-----------------%
 
 %-----------------%
