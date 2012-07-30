@@ -39,7 +39,7 @@ for i = 1:numel(timetick_s)
 end
 
 %-xlabel
-s2hhmm = @(x) datestr(x / 24 / 60 / 60, 'HH:MM'); % convert from seconds to HH:MM format
+s2hhmm = @(x) datestr(x / 24 / 60 / 60  + opt.beginrec, 'HH:MM'); % convert from seconds to HH:MM format
 timelabel = cellfun(s2hhmm, num2cell(timetick_s), 'uni', 0);
 set(gca, 'xtick', timetick_s, 'xticklabel', timelabel)
 %-----------------%
