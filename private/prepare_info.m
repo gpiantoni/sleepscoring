@@ -12,6 +12,16 @@ function info = prepare_info(info)
 %  .label: renamed labels
 %  .score: prepare_score
 %  .rater: index of the rater to use as reference
+%
+% TODO: either cfg or info
+
+%-----------------%
+%-read INFO first, if no dataset
+if ~isfield(info, 'dataset')
+  load(info.cfgfile, 'cfg')
+  info = cfg;
+end
+%-----------------%
 
 %-----------------%
 %-HDR

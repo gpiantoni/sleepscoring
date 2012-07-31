@@ -33,7 +33,6 @@ function sleepscoring(opt, cfg)
 % - multiple windows
 % - automatic detection of SW and spindles
 % - automatic scoring
-% - shortcuts
 % - The beginning of the sleep scoring need not coincide with the beginning
 % of the recordings (fix cb_currentpoint as well)
 % - when sleep scoring, enter beginning of sleep
@@ -46,6 +45,11 @@ function sleepscoring(opt, cfg)
 
 %-------------------------------------%
 %-CHECK INPUT
+ftdir = which('ft_read_header');
+if strcmp(ftdir, '')
+  error('Please add fieldtrip folder and execute ''ft_defaults''')
+end
+
 addpath([fileparts(mfilename('fullpath')) filesep 'preference'])
 
 if nargin == 0
@@ -65,6 +69,8 @@ if h; delete(h); end
 opt.h.main = figure;
 set(opt.h.main, 'tag', 'sleepscoring', ...
   'closerequestfcn', @cb_closemain)
+
+set(opt.h.main, 'KeyPressFcn', @cb_shortcuts)
 %-------------------------------------%
 
 %-------------------------------------%
@@ -99,45 +105,45 @@ opt.axis.fft = axes('parent', opt.h.fft, 'vis', 'off');
 %-------%
 %-info
 uicontrol(opt.h.info, 'sty', 'text', 'uni', 'norm', ...
-  'pos', [.05 .9 .9 .1], 'str', 'CFG:', 'tag', 'name_cfg');
+  'pos', [.05 .95 .9 .05], 'str', 'Dataset:', 'tag', 'name_cfg');
 uicontrol(opt.h.info, 'sty', 'text', 'uni', 'norm', ...
-  'pos', [.05 .8 .9 .1], 'str', 'OPT:', 'tag', 'name_opt');
+  'pos', [.05 .9 .9 .05], 'str', ['OPT: ' opt.optname], 'tag', 'name_opt');
 %-------%
 
 %-------%
 %-change epochs
 uicontrol(opt.h.info, 'sty', 'push', 'uni', 'norm', ...
-  'pos', [.05 .5 .25 .1], 'str', '<<', ...
+  'pos', [.05 .75 .25 .1], 'str', '<<', ...
   'call', @cb_bb);
 uicontrol(opt.h.info, 'sty', 'edit', 'uni', 'norm', ...
-  'pos', [.35 .5 .30 .1], 'str', '', 'tag', 'epochnumber', ...
+  'pos', [.35 .75 .30 .1], 'str', '', 'tag', 'epochnumber', ...
   'call', @cb_epoch); 
 uicontrol(opt.h.info, 'sty', 'push', 'uni', 'norm', ...
-  'pos', [.70 .5 .25 .1], 'str', '>>', ...
+  'pos', [.70 .75 .25 .1], 'str', '>>', ...
   'call', @cb_ff);
 %-------%
 
 %-------%
 %-scaling
 uicontrol(opt.h.info, 'sty', 'push', 'uni', 'norm', ...
-  'pos', [.05 .35 .25 .1], 'str', '+', ...
+  'pos', [.05 .6 .25 .1], 'str', '+', ...
   'call', @cb_yu);
 uicontrol(opt.h.info, 'sty', 'edit', 'uni', 'norm', ...
-  'pos', [.35 .35 .30 .1], 'str', num2str(opt.ylim(2)), 'tag', 'ylimval', ...
+  'pos', [.35 .6 .30 .1], 'str', num2str(opt.ylim(2)), 'tag', 'ylimval', ...
   'call', @cb_ylim);
 uicontrol(opt.h.info, 'sty', 'push', 'uni', 'norm', ...
-  'pos', [.70 .35 .25 .1], 'str', '-', ...
+  'pos', [.70 .6 .25 .1], 'str', '-', ...
   'call', @cb_yd);
 %-------%
 
 %-------%
 %-grid
 uicontrol(opt.h.info, 'sty', 'toggle', 'uni', 'norm', ...
-  'pos', [.05 .2 .4 .1], 'str', '75uV', ...
+  'pos', [.05 .45 .4 .1], 'str', '75uV', ...
   'val', opt.grid75, 'call', @cb_grid75);
 
 uicontrol(opt.h.info, 'sty', 'toggle', 'uni', 'norm', ...
-  'pos', [.55 .2 .4 .1], 'str', '1s', ...
+  'pos', [.55 .45 .4 .1], 'str', '1s', ...
   'val', opt.grid1s, 'call', @cb_grid1s);
 %-----------------%  
 %-------------------------------------%
@@ -149,8 +155,8 @@ set(opt.h.main, 'Menubar', 'none')
 %-----------------%
 %-FILE
 m_file = uimenu(opt.h.main, 'label', 'File');
-uimenu(m_file, 'label', 'New CFG', 'call', @cb_newcfg);
-uimenu(m_file, 'label', 'Open CFG', 'call', @cb_opencfg);
+uimenu(m_file, 'label', 'New Dataset', 'call', @cb_newcfg);
+uimenu(m_file, 'label', 'Open Dataset', 'call', @cb_opencfg);
 uimenu(m_file, 'label', 'Open OPT', 'sep', 'on', 'call', @cb_openopt);
 uimenu(m_file, 'label', 'Save OPT', 'call', @cb_saveopt);
 %-----------------%
@@ -196,7 +202,9 @@ setappdata(0, 'opt', opt)
 
 if nargin > 1 && isfield(cfg, 'dataset') 
   
-  cfg = prepare_info(cfg); % TODO: decide if it should be info or cfg
+  cfg = prepare_info(cfg);
+  
+  savecfg()
   setappdata(0, 'cfg', cfg)
   
   sleepscoring_init()
@@ -211,44 +219,24 @@ end
 %---------------------------------------------------------%
 
 %-------------------------------------%
-%-callback: load cfg/opt
+%-callback: save opt
 function cb_opencfg(h0, eventdata)
 
-opt = getappdata(0, 'opt');
+savecfg() % save previous cfg
 
 %-----------------%
-%-confirm delete
-if ~isempty(opt) % it's always not empty
-  ConfirmDel = questdlg('Are you sure that you want to delete current OPT?', ...
-    'Replace OPT', ...
-    'Yes', 'No', 'Yes');
-  if strcmp(ConfirmDel, 'No'); return; end
-end
-%-----------------%
-
-%-----------------%
-%-read file
-filename = uigetfile;
+%-read OPT file
+[filename pathname] = uigetfile({'*.mat', 'Dataset File (*.m, *.mat)'}, 'Select Dataset File');
 if ~filename; return; end
 
-if exist(filename, 'file')
-  
-  [~, ~, ext] = fileparts(filename);
-  if strcmp(ext, '.m')
-    
-  elseif strcmp(ext, '.mat')
-    load(filename, 'opt')
-    
-  end
-  
-else
-  return
-end
+cfg.cfgfile = [pathname filename];
+cfg = prepare_info(cfg);
 %-----------------%
 
 %-----------------%
 %-read and plot data
-setappdata(0, 'opt', opt)
+savecfg()
+setappdata(0, 'cfg', cfg)
 
 sleepscoring_init()
 cb_readplotdata()
@@ -256,52 +244,22 @@ cb_readplotdata()
 %-------------------------------------%
 
 %-------------------------------------%
-%-callback: save opt
-function cb_savecfg(h0, eventdata)
+%-callback: load opt
+function cb_openopt(h0, eventdata)
 
 opt = getappdata(0, 'opt');
 
 %-----------------%
-%-choose file to save',g
-filename = uiputfile;
+%-read OPT file
+[filename pathname] = uigetfile({'*.mat;*.m', 'Option file (*.m, *.mat)'}, 'Select OPT file');
 if ~filename; return; end
-
-if exist(filename, 'file')
-  load(filename, 'cfg', 'opt')
-  cfg.cfgname = filename;
-end
+opt = prepare_opt([pathname filename], opt);
 %-----------------%
 
 %-----------------%
 %-read and plot data
-setappdata(0, 'cfg', cfg)
 setappdata(0, 'opt', opt)
-sleepscoring_init()
-cb_readplotdata()
-%-----------------%
-%-------------------------------------%
 
-%-------------------------------------%
-%-callback: load dataset
-function cb_openmff(h0, eventdata)
-
-%-----------------%
-%-read dir
-dirname = uigetdir;
-if ~dirname; return; end
-
-if exist(dirname, 'dir')
-  
-  cfg = [];
-  cfg.dataset = dirname;
-  cfg = prepare_cfg(cfg);
-  
-end
-%-----------------%
-
-%-----------------%
-%-read and plot data
-setappdata(0, 'cfg', cfg)
 sleepscoring_init()
 cb_readplotdata()
 %-----------------%
@@ -463,8 +421,6 @@ wndw = textscan(answer{2}, '%f');
 wndw = wndw{1};
 %-----------------%
 
-
-
 %-----------------%
 %-update cfg
 cfg.rater = newrater;
@@ -577,6 +533,8 @@ cb_plotdata()
 %-------------------------------------%
 %-callback: close figure
 function cb_closemain(h0, eventdata)
+
+savecfg()
 setappdata(0, 'cfg', []) % clean up cfg
 setappdata(0, 'opt', []) % clean up opt
 delete(h0);

@@ -1,9 +1,11 @@
-function opt = prepare_opt(opt)
+function opt = prepare_opt(optname, opt_old)
 %PREPARE_OPT read or prepare opt
 % Input can be a file ending in ".m" (such as "opt_default.m") or a MAT
 % file with a "opt" variable.
 %
 % OPT
+%  .optname: name of the opt file
+%
 %-channels
 %  .renamelabel: two-column cell, the first column is the labels read from
 %                the header file and the second column is the labels used
@@ -19,6 +21,8 @@ function opt = prepare_opt(opt)
 %
 %-main window
 %  .marg, .width, .height: dimension of main panels
+%
+%  .epoch: index of the epoch
 %
 %-data panel
 %  .scoreheight: location of the score colorbar on top of scoring (used by plotdata)
@@ -45,6 +49,11 @@ function opt = prepare_opt(opt)
 %   .xlim: limit of the x axis (if empty, it's adaptive)
 %   .ylim: limit of the y axis (if empty, it's adaptive), log-scale
 %
+%-shortcuts
+% .short:
+%   .next: following epoch
+%   .previous: previous epoch
+%
 %-figure handles
 %  .h:
 %    .main: main figure handle
@@ -61,21 +70,26 @@ function opt = prepare_opt(opt)
 
 %-----------------%
 %-read opt
-if ~isstruct(opt) % use second argument
+if strcmp(optname(end-1:end), '.m') % if it's the .m file like opt_default
+  opt = feval(optname(1:end-2)); % remove .m
   
-  if strcmp(opt(end-1:end), '.m') % if it's the .m file like opt_default
-    opt = feval(opt(1:end-2)); % remove .m
-  elseif strcmp(opt(end-3:end), '.mat') % saved from previous OPT
-    load(opt, 'opt')
-  end
+elseif strcmp(optname(end-3:end), '.mat') % saved from previous OPT
+  load(optname, 'opt')
   
+end
+
+opt.optname = optname;
+%-----------------%
+
+%-----------------%
+%-handles (specific to a figure)
+if nargin == 2
+  opt.h = opt_old.h;
+  opt.axis = opt_old.axis;
 end
 %-----------------%
 
 %-----------------%
-%-remove handles
-if isfield(opt, 'h')
-  opt = rmfield(opt, 'h');
-end
+%rename CFG
+set(findobj( 'tag', 'name_opt'), 'str', ['OPT: ' opt.optname]);
 %-----------------%
-

@@ -71,6 +71,7 @@ if ~strcmp(cfg.dataset, '(click to select)') || ...
   
   %-------%
   %-init
+  savecfg()
   setappdata(0, 'cfg', cfg)
   sleepscoring_init()
   cb_readplotdata()

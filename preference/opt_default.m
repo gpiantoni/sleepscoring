@@ -99,6 +99,14 @@ opt.arrowcolor = 'r'; % color of the arrow indicating the hypnogram
 %-------------------------------------%
 
 %-------------------------------------%
+%-SHORTCUTS (cannot be modified in GUI)
+%-------------------------------------%
+opt.short.next = 'k';
+opt.short.previous = 'j';
+% '0' to '9' are reserved for sleep stages
+%-------------------------------------%
+
+%-------------------------------------%
 %-MARKERS
 %-------------------------------------%
 opt.marker = {'artifacts' 'sleep scoring begins (!)' 'sleep scoring ends (!)'};
