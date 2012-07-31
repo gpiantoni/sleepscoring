@@ -12,7 +12,9 @@ opt = getappdata(0, 'opt');
 %-------------------------------------%
 %-channels
 for i = 1:size(opt.renamelabel,1)
+  try % TODO
   cfg.label{strcmp(cfg.label, opt.renamelabel{i,1})} = opt.renamelabel{i,2};
+  end
 end
 %-------------------------------------%
 

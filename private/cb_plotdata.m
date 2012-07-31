@@ -12,6 +12,9 @@ plotdata(cfg, opt, dat);
 
 if ~isempty(cfg.score)
   
+  delete(findobj('tag', 'artifact'))
+  plotartifact()
+  
   delete(findobj('tag', 'a_hypno'))
   axes('parent', findobj('tag', 'p_hypno'), 'tag', 'a_hypno');
   

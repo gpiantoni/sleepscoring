@@ -5,7 +5,7 @@ wndw = cfg.score{3,cfg.rater};
 beginsleep = cfg.score{4,cfg.rater}(1);
 
 epoch_beg = (opt.epoch - 1) * wndw + beginsleep; % add the beginning of the scoring period
-epoch_end = epoch_beg + wndw - 1/cfg.hdr.Fs; % add length of time window and remove one sample
+epoch_end = epoch_beg + wndw - 1/cfg.fsample; % add length of time window and remove one sample
 timescale = epoch_beg : 1/cfg.hdr.Fs : epoch_end;
 
 p75 = 75 * ones(size(timescale));
@@ -88,7 +88,7 @@ if ~isempty(cfg.score)
     i_score = find(isnan([opt.stage.code]));
   end
   
-%  ft_plot_box([ timescale([1 end]) - opt.scoreheight 0], 'FaceColor', opt.stage(i_score).color)
+ ft_plot_box([timescale([1 end]) -opt.scoreheight 0], 'FaceColor', opt.stage(i_score).color)
   
 end
 %-----------------%

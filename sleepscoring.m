@@ -29,15 +29,14 @@ function sleepscoring(opt, cfg)
 % CFG is automatically saved, OPT only if you click on save
 
 %TODO:
-% - marker (beginning of recordings: are you sure you want to modify sleep scoring?)
 % - multiple windows
 % - automatic detection of SW and spindles
 % - automatic scoring
-% - The beginning of the sleep scoring need not coincide with the beginning
-% of the recordings (fix cb_currentpoint as well)
 % - when sleep scoring, enter beginning of sleep
 % - hObject,h -> h0
 % - notes for each epoch
+% - score names does not check on
+% - make dat1 with following epoch to preload following epoch
 
 %---------------------------------------------------------%
 %-GUI FUNCTION

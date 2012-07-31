@@ -16,7 +16,23 @@ if strcmp(tag, 'a_dat')
     set(h, 'WindowButtonUpFcn', @cb_wbup)
     
   else
-    % when right clicking use as marker
+    
+    popup_str = get(findobj('tag', 'popupmarker'), 'str');
+    popup_val = get(findobj('tag', 'popupmarker'), 'val');
+    popup = popup_str{popup_val};
+    
+    if numel(popup) > 13 && ...
+        strcmp(popup(1:13), 'sleep scoring')
+      
+      score_retime(pos, popup)
+      
+    else
+      
+      set(h, 'WindowButtonMotionFcn', {@cb_range, pos})
+      set(h, 'WindowButtonUpFcn', {@cb_marker, pos})
+      
+    end
+    
     
   end
   %-------------------------------------%
@@ -48,9 +64,8 @@ elseif strcmp(tag, 'a_hypno')
     
   end
   %-----------------%
-  
-  
   %-------------------------------------%
+  
 end
 %---------------------------------------------------------%
 
@@ -59,7 +74,7 @@ end
 %---------------------------------------------------------%
 %-------------------------------------%
 %-callback: when mouse is moving
-function cb_box(hObject, eventdata, pos1)
+function cb_box(h0, eventdata, pos1)
 % TODO: this does not take into account the scaling
 
 cfg = getappdata(0, 'cfg');
@@ -100,15 +115,72 @@ drawnow
 %-------------------------------------%
 
 %-------------------------------------%
-function cb_wbup(hObject, eventdata)
+%-when click is released
+function cb_wbup(h0, eventdata)
 
-if strcmp(get(hObject, 'SelectionType'), 'normal')
+if strcmp(get(h0, 'SelectionType'), 'normal')
   
   delete(findobj('tag', 'Selecting'))
-  set(hObject,'WindowButtonMotionFcn', '')
-  set(hObject,'WindowButtonUpFcn', '')
+  set(h0,'WindowButtonMotionFcn', '')
+  set(h0,'WindowButtonUpFcn', '')
   
   plotfft()
 end
 %-------------------------------------%
+
+%-------------------------------------%
+%-callback: when mouse is moving
+function cb_range(h0, eventdata, pos1)
+
+opt = getappdata(0, 'opt');
+pos2 = get(gca, 'CurrentPoint');
+
+delete(findobj('tag', 'sel_marker'))
+
+%-----------------%
+%-range on yaxis
+yrange(1) = -1 * numel([opt.changrp.chan]) - 1;
+yrange(2) = 0;
+%-----------------%
+
+%-----------------%
+%-range
+hold on
+h_f = fill([pos1(1,1) pos1(1,1) pos2(1,1) pos2(1,1)], ...
+  yrange([1 2 2 1]), 'm');
+set(h_f, 'tag', 'sel_marker')
+drawnow
+%-----------------%
+%-------------------------------------%
+
+%-------------------------------------%
+%-callback: when click is released
+function cb_marker(h0, eventdata, pos1)
+
+pos2 = get(gca, 'CurrentPoint');
+
+delete(findobj('tag', 'sel_marker'))
+set(h0,'WindowButtonMotionFcn', '')
+set(h0,'WindowButtonUpFcn', '')
+
+make_marker(pos1, pos2)
+%-------------------------------------%
 %---------------------------------------------------------%
+
+%---------------------------------------------------------%
+%-SUBFUNCTIONS
+%-------------------------------------%
+%-make marker as artifact or other
+function make_marker(pos1, pos2)
+
+cfg = getappdata(0, 'cfg');
+
+newmrk = sort([pos1(1,1) pos2(1,1)]);
+cfg.score{5,cfg.rater} = [cfg.score{5,cfg.rater}; newmrk];
+
+savecfg()
+setappdata(0, 'cfg', cfg);
+cb_plotdata()
+%-------------------------------------%
+%---------------------------------------------------------%
+

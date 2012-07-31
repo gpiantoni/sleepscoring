@@ -3,6 +3,8 @@ function score = prepare_score(score)
 % INPUT can be
 %  - empty: so initialize
 
+% TODO: no scoring if empty score
+
 %-----------------%
 %-score structure
 % 1- score values
@@ -14,9 +16,10 @@ function score = prepare_score(score)
 % 7- empty (will contain the markers)
 %-----------------%
 
-%-------------------------------------%
-%-called by prepare_info, create empty structure
 if isstruct(score)
+  
+  %-------------------------------------%
+  %-called by prepare_info, create empty structure
   
   info = score; % for clarity
   score = [];
@@ -31,6 +34,16 @@ if isstruct(score)
   score{5,1} = [];
   score{6,1} = [];
   score{7,1} = [];
+  %-------------------------------------%
+  
+else
+  
+  %-------------------------------------%
+  %-called by score_retime
+  dur = score{4,1}(2) - score{4,1}(1);
+  nscore = floor(dur / score{3,1}); % TODO: or ceil?
+  score{1,1} = NaN(1, nscore);
+  %-------------------------------------%
   
 end
-%-------------------------------------%
+
