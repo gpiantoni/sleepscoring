@@ -14,6 +14,8 @@ if ~isempty(cfg.score)
   
   delete(findobj('tag', 'a_hypno'))
   axes('parent', findobj('tag', 'p_hypno'), 'tag', 'a_hypno');
+  
+  opt.beginrec = cfg.beginrec;
   hypnogram(opt, cfg.score(:, cfg.rater))
   popup_score(cfg, opt)
   

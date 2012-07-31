@@ -34,12 +34,14 @@ elseif strcmp(tag, 'a_hypno')
     
     cfg = getappdata(0, 'cfg');
     opt = getappdata(0, 'opt');
+    wndw = cfg.score{3,cfg.rater};
+    
     pnt = pos(2,1);
-    opt.epoch = round(pnt / cfg.wndw);
+    opt.epoch = round(pnt / wndw);
     
     %-TODO: the timing should be based on epoch/score info
-    opt.begsample = (opt.epoch-1) * cfg.wndw * cfg.hdr.Fs + 1;
-    opt.endsample = opt.begsample + cfg.hdr.Fs * cfg.wndw - 1;
+    opt.begsample = (opt.epoch-1) * wndw * cfg.fsample + 1;
+    opt.endsample = opt.begsample + cfg.fsample * wndw - 1;
     setappdata(0, 'opt', opt)
     
     cb_readplotdata()
@@ -85,17 +87,16 @@ set(p_txt, 'tag', 'Selecting', 'BackgroundColor', [0 0 0], 'Color', [1 1 1])
 drawnow
 %-----------------%
 
-%-----------------%
-%-fft
-%-channel (TODO: check if correct)
-i_chan = -1 * round(pos1(1,2));
-
-%-time in sample
-epoch_beg = (opt.epoch - 1) * cfg.wndw + opt.beginsleep; % add the beginning of the scoring period
-i_dat = sort(round(([pos1(1,1) pos2(1,1)] - epoch_beg) * cfg.fsample));
-
-% plotfft(i_chan, i_dat); %TODO: too slow, why is the FASST implementation faster?
-%-----------------%
+% %-----------------%
+% %-fft %TODO: too slow, why is the FASST implementation faster?
+% %-channel (TODO: check if correct)
+% i_chan = -1 * round(pos1(1,2));
+% 
+% %-time in sample
+% epoch_beg = (opt.epoch - 1) * cfg.wndw + opt.beginsleep; % add the beginning of the scoring period
+% i_dat = sort(round(([pos1(1,1) pos2(1,1)] - epoch_beg) * cfg.fsample));
+% plotfft(i_chan, i_dat); 
+% %-----------------%
 %-------------------------------------%
 
 %-------------------------------------%

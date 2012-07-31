@@ -84,7 +84,7 @@ if cp
   
   %-----------------%
   %-current point
-  channame = ['!!! ' chan{i_chan} '!!!'];
+  channame = ['!!!' chan{i_chan} '!!!'];
   uicontrol(opt.h.fft, 'sty', 'popup', 'uni', 'norm', ...
     'pos', [.05 .9 .9 .1], 'str', channame, 'val', 1, 'tag', 'popup_fft', ...
     'call', @plotfft);

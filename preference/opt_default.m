@@ -3,6 +3,29 @@ function opt = opt_default
 opt = [];
 
 %-------------------------------------%
+%-CHANNAME (cannot be modified in GUI)
+%-------------------------------------%
+% Here you can rename channels, to give more meaningful names. 
+% The first column is the labels read from the header file and the
+% second column is the labels used in the analysis. The final labels will be
+% stored in CFG.
+%-----------------%
+%-scalp EEG
+opt.renamelabel = {'E41', 'F3';
+                  'E214', 'F4';
+                   'E59', 'C3';
+                  'E183', 'C4';
+                  'E124', 'O3';
+                  'E149', 'O4';
+                   'E94', 'LM'; % mastoid
+                  'E190', 'RM';
+                  'E234', 'REOG'; % EOG
+                  'E244', 'LEOG';
+                  'E165', 'EMG'};
+%-----------------%
+%-------------------------------------%
+
+%-------------------------------------%
 %-PANEL POSITION (cannot be modified in GUI)
 %-------------------------------------%
 %-----------------%
@@ -107,28 +130,27 @@ opt.grid1s = false; % one second grid
 %-----------------%
 % (cannot be modified in GUI)
 opt.fft.welchdur = 2; % duration of welch's window in s (short -> more smoothing)
-opt.fft.xlim = [0 40];
-opt.fft.ylim = [1e-2 1e3];
+opt.fft.xlim = [0 40]; % if empty, it changes every time
+opt.fft.ylim = [1e-2 1e3]; % if empty, it changes every time
 %-----------------%
 
 %-----------------%
 % (can be modified in GUI)
 opt.fft.i_chan = 1;
-
 %-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
-%-CHANNEL GROUPS (can be modified in GUI)
+%-CHANNEL GROUPS
 %-------------------------------------%
 %-the same channel cannot belong to two groups at the same time
-opt.changrp(1).chantype = 'eeg';
-opt.changrp(1).chan = {'F3' 'F4' 'C3' 'C4' 'O3' 'O4'};
-opt.changrp(1).ref = {'LM' 'RM'};
-opt.changrp(1).Fhp = 0.3;
-opt.changrp(1).Flp = 35;
-opt.changrp(1).linecolor = 'k';
-opt.changrp(1).scaling = 1;
+opt.changrp(1).chantype = 'eeg'; % cannot be modified in GUI
+opt.changrp(1).chan = {'F3' 'F4' 'C3' 'C4' 'O3' 'O4'};  % can be modified in GUI
+opt.changrp(1).ref = {'LM' 'RM'};  % can be modified in GUI
+opt.changrp(1).Fhp = 0.3; % cannot be modified in GUI
+opt.changrp(1).Flp = 35; % cannot be modified in GUI
+opt.changrp(1).linecolor = 'k'; % cannot be modified in GUI
+opt.changrp(1).scaling = 1; % cannot be modified in GUI
 
 opt.changrp(2).chantype = 'eog';
 opt.changrp(2).chan = {'REOG'};
@@ -154,5 +176,4 @@ opt.changrp(3).scaling = 1;
 % opt.changrp(4).Flp = 35;
 % opt.changrp(4).linecolor = 'g';
 %-------------------------------------%
-
 
