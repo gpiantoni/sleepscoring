@@ -109,8 +109,8 @@ opt.short.previous = 'j';
 %-------------------------------------%
 %-MARKERS
 %-------------------------------------%
-opt.marker = {'artifacts' 'sleep scoring begins (!)' 'sleep scoring ends (!)'};
-% TODO: add color
+opt.marker.name = {'artifacts' 'sleep scoring begins (!)' 'sleep scoring ends (!)'};
+opt.marker.color = {'m' '' ''};
 %-------------------------------------%
 
 %-------------------------------------%

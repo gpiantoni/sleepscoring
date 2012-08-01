@@ -52,5 +52,12 @@ uicontrol(opt.h.info, 'sty', 'popup', 'uni', 'norm', ...
 popup_score(info, opt)
 %-----------------%
 
+%-----------------%
+%-working GUI
+set(findobj('label', 'Sleep Score'), 'enable', 'on')
+set(findobj('label', 'Channel Selection'), 'enable', 'on')
+set(findobj('label', 'Filter'), 'enable', 'on')
+set(findobj('label', 'Reference'), 'enable', 'on')
 set(opt.h.main, 'windowbuttonDownFcn', @cb_currentpoint)
+%-----------------%
 %-------------------------------------%

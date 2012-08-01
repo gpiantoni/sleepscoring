@@ -5,7 +5,7 @@ function cb_shortcuts(h0, eventdata)
 % j -> previous epoch
 % 0 to 9 -> sleep stage, depending on code
 
-cfg = getappdata(0, 'cfg');
+info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
 
 switch eventdata.Key
@@ -38,12 +38,12 @@ switch eventdata.Key
     i_score = find([opt.stage.code] == scored);
     
     if ~isempty(i_score)
-      cfg.score{1, cfg.rater}(opt.epoch) = opt.stage(i_score).code;
-      savecfg()
+      info.score{1, info.rater}(opt.epoch) = opt.stage(i_score).code;
+      save_info()
       
       opt.epoch = opt.epoch + 1;
       
-      setappdata(0, 'cfg', cfg)
+      setappdata(0, 'info', info)
       setappdata(0, 'opt', opt)
       cb_readplotdata()
       

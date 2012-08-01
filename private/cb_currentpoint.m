@@ -48,16 +48,16 @@ elseif strcmp(tag, 'a_hypno')
   if pos(2,1) >= xlim(1) && pos(2,1) <= xlim(2) && ...
       pos(2,2) >= ylim(1) && pos(2,2) <= ylim(2)
     
-    cfg = getappdata(0, 'cfg');
+    info = getappdata(0, 'info');
     opt = getappdata(0, 'opt');
-    wndw = cfg.score{3,cfg.rater};
+    wndw = info.score{3,info.rater};
     
     pnt = pos(2,1);
     opt.epoch = round(pnt / wndw);
     
     %-TODO: the timing should be based on epoch/score info
-    opt.begsample = (opt.epoch-1) * wndw * cfg.fsample + 1;
-    opt.endsample = opt.begsample + cfg.fsample * wndw - 1;
+    opt.begsample = (opt.epoch-1) * wndw * info.fsample + 1;
+    opt.endsample = opt.begsample + info.fsample * wndw - 1;
     setappdata(0, 'opt', opt)
     
     cb_readplotdata()
@@ -77,7 +77,7 @@ end
 function cb_box(h0, eventdata, pos1)
 % TODO: this does not take into account the scaling
 
-cfg = getappdata(0, 'cfg');
+info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
 pos2 = get(gca, 'CurrentPoint');
 
@@ -108,8 +108,8 @@ drawnow
 % i_chan = -1 * round(pos1(1,2));
 % 
 % %-time in sample
-% epoch_beg = (opt.epoch - 1) * cfg.wndw + opt.beginsleep; % add the beginning of the scoring period
-% i_dat = sort(round(([pos1(1,1) pos2(1,1)] - epoch_beg) * cfg.fsample));
+% epoch_beg = (opt.epoch - 1) * info.wndw + opt.beginsleep; % add the beginning of the scoring period
+% i_dat = sort(round(([pos1(1,1) pos2(1,1)] - epoch_beg) * info.fsample));
 % plotfft(i_chan, i_dat); 
 % %-----------------%
 %-------------------------------------%
@@ -124,7 +124,7 @@ if strcmp(get(h0, 'SelectionType'), 'normal')
   set(h0,'WindowButtonMotionFcn', '')
   set(h0,'WindowButtonUpFcn', '')
   
-  plotfft()
+  plot_fft()
 end
 %-------------------------------------%
 
@@ -173,13 +173,13 @@ make_marker(pos1, pos2)
 %-make marker as artifact or other
 function make_marker(pos1, pos2)
 
-cfg = getappdata(0, 'cfg');
+info = getappdata(0, 'info');
 
 newmrk = sort([pos1(1,1) pos2(1,1)]);
-cfg.score{5,cfg.rater} = [cfg.score{5,cfg.rater}; newmrk];
+info.score{5,info.rater} = [info.score{5,info.rater}; newmrk];
 
-savecfg()
-setappdata(0, 'cfg', cfg);
+save_info()
+setappdata(0, 'info', info);
 cb_plotdata()
 %-------------------------------------%
 %---------------------------------------------------------%

@@ -1,7 +1,7 @@
-function cb_readplotdata(hObject, eventdata)
+function cb_readplotdata(h0, eventdata)
 %CB_READPLOTDATA: callback which reads data and plots them
 
-cfg = getappdata(0, 'cfg');
+info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
 
 %-----------------%
@@ -12,7 +12,7 @@ if opt.epoch < 1
   opt.epoch = 1;
 end
 
-nepoch = floor(cfg.hdr.nSamples / cfg.fsample / cfg.score{3,cfg.rater});
+nepoch = numel(info.score{1,info.rater});
 if opt.epoch > nepoch
   opt.epoch = nepoch;
 end
@@ -23,18 +23,16 @@ end
 set(findobj('tag', 'epochnumber'), 'str', num2str(opt.epoch))
 setappdata(0, 'opt', opt);
 %-------%
-
-wndw = cfg.score{3,cfg.rater};
-beginrec = cfg.score{4,cfg.rater}(1);
-
-begsample = (opt.epoch - 1) * wndw * cfg.fsample + beginrec * cfg.fsample;
-endsample = begsample + wndw * cfg.fsample - 1;
 %-----------------%
 
-dat = readdata(cfg, opt, begsample, endsample);
+%-----------------%
+%-read data
+dat = read_data(info, opt);
 setappdata(0, 'dat', dat);
+%-----------------%
 
+%-----------------%
+%-plot data
 cb_plotdata()
-
-plotfft()
-%-------------------------------------%
+plot_fft()
+%-----------------%

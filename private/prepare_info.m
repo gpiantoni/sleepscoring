@@ -1,10 +1,11 @@
 function info = prepare_info(info)
-%PREPARE_INFO create complete info
-% Input is info.dataset and info.cfgfile and optionally info.hdr
+%PREPARE_INFO create info based on dataset
+%
+% Input is info.dataset and info.infofile and optionally info.hdr
 % The function will fill up all the other fields
 %
 % info
-%  .cfgfile: file where the CFG is saved into
+%  .infofile: file where the info is saved into
 %  .dataset: full file name of the dataset
 %  .hdr: header of the dataset read by ft_read_header
 %  .fsample: sampling frequency taken from hdr
@@ -13,13 +14,13 @@ function info = prepare_info(info)
 %  .score: prepare_score
 %  .rater: index of the rater to use as reference
 %
-% TODO: either cfg or info
+% This function is always followed by prepare_info_opt, which takes the
+% input from info and opt, and uses them together
 
 %-----------------%
 %-read INFO first, if no dataset
 if ~isfield(info, 'dataset')
-  load(info.cfgfile, 'cfg')
-  info = cfg;
+  load(info.infofile, 'info')
 end
 %-----------------%
 
@@ -44,7 +45,7 @@ info.beginrec = datenum(info.hdr.orig.xml.info.recordTime([1:10 12:19]), 'yyyy-m
 
 %-----------------%
 %-INFO
-% TODO: how to handle labels
+% use original labels, prepare_info_opt will change the labels
 info.label = info.hdr.label;
 %-----------------%
 
@@ -64,5 +65,8 @@ end
 
 %-----------------%
 %-INFO TEXT
-set(findobj('tag', 'name_cfg'), 'str', info.cfgfile)
+set(findobj('tag', 'name_info'), 'str', info.infofile)
+
+[~, filename] = fileparts(info.dataset);
+set(findobj('tag', 'p_data'), 'title', filename)
 %-----------------%

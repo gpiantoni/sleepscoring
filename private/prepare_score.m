@@ -1,9 +1,5 @@
-function score = prepare_score(score)
+function score = prepare_score(score, rater, wndw)
 %PREPARESCORE: even if empty, create score 
-% INPUT can be
-%  - empty: so initialize
-
-% TODO: no scoring if empty score
 
 %-----------------%
 %-score structure
@@ -13,27 +9,35 @@ function score = prepare_score(score)
 % 4- beginning and end of the scoring period (s)
 % 5- artifacts (data not to analyze)
 % 6- movements (?)
-% 7- empty (will contain the markers)
+% 7- ?
+% 8- ?
 %-----------------%
 
 if isstruct(score)
   
   %-------------------------------------%
   %-called by prepare_info, create empty structure
-  
   info = score; % for clarity
   score = [];
-  wndw = 30; % default of 30s when showing the data the first time
+  
+  %-----------------%
+  %-values from cb_rater or default
+  if nargin < 3 % use default
+    rater = [];
+    wndw = 30; % default of 30s when showing the data the first time
+  end
+  %-----------------%
   
   nscore = floor(info.hdr.nSamples / info.fsample / wndw); % TODO: or ceil?
   
   score{1,1} = NaN(1, nscore);
-  score{2,1} = [];
+  score{2,1} = rater;
   score{3,1} = wndw;
   score{4,1} = [1 info.hdr.nSamples] / info.fsample;
   score{5,1} = [];
   score{6,1} = [];
   score{7,1} = [];
+  score{8,1} = [];
   %-------------------------------------%
   
 else

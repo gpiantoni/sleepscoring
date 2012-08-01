@@ -1,6 +1,8 @@
 function score_retime(pos, popup)
+%SCORE_RETIME recreate the scoring epochs after you indicated the beginning
+% and end of the sleep scoring
 
-cfg = getappdata(0, 'cfg');
+info = getappdata(0, 'info');
 
 %-----------------%
 %-check if sure to replace score
@@ -11,21 +13,23 @@ if strcmp(ConfirmDel, 'No'); return; end
 %-----------------%
 
 %-----------------%
+pos = round(pos(1,1) * info.fsample) / info.fsample;
+
 if strcmp(popup, 'sleep scoring begins (!)')
   
-  cfg.score{4, cfg.rater}(1) = pos(1,1);
+  info.score{4, info.rater}(1) = pos;
   
 else
 
-  cfg.score{4, cfg.rater}(2) = pos(1,1);
+  info.score{4, info.rater}(2) = pos;
   
 end
 %-----------------%
 
 %-----------------%
-score = prepare_score(cfg.score(:,cfg.rater));
-cfg.score(:,cfg.rater) = score;
+score = prepare_score(info.score(:,info.rater));
+info.score(:,info.rater) = score;
 
-setappdata(0, 'cfg', cfg);
+setappdata(0, 'info', info);
 cb_readplotdata()
 %-----------------%

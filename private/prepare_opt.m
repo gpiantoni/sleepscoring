@@ -68,28 +68,60 @@ function opt = prepare_opt(optname, opt_old)
 
 % TODO: check opt
 
-%-----------------%
-%-read opt
-if strcmp(optname(end-1:end), '.m') % if it's the .m file like opt_default
-  opt = feval(optname(1:end-2)); % remove .m
+%-------------------------------------%
+%-get opt
+if isstruct(optname)
   
-elseif strcmp(optname(end-3:end), '.mat') % saved from previous OPT
-  load(optname, 'opt')
+  %---------------------------%
+  %-already a struct
+  opt = optname;
+  %---------------------------%
+  
+else
+  
+  %---------------------------%
+  %-read from file
+  [dirname, filename, ext] = fileparts(optname);
+  
+  
+  if strcmp(ext, '.m') % if it's the .m file like opt_default
+    
+    %-----------------%
+    %-if .m file, move to that directory and run it
+    
+    wd = pwd;
+    cd(dirname)
+    opt = feval(filename);
+    cd(wd)
+    %-----------------%
+    
+  elseif strcmp(ext, '.mat')
+    
+    %-----------------%
+    %-opt saved from previous analysis
+    load(optname, 'opt')
+    %-----------------%
+    
+  end
+  
+  opt.optname = filename;
+  %---------------------------%
   
 end
+%-------------------------------------%
 
-opt.optname = optname;
-%-----------------%
-
-%-----------------%
+%-------------------------------------%
 %-handles (specific to a figure)
+%-----------------%
+%-if openopt from dropdown menu, keep previous handles information
 if nargin == 2
   opt.h = opt_old.h;
   opt.axis = opt_old.axis;
 end
 %-----------------%
+%-------------------------------------%
 
 %-----------------%
-%rename CFG
+%rename OPT
 set(findobj( 'tag', 'name_opt'), 'str', ['OPT: ' opt.optname]);
 %-----------------%

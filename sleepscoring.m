@@ -1,42 +1,46 @@
-function sleepscoring(opt, cfg)
-%SLEEPSCORING do sleep scoring on EGI data
-% This function takes one optional CFG argument. If no input, go to
-% "File" >> "Load MFF" and select the .mff folder with the sleep data.
-% To start a new sleep score, go to "Sleep Score" >> "New Score" and add
-% the relevant information.
+function sleepscoring(info, opt)
+%SLEEPSCORING do sleep scoring on EGI data without modifying the data
+% The function reads the data directly from disk and keeps the scoring
+% information separate from the data. There are two types of parameters for
+% sleep scoring:
+% 1- Parameters which is specific to the dataset ('info') 
+% 2- Parameters about the visualization, not specific to the dataset ('opt')
+%
+% The two structures are saved and dealt with differently. 
+% 1- INFO contains all the sleep scoring and other information specific to
+%    the dataset, as it's stored in a .MAT file as structure. It's saved
+%    every time you modify it (f.e. by changing sleep scoring).
+% 2- OPT contains all the information about visualization, it can be stored
+%    in a .m file (such as "opt_default.m") or in a .MAT file as structure.
+%    See PREPARE_OPT for more information
+%    This structure is NOT saved automatically. 
+%
+% Use as:
+%   SLEEPSCORING uses default "opt_default.m" in folder "preferences"
 % 
-% Two optional arguments: CFG and OPT
-%   .dataset: the absolute path to the MFF file
-%   .hdr: the header of the MFF file (use ft_read_header). If .hdr is not
-%         present, it'll be read from .dataset
+%   SLEEPSCORING(INFO) where INFO contains at least a field called 
+%                     .dataset which points to the dataset to read
+%                     If you specify a .fileinfo, it'll save the INFO
+%                     variable in the file .fileinfo.
 %
-%   .default.channame: if you want to rename some channels, you can use
-%                      this function. By default, it uses CHANNAME. You can
-%                      use any other function, based on channame.m
-%
-%   OPT: all the optional information, for example the default
-%                 channels and visualization properties. By default, it
-%                 uses OPT_DEFAULT. If you want to edit the optional
-%                 information, create a new file based on "opt_default.m"
-%                 and change the parameter. Then .default.opt should
-%                 contain the name of the new file.
+%   SLEEPSCORING(INFO, OPT) where OPT is a file similar to "opt_default.m",
+%                           but modified by you for your parameters 
+%   SLEEPSCORING(INFO, OPT) where OPT is a .MAT file with a "opt" variable
+%                           saved from a previous analysis 
+%   SLEEPSCORING(INFO, OPT) where OPT is the "opt" variable from a previous
+%                           analysis 
 %  
 % SLEEPSCORING can only run in one window at the time. If you want to run
 % two sessions at the same time, open a new Matlab.
-%    
-% Difference between CFG and OPT: CFG is dataset specific, OPT is general
-% OPT is necessary and always loaded, while CFG can be created on the fly
-% CFG is automatically saved, OPT only if you click on save
 
 %TODO:
 % - multiple windows
 % - automatic detection of SW and spindles
 % - automatic scoring
-% - when sleep scoring, enter beginning of sleep
 % - hObject,h -> h0
 % - notes for each epoch
-% - score names does not check on
 % - make dat1 with following epoch to preload following epoch
+% - allow for more markers
 
 %---------------------------------------------------------%
 %-GUI FUNCTION
@@ -49,10 +53,8 @@ if strcmp(ftdir, '')
   error('Please add fieldtrip folder and execute ''ft_defaults''')
 end
 
-addpath([fileparts(mfilename('fullpath')) filesep 'preference'])
-
-if nargin == 0
-  opt = 'opt_default.m'; % default OPT (TODO: maybe absolute path?)
+if nargin < 2 || isempty(opt)
+  opt = [fileparts(mfilename('fullpath')) filesep 'preference' filesep 'opt_default.m']; % default OPT
 end
 %-------------------------------------%
 
@@ -65,8 +67,9 @@ opt = prepare_opt(opt);
 %-create new figure
 h = findobj('tag', 'sleepscoring');
 if h; delete(h); end
+
 opt.h.main = figure;
-set(opt.h.main, 'tag', 'sleepscoring', ...
+set(opt.h.main, 'tag', 'sleepscoring', 'name', 'Sleep Scoring', 'numbertitle', 'off', ...
   'closerequestfcn', @cb_closemain)
 
 set(opt.h.main, 'KeyPressFcn', @cb_shortcuts)
@@ -76,11 +79,11 @@ set(opt.h.main, 'KeyPressFcn', @cb_shortcuts)
 %-PANELS
 %-----------------%
 %-create main panels
-opt.h.data = uipanel('Title', 'Sleep Data', 'FontSize', 12, 'tag', 'p_data', ... % rename with name of subject
+opt.h.data = uipanel('Title', 'Sleep Data', 'FontSize', 12, 'tag', 'p_data', ...
   'BackgroundColor','white', ...
   'Position', [opt.marg.l opt.marg.u opt.width.l opt.height.u]);
 
-opt.h.hypno = uipanel('Title', 'Hypnogram', 'FontSize', 12, 'tag', 'p_hypno',...
+opt.h.hypno = uipanel('Title', 'Recording', 'FontSize', 12, 'tag', 'p_hypno',...
   'BackgroundColor','white', ...
   'Position', [opt.marg.l opt.marg.d opt.width.l opt.height.d]);
 
@@ -104,7 +107,7 @@ opt.axis.fft = axes('parent', opt.h.fft, 'vis', 'off');
 %-------%
 %-info
 uicontrol(opt.h.info, 'sty', 'text', 'uni', 'norm', ...
-  'pos', [.05 .95 .9 .05], 'str', 'Dataset:', 'tag', 'name_cfg');
+  'pos', [.05 .95 .9 .05], 'str', 'Dataset:', 'tag', 'name_info');
 uicontrol(opt.h.info, 'sty', 'text', 'uni', 'norm', ...
   'pos', [.05 .9 .9 .05], 'str', ['OPT: ' opt.optname], 'tag', 'name_opt');
 %-------%
@@ -154,25 +157,26 @@ set(opt.h.main, 'Menubar', 'none')
 %-----------------%
 %-FILE
 m_file = uimenu(opt.h.main, 'label', 'File');
-uimenu(m_file, 'label', 'New Dataset', 'call', @cb_newcfg);
-uimenu(m_file, 'label', 'Open Dataset', 'call', @cb_opencfg);
+uimenu(m_file, 'label', 'New Dataset', 'call', @cb_newinfo);
+uimenu(m_file, 'label', 'Open Dataset', 'call', @cb_openinfo);
 uimenu(m_file, 'label', 'Open OPT', 'sep', 'on', 'call', @cb_openopt);
 uimenu(m_file, 'label', 'Save OPT', 'call', @cb_saveopt);
 %-----------------%
 
 %-----------------%
 %-SCORE
-m_score = uimenu(opt.h.main, 'label', 'Sleep Score');
-uimenu(m_score, 'label', 'New Score', 'call', @cb_newrater)
-uimenu(m_score, 'label', 'Load Score', 'call', @cb_loadscore)
-uimenu(m_score, 'label', 'Import Score from FASST', 'call', @cb_importscore)
-uimenu(m_score, 'label', 'Rater', 'Sep', 'on', 'tag', 'uimenu_rater', 'enable', 'off')
-uimenu(m_score, 'label', 'New Rater', 'call', @cb_newrater)
+m_score = uimenu(opt.h.main, 'label', 'Sleep Score', 'enable', 'off');
+uimenu(m_score, 'label', 'Rater', 'tag', 'uimenu_rater', 'enable', 'off')
+uimenu(m_score, 'label', 'New Rater', 'sep', 'on', 'call', @cb_rater)
+uimenu(m_score, 'label', 'Rename Rater', 'enable', 'off', 'call', @cb_rater)
+uimenu(m_score, 'label', 'Copy Current Score', 'enable', 'off', 'call', @cb_rater)
+uimenu(m_score, 'label', 'Delete Current Score', 'enable', 'off', 'call', @cb_rater)
+uimenu(m_score, 'label', 'Import Score from FASST', 'call', @cb_rater)
 %-----------------%
 
 %-----------------%
 %-CHAN SELECTION
-m_chan = uimenu(opt.h.main, 'label', 'Channel Selection');
+m_chan = uimenu(opt.h.main, 'label', 'Channel Selection', 'enable', 'off');
 for i = 1:numel(opt.changrp)
   uimenu(m_chan, 'label', opt.changrp(i).chantype, 'call', @cb_selchan);
 end
@@ -180,7 +184,7 @@ end
 
 %-----------------%
 %-FILTER
-m_filt = uimenu(opt.h.main, 'label', 'Filter');
+m_filt = uimenu(opt.h.main, 'label', 'Filter', 'enable', 'off');
 for i = 1:numel(opt.changrp)
   uimenu(m_filt, 'label', opt.changrp(i).chantype, 'call', @cb_filt);
 end
@@ -188,7 +192,7 @@ end
 
 %-----------------%
 %-REFERENCE
-m_ref = uimenu(opt.h.main, 'label', 'Reference');
+m_ref = uimenu(opt.h.main, 'label', 'Reference', 'enable', 'off');
 for i = 1:numel(opt.changrp)
   uimenu(m_ref, 'label', opt.changrp(i).chantype, 'call', @cb_ref);
 end
@@ -196,17 +200,17 @@ end
 %-------------------------------------%
 
 %-------------------------------------%
-%-read the data if present in cfg
+%-read the data if present in info
 setappdata(0, 'opt', opt)
 
-if nargin > 1 && isfield(cfg, 'dataset') 
+if nargin > 0 && isfield(info, 'dataset') 
   
-  cfg = prepare_info(cfg);
+  info = prepare_info(info);
   
-  savecfg()
-  setappdata(0, 'cfg', cfg)
+  save_info()
+  setappdata(0, 'info', info)
   
-  sleepscoring_init()
+  prepare_info_opt()
   cb_readplotdata()
   
 end
@@ -216,28 +220,27 @@ end
 %---------------------------------------------------------%
 %-CALLBACKS
 %---------------------------------------------------------%
-
 %-------------------------------------%
 %-callback: save opt
-function cb_opencfg(h0, eventdata)
+function cb_openinfo(h0, eventdata)
 
-savecfg() % save previous cfg
+save_info() % save previous info
 
 %-----------------%
 %-read OPT file
 [filename pathname] = uigetfile({'*.mat', 'Dataset File (*.m, *.mat)'}, 'Select Dataset File');
 if ~filename; return; end
 
-cfg.cfgfile = [pathname filename];
-cfg = prepare_info(cfg);
+info.infofile = [pathname filename];
+info = prepare_info(info);
 %-----------------%
 
 %-----------------%
 %-read and plot data
-savecfg()
-setappdata(0, 'cfg', cfg)
+save_info()
+setappdata(0, 'info', info)
 
-sleepscoring_init()
+prepare_info_opt()
 cb_readplotdata()
 %-----------------%
 %-------------------------------------%
@@ -259,8 +262,33 @@ opt = prepare_opt([pathname filename], opt);
 %-read and plot data
 setappdata(0, 'opt', opt)
 
-sleepscoring_init()
+prepare_info_opt()
 cb_readplotdata()
+%-----------------%
+%-------------------------------------%
+
+%-------------------------------------%
+%-callback: load opt
+function cb_saveopt(h0, eventdata) % OK
+
+%-----------------%
+%-get current opt and remove handles
+opt = getappdata(0, 'opt');
+opt = rmfield(opt, {'h' 'axis'});
+%-----------------%
+
+%-----------------%
+%-file to save
+[filename pathname] = uiputfile({'*.mat', 'Option file (*.mat)'}, 'Select OPT file');
+if ~filename; return; end
+opt.optname = filename;
+%-----------------%
+
+%-----------------%
+%-save and update info
+save([pathname filename], 'opt')
+setappdata(0, 'opt', opt)
+set(findobj('tag', 'name_opt'), 'str', ['OPT: ' opt.optname]) 
 %-----------------%
 %-------------------------------------%
 
@@ -270,7 +298,7 @@ function cb_selchan(h0, eventdata)
 
 chantype = get(h0, 'label');
 
-cfg = getappdata(0, 'cfg');
+info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
 
 changrp = strcmp(chantype, {opt.changrp.chantype});
@@ -279,8 +307,8 @@ changrp = strcmp(chantype, {opt.changrp.chantype});
 %-don't show labels belonging to another chantype
 nolabel = arrayfun(@(x) x.chan, opt.changrp(~changrp), 'uni', 0);
 nolabel = [nolabel{:}];
-[~, ilabel] = setdiff(cfg.label, nolabel);
-label = cfg.label(sort(ilabel));
+[~, ilabel] = setdiff(info.label, nolabel);
+label = info.label(sort(ilabel));
 %-------%
 
 [~, chanindx] = intersect(label, opt.changrp(changrp).chan);
@@ -297,14 +325,14 @@ function cb_ref(h0, eventdata)
 
 chantype = get(h0, 'label');
 
-cfg = getappdata(0, 'cfg');
+info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
 
 changrp = strcmp(chantype, {opt.changrp.chantype});
 
-[~, chanindx] = intersect(cfg.label, opt.changrp(changrp).ref);
-chanindx = select_channel_list(cfg.label, sort(chanindx)); % fieldtrip/private function
-opt.changrp(changrp).ref = cfg.label(chanindx)';
+[~, chanindx] = intersect(info.label, opt.changrp(changrp).ref);
+chanindx = select_channel_list(info.label, sort(chanindx)); % fieldtrip/private function
+opt.changrp(changrp).ref = info.label(chanindx)';
 
 setappdata(0, 'opt', opt);
 cb_readplotdata()
@@ -356,77 +384,6 @@ if ~isempty(answer) % cancel button
   cb_readplotdata()
   
 end
-%-----------------%
-%-------------------------------------%
-
-%-------------------------------------%
-%-callback: load sleep score
-function cb_loadscore(h0, eventdata)
-
-%-------------------------------------%
-
-%-------------------------------------%
-%-callback: load sleep score
-function cb_importscore(h0, eventdata)
-%TODO: indicate that this will overwrite current score
-%TODO: check that the length is consistent
-
-[filename, pathname] = uigetfile('*.mat', 'Select FASST file');
-warning off % class to struct warning
-load([pathname filename], 'D')
-warning on
-
-cfg = getappdata(0, 'cfg');
-if isfield(D.other, 'CRC') && isfield(D.other.CRC, 'score')
-  cfg.score = D.other.CRC.score;
-
-  cfg.rater = 1;
-  setappdata(0, 'cfg', cfg)
-  update_rater()
-end
-%-------------------------------------%
-
-%-------------------------------------%
-%-callback: load sleep score
-function cb_newrater(h0, eventdata)
-
-%-----------------%
-cfg = getappdata(0, 'cfg');
-
-if strcmp(get(h0, 'label'), 'New Score')
-  ConfirmDel = questdlg('Are you sure that you want to delete the current scoring?', ...
-    'Replace Score', ...
-    'Yes', 'No', 'Yes');
-  if strcmp(ConfirmDel, 'No'); return; end
-  
-  cfg.score = [];
-end
-
-if isempty(cfg.score)
-  newrater = 1;
-else
-  newrater = size(cfg.score,2) + 1;
-end
-%-----------------%
-
-%-----------------%
-%-prompt
-prompt = {'Rater Name' 'Window Duration'};
-name = 'Sleep Score Information';
-defaultanswer = {'' '30'};
-answer = inputdlg(prompt, name, 1, defaultanswer);
-
-wndw = textscan(answer{2}, '%f');
-wndw = wndw{1};
-%-----------------%
-
-%-----------------%
-%-update cfg
-cfg.rater = newrater;
-setappdata(0, 'cfg', cfg)
-
-sleepscoring_init()
-update_rater()
 %-----------------%
 %-------------------------------------%
 
@@ -533,8 +490,8 @@ cb_plotdata()
 %-callback: close figure
 function cb_closemain(h0, eventdata)
 
-savecfg()
-setappdata(0, 'cfg', []) % clean up cfg
+save_info()
+setappdata(0, 'info', []) % clean up info
 setappdata(0, 'opt', []) % clean up opt
 delete(h0);
 %-------------------------------------%
