@@ -25,28 +25,28 @@ end
 %-----------------%
 
 %-----------------%
-%-HDR
-if ~isfield(info, 'hdr')
-  info.hdr = ft_read_header(info.dataset);
-end
+%-HDR (read it every time)
+hdr = ft_read_header(info.dataset);
+info.hdr = rmfield(hdr, 'orig'); % this is really large,  but it's needed by ft_read_data
+setappdata(0, 'hdr', hdr)
 %-----------------%
 
 %-----------------%
 %-FSAMPLE
 % only for MFF at the moment
-info.fsample = info.hdr.Fs;
+info.fsample = hdr.Fs;
 %-----------------%
 
 %-----------------%
 %-BEGINREC
 % only for MFF at the moment
-info.beginrec = datenum(info.hdr.orig.xml.info.recordTime([1:10 12:19]), 'yyyy-mm-ddHH:MM:SS');
+info.beginrec = datenum(hdr.orig.xml.info.recordTime([1:10 12:19]), 'yyyy-mm-ddHH:MM:SS');
 %-----------------%
 
 %-----------------%
 %-INFO
 % use original labels, prepare_info_opt will change the labels
-info.label = info.hdr.label;
+info.label = hdr.label;
 %-----------------%
 
 %-----------------%

@@ -3,6 +3,7 @@ function cb_readplotdata(h0, eventdata)
 
 info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
+hdr = getappdata(0, 'hdr');
 
 %-----------------%
 %-data to read
@@ -27,7 +28,7 @@ setappdata(0, 'opt', opt);
 
 %-----------------%
 %-read data
-dat = read_data(info, opt);
+dat = read_data(info, opt, hdr);
 setappdata(0, 'dat', dat);
 %-----------------%
 

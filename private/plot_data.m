@@ -6,7 +6,7 @@ beginsleep = info.score{4,info.rater}(1);
 
 epoch_beg = (opt.epoch - 1) * wndw + beginsleep; % add the beginning of the scoring period
 epoch_end = epoch_beg + wndw - 1/info.fsample; % add length of time window and remove one sample
-timescale = epoch_beg : 1/info.hdr.Fs : epoch_end;
+timescale = epoch_beg : 1/info.fsample : epoch_end;
 
 p75 = 75 * ones(size(timescale));
 d75 = -75 * ones(size(timescale));
@@ -55,7 +55,7 @@ end
 %-----------------%
 %-x axes
 xlim(timescale([1 end]))
-xspan = info.hdr.Fs * opt.timegrid;
+xspan = info.fsample * opt.timegrid;
 xgrid = timescale([1:xspan:end]);
 s2hhmm = @(x) datestr(x / 24 / 60 / 60 + info.beginrec, 'HH:MM:SS'); % convert from seconds to HH:MM format
 timelabel = cellfun(s2hhmm, num2cell(xgrid), 'uni', 0);

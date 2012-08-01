@@ -493,6 +493,9 @@ function cb_closemain(h0, eventdata)
 save_info()
 setappdata(0, 'info', []) % clean up info
 setappdata(0, 'opt', []) % clean up opt
+setappdata(0, 'hdr', [])
+setappdata(0, 'dat', [])
+setappdata(0, 'dat1', [])
 delete(h0);
 %-------------------------------------%
 %---------------------------------------------------------%

@@ -1,4 +1,4 @@
-function dat = read_data(info, opt)
+function dat = read_data(info, opt, hdr)
 
 %-----------------%
 %-samples to read
@@ -22,7 +22,7 @@ chan_raw = unique([chan ref]);
 chan_raw = chan_raw(si_raw);
 %-----------------%
 
-raw = ft_read_data(info.dataset, 'header', info.hdr, ...
+raw = ft_read_data(info.dataset, 'header', hdr, ...
   'begsample', begsample, 'endsample', endsample, 'chanindx', i_raw, ...
   'cache', false); % cache true might be faster but it does not read the whole dataset
 %-------------------------------------%
@@ -66,11 +66,11 @@ for i = 1:numel(opt.changrp)
   Flp = opt.changrp(i).Flp;
   
   if ~isempty(Fhp)
-    reref = ft_preproc_highpassfilter(reref, info.hdr.Fs, Fhp, 2);
+    reref = ft_preproc_highpassfilter(reref, info.fsample, Fhp, 2);
   end
   
   if ~isempty(Flp)
-    reref = ft_preproc_lowpassfilter(reref, info.hdr.Fs, Flp);
+    reref = ft_preproc_lowpassfilter(reref, info.fsample, Flp);
   end
   %-----------------%
   
