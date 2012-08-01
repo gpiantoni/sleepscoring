@@ -1,4 +1,13 @@
-function dat = readdata(cfg, opt, begsample, endsample)
+function dat = read_data(info, opt)
+
+%-----------------%
+%-samples to read
+wndw = info.score{3,info.rater};
+beginsleep = info.score{4,info.rater}(1);
+
+begsample = (opt.epoch - 1) * wndw * info.fsample + beginsleep * info.fsample;
+endsample = begsample + wndw * info.fsample - 1;
+%-----------------%
 
 %-------------------------------------%
 %-read channels and references
@@ -8,12 +17,12 @@ ref = [opt.changrp.ref];
 %-----------------%
 %-channels in raw
 chan_raw = unique([chan ref]);
-[~, i_raw] = intersect(cfg.label, chan_raw);
+[~, i_raw] = intersect(info.label, chan_raw);
 [i_raw, si_raw] = sort(i_raw);
 chan_raw = chan_raw(si_raw);
 %-----------------%
 
-raw = ft_read_data(cfg.dataset, 'header', cfg.hdr, ...
+raw = ft_read_data(info.dataset, 'header', info.hdr, ...
   'begsample', begsample, 'endsample', endsample, 'chanindx', i_raw, ...
   'cache', false); % cache true might be faster but it does not read the whole dataset
 %-------------------------------------%
@@ -57,11 +66,11 @@ for i = 1:numel(opt.changrp)
   Flp = opt.changrp(i).Flp;
   
   if ~isempty(Fhp)
-    reref = ft_preproc_highpassfilter(reref, cfg.hdr.Fs, Fhp, 2);
+    reref = ft_preproc_highpassfilter(reref, info.hdr.Fs, Fhp, 2);
   end
   
   if ~isempty(Flp)
-    reref = ft_preproc_lowpassfilter(reref, cfg.hdr.Fs, Flp);
+    reref = ft_preproc_lowpassfilter(reref, info.hdr.Fs, Flp);
   end
   %-----------------%
   

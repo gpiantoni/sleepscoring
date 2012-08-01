@@ -1,10 +1,11 @@
-function plotfft(hObject, eventdata)
+function plot_fft(h0, eventdata)
+%PLOT_FFT plot FFT of one channel, 
 
 %-------------------------------------%
 %-general info
 %-----------------%
 %-read info
-cfg = getappdata(0, 'cfg');
+info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
 dat = getappdata(0, 'dat');
 
@@ -20,7 +21,7 @@ if nargin > 0
     
     %-called by cb_currentpoint
     cp = true;
-    i_chan = hObject;
+    i_chan = h0;
     if i_chan < 1; i_chan = 1; end
     if i_chan > numel(chan); i_chan = numel(chan); end
     
@@ -33,7 +34,7 @@ if nargin > 0
   else
     
     %-called by popup
-    opt.fft.i_chan = get(hObject, 'val');
+    opt.fft.i_chan = get(h0, 'val');
     setappdata(0, 'opt', opt)
     
   end
@@ -52,7 +53,7 @@ set(ax, 'pos', [.05 .1 .9 .8], 'uni', 'norm');
 %-compute fft
 % TODO: this should not use the signal toolbox
 x = dat(opt.fft.i_chan, :);
-[Pxx, f] = pwelch(x, cfg.fsample * opt.fft.welchdur, [], [], cfg.fsample);
+[Pxx, f] = pwelch(x, info.fsample * opt.fft.welchdur, [], [], info.fsample);
 %-----------------%
 
 %-----------------%

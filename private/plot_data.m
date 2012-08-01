@@ -1,12 +1,12 @@
-function plotdata(cfg, opt, dat)
+function plot_data(info, opt, dat)
 
 % All the options should be specified in opt
-wndw = cfg.score{3,cfg.rater};
-beginsleep = cfg.score{4,cfg.rater}(1);
+wndw = info.score{3,info.rater};
+beginsleep = info.score{4,info.rater}(1);
 
 epoch_beg = (opt.epoch - 1) * wndw + beginsleep; % add the beginning of the scoring period
-epoch_end = epoch_beg + wndw - 1/cfg.fsample; % add length of time window and remove one sample
-timescale = epoch_beg : 1/cfg.hdr.Fs : epoch_end;
+epoch_end = epoch_beg + wndw - 1/info.fsample; % add length of time window and remove one sample
+timescale = epoch_beg : 1/info.hdr.Fs : epoch_end;
 
 p75 = 75 * ones(size(timescale));
 d75 = -75 * ones(size(timescale));
@@ -55,9 +55,9 @@ end
 %-----------------%
 %-x axes
 xlim(timescale([1 end]))
-xspan = cfg.hdr.Fs * opt.timegrid;
+xspan = info.hdr.Fs * opt.timegrid;
 xgrid = timescale([1:xspan:end]);
-s2hhmm = @(x) datestr(x / 24 / 60 / 60 + cfg.beginrec, 'HH:MM:SS'); % convert from seconds to HH:MM format
+s2hhmm = @(x) datestr(x / 24 / 60 / 60 + info.beginrec, 'HH:MM:SS'); % convert from seconds to HH:MM format
 timelabel = cellfun(s2hhmm, num2cell(xgrid), 'uni', 0);
 set(gca, 'xtick', xgrid, 'xticklabel', timelabel)
 %-----------------%
@@ -80,8 +80,8 @@ end
 
 %-----------------%
 %-plot score on top
-if ~isempty(cfg.score)
-  score = cfg.score{1,cfg.rater}(opt.epoch);
+if ~isempty(info.score)
+  score = info.score{1,info.rater}(opt.epoch);
   
   i_score = find([opt.stage.code] == score);
   if isempty(i_score)
