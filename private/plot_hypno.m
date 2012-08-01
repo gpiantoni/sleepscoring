@@ -1,9 +1,13 @@
-function hypnogram(opt, score)
-%HYPNOGRAM plot hypnogram, very similar to FASST
+function plot_hypno(opt, score)
+%PLOT_HYPNO plot hypnogram, very similar to FASST
 % Use as:
-%  hypnogram(opt, score)
+%  plot_hypno(opt, score)
 %
 % OPT
+%  .beginrec: beginning of the recording in Matlab time (datenum)
+%  .wndw: length of the scoring window
+%  .beginsleep: time in s from beginning of the scoring period
+%
 %  .hypnogrid: distance of the grid in minutes (put a grid and label every ... minutes) 
 %
 %  .epoch: the epoch to highlight (optional)
@@ -15,8 +19,6 @@ function hypnogram(opt, score)
 %    .height: the height of the bar
 %
 % SCORE as one-column cell from FASST
-
-% TODO: mark non-scored period before and after
 
 hold on
 
@@ -57,7 +59,7 @@ for i = 1:numel(opt.stage)
     % consecutive, it messes up the proportions
     bar_y = [ones(size(epochs)) * opt.stage(i).height NaN];
     epochs(end+1) = epochs(end) + 1;
-    bar_x= epochs * score{3,1} - score{3,1}/2; % convert into s
+    bar_x = epochs * score{3,1} - score{3,1}/2 + score{4}(1); % convert into s
     %-------%
     
      bar(bar_x, bar_y, 1, 'LineStyle', 'none', 'FaceColor', opt.stage(i).color)
@@ -67,7 +69,7 @@ end
 
 %-----------------%
 if isfield(opt, 'epoch')
-  epochpos = [(opt.epoch - 1) * score{3,1} (opt.epoch) * score{3,1}];
+  epochpos = [(opt.epoch - 1) * score{3,1} (opt.epoch) * score{3,1}] + score{4}(1);
   xfill = [epochpos mean(epochpos)];
   yfill = st_h(end) + [1 1 0];
   fill(xfill, yfill, opt.arrowcolor)

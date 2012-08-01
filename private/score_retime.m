@@ -27,9 +27,18 @@ end
 %-----------------%
 
 %-----------------%
+%-modify score timing
 score = prepare_score(info.score(:,info.rater));
 info.score(:,info.rater) = score;
 
 setappdata(0, 'info', info);
-cb_readplotdata()
 %-----------------%
+
+%-----------------%
+%-go to first epoch
+opt = getappdata(0, 'opt');
+opt.epoch = 1;
+setappdata(0, 'opt', opt)
+%-----------------%
+
+cb_readplotdata()

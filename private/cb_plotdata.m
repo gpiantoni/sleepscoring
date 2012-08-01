@@ -14,13 +14,11 @@ dat = getappdata(0, 'dat');
 %-plot data
 delete(findobj('tag', 'a_dat'))
 axes('parent', opt.h.data, 'tag', 'a_dat');
-plot_data(info, opt, dat);
-%-----------------%
 
-%-----------------%
-%-plot artifacts
 delete(findobj('tag', 'artifact'))
-% TODO: plot_artifact()
+plot_artifact()
+
+plot_data(info, opt, dat);
 %-----------------%
 %-------------------------------------%
 
@@ -33,7 +31,6 @@ axes('parent', findobj('tag', 'p_hypno'), 'tag', 'a_hypno');
 %-info to hypnogram
 opt.beginrec = info.beginrec;
 opt.wndw = info.score{3,info.rater};
-opt.beginsleep = info.score{4,info.rater}(1);
 %-------%
 
 plot_hypno(opt, info.score(:, info.rater))

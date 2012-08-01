@@ -29,12 +29,15 @@ if ~isempty(art)
   art = art(art_in_epoch,:);
   %-----------------%
   
-  %-----------------%
-  %-range
-  hold on
-  h_f = fill(art([1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{1});
-  set(h_f, 'tag', 'artifact')
-  drawnow
-  %-----------------%
+  if ~isempty(art)
+    
+    %-----------------%
+    %-range
+    hold on
+    h_f = fill(art([1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{1});
+    set(h_f, 'tag', 'artifact')
+    %-----------------%
+    
+  end
   
 end

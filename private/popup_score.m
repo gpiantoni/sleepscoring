@@ -17,6 +17,8 @@ if ~isempty(info.score{2,info.rater})
   end
   %-----------------%
   
+  delete(findobj('tag', 'popupscore')) % delete in case it already exists
+  
   uicontrol(findobj('tag', 'p_info'), 'sty', 'popup', 'uni', 'norm', ...
     'pos', [.05 .1 .9 .1], 'str', stages, 'val', i_score, 'tag', 'popupscore', ...
     'call', @cb_score);
