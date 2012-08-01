@@ -30,16 +30,16 @@ for i = 1:3
     
     %-----------------%
     %-only artifact in epoch
-    art_in_epoch = art(:,1) <= epoch_end & art(:,2) >= epoch_beg;
+    art_in_epoch = art(:,1) < epoch_end & art(:,2) > epoch_beg;
     art = art(art_in_epoch,:);
     %-----------------%
     
-    if ~isempty(art)
+    for j = 1:size(art,1)
       
       %-----------------%
       %-range
       hold on
-      h_f = fill(art([1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{i});
+      h_f = fill(art(j,[1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{i});
       set(h_f, 'tag', 'artifact')
       %-----------------%
       

@@ -73,7 +73,6 @@ end
 function cb_box(h0, eventdata, pos1)
 % TODO: this does not take into account the scaling
 
-info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
 pos2 = get(gca, 'CurrentPoint');
 
@@ -180,6 +179,12 @@ mrktype = find(strcmp(opt.marker.name, mrk_str{mrk_val}));
 mrktype = mrktype + 4; % row in FASST score
 
 newmrk = sort([pos1(1,1) pos2(1,1)]);
+xlim = get(gca, 'xlim');
+if newmrk(1) < xlim(1); newmrk(1) = xlim(1); end
+if newmrk(2) > xlim(2); newmrk(2) = xlim(2); end
+beginsleep = info.score{4,info.rater}(1);
+newmrk = newmrk + beginsleep;
+
 info.score{mrktype,info.rater} = [info.score{mrktype,info.rater}; newmrk];
 
 save_info()
