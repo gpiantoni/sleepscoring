@@ -27,8 +27,13 @@ setappdata(0, 'opt', opt);
 %-----------------%
 
 %-----------------%
-%-read data
-dat = read_data(info, opt, hdr);
+%-read preallocated data or read from disk
+tmp = getappdata(0, 'tmp');
+if ~isempty(tmp) && tmp.epoch == opt.epoch
+  dat = tmp.dat;
+else
+  dat = read_data(info, opt, hdr);
+end
 setappdata(0, 'dat', dat);
 %-----------------%
 
@@ -36,4 +41,15 @@ setappdata(0, 'dat', dat);
 %-plot data
 cb_plotdata()
 plot_fft()
+%-----------------%
+
+%-----------------%
+%-read data for following epoch
+opt.epoch = opt.epoch + 1;
+if opt.epoch > nepoch
+  opt.epoch = nepoch;
+end
+tmp.epoch = opt.epoch;
+tmp.dat = read_data(info, opt, hdr);
+setappdata(0, 'tmp', tmp);
 %-----------------%

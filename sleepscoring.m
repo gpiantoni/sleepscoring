@@ -37,9 +37,7 @@ function sleepscoring(info, opt)
 % - multiple windows
 % - automatic detection of SW and spindles
 % - automatic scoring
-% - hObject,h -> h0
 % - notes for each epoch
-% - make dat1 with following epoch to preload following epoch
 % - allow for more markers
 
 %---------------------------------------------------------%
@@ -495,7 +493,7 @@ setappdata(0, 'info', []) % clean up info
 setappdata(0, 'opt', []) % clean up opt
 setappdata(0, 'hdr', [])
 setappdata(0, 'dat', [])
-setappdata(0, 'dat1', [])
+setappdata(0, 'tmp', [])
 delete(h0);
 %-------------------------------------%
 %---------------------------------------------------------%

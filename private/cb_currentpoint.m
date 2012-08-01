@@ -33,7 +33,6 @@ if strcmp(tag, 'a_dat')
       
     end
     
-    
   end
   %-------------------------------------%
   
@@ -51,13 +50,10 @@ elseif strcmp(tag, 'a_hypno')
     info = getappdata(0, 'info');
     opt = getappdata(0, 'opt');
     wndw = info.score{3,info.rater};
+    beginsleep = info.score{4,info.rater}(1); 
     
-    pnt = pos(2,1);
+    pnt = pos(2,1) - beginsleep;
     opt.epoch = round(pnt / wndw);
-    
-    %-TODO: the timing should be based on epoch/score info
-    opt.begsample = (opt.epoch-1) * wndw * info.fsample + 1;
-    opt.endsample = opt.begsample + info.fsample * wndw - 1;
     setappdata(0, 'opt', opt)
     
     cb_readplotdata()
