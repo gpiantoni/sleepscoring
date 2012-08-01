@@ -38,7 +38,7 @@ function sleepscoring(info, opt)
 % - automatic detection of SW and spindles
 % - automatic scoring
 % - notes for each epoch
-% - allow for more markers
+% - can only ADD markers, not delete them
 
 %---------------------------------------------------------%
 %-GUI FUNCTION

@@ -44,12 +44,6 @@ setappdata(0, 'opt', opt)
 %-----------------%
 
 %-----------------%
-delete(findobj('tag', 'popupmarker')) % delete in case it already exists
-uicontrol(opt.h.info, 'sty', 'popup', 'uni', 'norm', ...
-  'pos', [.05 .25 .9 .1], 'str', opt.marker.name, 'val', 1, 'tag', 'popupmarker');
-%-----------------%
-
-%-----------------%
 popup_score(info, opt)
 update_rater(info)
 %-----------------%

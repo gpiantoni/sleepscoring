@@ -88,7 +88,7 @@ if cp
   channame = ['!!!' chan{i_chan} '!!!'];
   uicontrol(opt.h.fft, 'sty', 'popup', 'uni', 'norm', ...
     'pos', [.05 .9 .9 .1], 'str', channame, 'val', 1, 'tag', 'popup_fft', ...
-    'call', @plotfft);
+    'call', @plot_fft);
   %-----------------%
   
 else
@@ -97,7 +97,7 @@ else
   %-normal fft
   uicontrol(opt.h.fft, 'sty', 'popup', 'uni', 'norm', ...
     'pos', [.05 .9 .9 .1], 'str', chan, 'val', opt.fft.i_chan, 'tag', 'popup_fft', ...
-    'call', @plotfft);
+    'call', @plot_fft);
   %-----------------%
   
 end

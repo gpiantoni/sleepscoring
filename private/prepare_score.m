@@ -8,9 +8,9 @@ function score = prepare_score(score, rater, wndw)
 % 3- duration of scoring window
 % 4- beginning and end of the scoring period (s)
 % 5- artifacts (data not to analyze)
-% 6- movements (?)
-% 7- ?
-% 8- ?
+% 6- arousals
+% 7- events of interest
+% 8- (not described in FASST, but present in .mat file)
 %-----------------%
 
 if isstruct(score)

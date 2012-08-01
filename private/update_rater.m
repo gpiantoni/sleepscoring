@@ -22,6 +22,12 @@ if isempty(info.score{2,1})
   set(findobj('tag', 'p_hypno'), 'Title', 'Recording')
   %-------%
   
+  %-------%
+  % delete popupmarker
+  delete(findobj('tag', 'popupmarker'))
+  delete(findobj('tag', 'popupscore'))
+  %-------%
+  
 else
   
   %-------%

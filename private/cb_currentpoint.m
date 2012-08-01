@@ -143,7 +143,7 @@ yrange(2) = 0;
 %-range
 hold on
 h_f = fill([pos1(1,1) pos1(1,1) pos2(1,1) pos2(1,1)], ...
-  yrange([1 2 2 1]), 'm');
+  yrange([1 2 2 1]), opt.marker.selcolor);
 set(h_f, 'tag', 'sel_marker')
 drawnow
 %-----------------%
@@ -170,13 +170,20 @@ make_marker(pos1, pos2)
 function make_marker(pos1, pos2)
 
 info = getappdata(0, 'info');
+opt = getappdata(0, 'opt');
+
+mrk_h = findobj('tag', 'popupmarker');
+mrk_str = get(mrk_h, 'str');
+mrk_val = get(mrk_h, 'val');
+
+mrktype = find(strcmp(opt.marker.name, mrk_str{mrk_val}));
+mrktype = mrktype + 4; % row in FASST score
 
 newmrk = sort([pos1(1,1) pos2(1,1)]);
-info.score{5,info.rater} = [info.score{5,info.rater}; newmrk];
+info.score{mrktype,info.rater} = [info.score{mrktype,info.rater}; newmrk];
 
 save_info()
 setappdata(0, 'info', info);
 cb_plotdata()
 %-------------------------------------%
 %---------------------------------------------------------%
-

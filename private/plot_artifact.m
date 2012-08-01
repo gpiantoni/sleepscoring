@@ -19,25 +19,33 @@ yrange(1) = -1 * numel([opt.changrp.chan]) - 1;
 yrange(2) = 0;
 %-----------------%
 
-art = info.score{5,info.rater};
-
-if ~isempty(art)
+%-------------------------------------%
+%-plot artifacts and other markers
+for i = 1:3
+  mrktype = i + 4; % row in FASST score
   
-  %-----------------%
-  %-only artifact in epoch
-  art_in_epoch = art(:,1) <= epoch_end & art(:,2) >= epoch_beg;
-  art = art(art_in_epoch,:);
-  %-----------------%
+  art = info.score{mrktype, info.rater};
   
   if ~isempty(art)
     
     %-----------------%
-    %-range
-    hold on
-    h_f = fill(art([1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{1});
-    set(h_f, 'tag', 'artifact')
+    %-only artifact in epoch
+    art_in_epoch = art(:,1) <= epoch_end & art(:,2) >= epoch_beg;
+    art = art(art_in_epoch,:);
     %-----------------%
+    
+    if ~isempty(art)
+      
+      %-----------------%
+      %-range
+      hold on
+      h_f = fill(art([1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{i});
+      set(h_f, 'tag', 'artifact')
+      %-----------------%
+      
+    end
     
   end
   
 end
+%-------------------------------------%
