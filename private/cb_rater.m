@@ -103,7 +103,7 @@ switch get(h0, 'label')
       newscore = D.other.CRC.score;
       nnewscore = size(newscore,2); % number of new scores
       
-      score(:, (1:nnewscore) + nrater) = newscore;
+      score(:, (1:nnewscore) + nrater) = newscore(1:7,:);
       
       rater = nrater + 1;
     end
