@@ -9,11 +9,18 @@ set(h_input, 'tag', 'newinfo', 'Menubar', 'none')
 set(h_input, 'pos', get(h_input, 'pos') .* [1 1 1 .5]) % half height
 
 uicontrol(h_input, 'sty', 'text', 'uni', 'norm', ...
-  'pos', [.05 .8 .9 .1], 'str', 'Dataset to read');
+  'pos', [.05 .8 .4 .1], 'str', 'Directory to read (f.e. MFF)');
 
 uicontrol(h_input, 'sty', 'push', 'uni', 'norm', 'tag', 'datasetdir', ...
-  'pos', [.05 .6 .9 .2], 'str', '(click to select)', ...
-  'call', @cb_uigetdir); % TODO: or file
+  'pos', [.05 .6 .4 .2], 'str', '(click to select)', ...
+  'call', @cb_uigetdir);
+
+uicontrol(h_input, 'sty', 'text', 'uni', 'norm', ...
+  'pos', [.55 .8 .4 .1], 'str', 'File to read (f.e. FASST)');
+
+uicontrol(h_input, 'sty', 'push', 'uni', 'norm', 'tag', 'datasetfile', ...
+  'pos', [.55 .6 .4 .2], 'str', '(click to select)', ...
+  'call', @cb_uigetfile);
 
 uicontrol(h_input, 'sty', 'text', 'uni', 'norm', ...
   'pos', [.05 .4 .9 .1], 'str', 'Save info in');
@@ -42,6 +49,22 @@ dirname = uigetdir;
 
 if dirname
   set(h0, 'str', dirname)
+  set(findobj('tag', 'datasetfile'), 'enable', 'off')
+  set(findobj('tag', 'datasetdir'), 'tag', 'dataset2read')
+  
+end
+%-----------------%
+
+%-----------------%
+%-cb_uigetfile
+function cb_uigetfile(h0, eventdata)
+[filename pathname] = uigetfile;
+
+if filename
+  set(h0, 'str', [pathname filename])
+  set(findobj('tag', 'datasetdir'), 'enable', 'off')
+  set(findobj('tag', 'datasetfile'), 'tag', 'dataset2read')
+  
 end
 %-----------------%
 
@@ -60,10 +83,10 @@ end
 function cb_ok(h0, eventdata)
 
 info = [];
-info.dataset = get(findobj('tag', 'datasetdir'), 'str');
+info.dataset = get(findobj('tag', 'dataset2read'), 'str');
 info.infofile = get(findobj('tag', 'infofile'), 'str');
 
-if ~strcmp(info.dataset, '(click to select)') || ...
+if ~isempty(info.dataset) && ...
     ~strcmp(info.infofile, '(click to select)')
   
   delete(findobj('tag', 'newinfo'))
