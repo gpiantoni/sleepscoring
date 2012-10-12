@@ -27,6 +27,7 @@ hold on
 st_h = [opt.stage.height];
 [st_h, sst_h] = sort(st_h);
 set(gca, 'ytick', st_h, 'yticklabel', {opt.stage(sst_h).label})
+ylim([st_h(1) st_h(end) + 1]) % 1 is roughly for the arrow
 %-----------------%
 
 %-----------------%
