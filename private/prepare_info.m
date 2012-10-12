@@ -39,8 +39,33 @@ info.fsample = hdr.Fs;
 
 %-----------------%
 %-BEGINREC
-% only for MFF at the moment
-info.beginrec = datenum(hdr.orig.xml.info.recordTime([1:10 12:19]), 'yyyy-mm-ddHH:MM:SS');
+switch ft_filetype(info.dataset)
+  
+  case 'egi_mff'
+    %-with MFF file, read directly from xml
+    info.beginrec = datenum(hdr.orig.xml.info.recordTime([1:10 12:19]), 'yyyy-mm-ddHH:MM:SS');
+    
+  case 'spmeeg_mat'
+    %-with FASST data, read from FASST
+    if isfield(hdr.orig.other, 'info') && isfield(hdr.orig.other.info, 'date')
+      
+      info.beginrec = datenum(hdr.orig.other.info.date(1), hdr.orig.other.info.date(2), hdr.orig.other.info.date(3), ...
+        hdr.orig.other.info.hour(1), hdr.orig.other.info.hour(2), hdr.orig.other.info.hour(3));
+      
+    else
+      info.beginrec = 0;
+      warning('not time information in the FASST file')
+      
+    end
+    
+    %-read score as well from FASST
+    info.score = hdr.orig.other.CRC.score;
+    
+  otherwise
+    info.beginrec = 0;
+    warning(['file format ' ft_filetype(info.dataset) ' not recognized. Time of the recording will not be correct'])
+    
+end
 %-----------------%
 
 %-----------------%
