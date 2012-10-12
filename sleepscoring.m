@@ -11,19 +11,19 @@ function sleepscoring(info, opt)
 %    the dataset, as it's stored in a .MAT file as structure. It's saved
 %    every time you modify it (f.e. by changing sleep scoring).
 % 2- OPT contains all the information about visualization, it can be stored
-%    in a .m file (such as "opt_default.m") or in a .MAT file as structure.
+%    in a .m file (such as "opt_svui.m") or in a .MAT file as structure.
 %    See PREPARE_OPT for more information
 %    This structure is NOT saved automatically. 
 %
 % Use as:
-%   SLEEPSCORING uses default "opt_default.m" in folder "preferences"
+%   SLEEPSCORING uses default "opt_svui.m" in folder "preferences"
 % 
 %   SLEEPSCORING(INFO) where INFO contains at least a field called 
 %                     .dataset which points to the dataset to read
 %                     If you specify a .fileinfo, it'll save the INFO
 %                     variable in the file .fileinfo.
 %
-%   SLEEPSCORING(INFO, OPT) where OPT is a file similar to "opt_default.m",
+%   SLEEPSCORING(INFO, OPT) where OPT is a file similar to "opt_svui.m",
 %                           but modified by you for your parameters 
 %   SLEEPSCORING(INFO, OPT) where OPT is a .MAT file with a "opt" variable
 %                           saved from a previous analysis 

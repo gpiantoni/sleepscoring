@@ -1,6 +1,6 @@
 function opt = prepare_opt(optname, opt_old)
 %PREPARE_OPT read or prepare opt
-% Input can be a file ending in ".m" (such as "opt_default.m") or a MAT
+% Input can be a file ending in ".m" (such as "opt_svui.m") or a MAT
 % file with a "opt" variable.
 %
 % OPT
@@ -84,7 +84,7 @@ else
   [dirname, filename, ext] = fileparts(optname);
   
   
-  if strcmp(ext, '.m') % if it's the .m file like opt_default
+  if strcmp(ext, '.m') % if it's the .m file like opt_svui
     
     %-----------------%
     %-if .m file, move to that directory and run it
