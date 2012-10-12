@@ -272,6 +272,8 @@ function cb_saveopt(h0, eventdata) % OK
 %-----------------%
 %-get current opt and remove handles
 opt = getappdata(0, 'opt');
+h = opt.h;
+axis = opt.axis;
 opt = rmfield(opt, {'h' 'axis'});
 %-----------------%
 
@@ -285,6 +287,9 @@ opt.optname = filename;
 %-----------------%
 %-save and update info
 save([pathname filename], 'opt')
+
+opt.h = h;
+opt.axis = axis;
 setappdata(0, 'opt', opt)
 set(findobj('tag', 'name_opt'), 'str', ['OPT: ' opt.optname]) 
 %-----------------%
