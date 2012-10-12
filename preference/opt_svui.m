@@ -128,16 +128,16 @@ opt.changrp(1).scaling = 1; % cannot be modified in GUI
 opt.changrp(2).chantype = 'eog';
 opt.changrp(2).chan = {'REOG'};
 opt.changrp(2).ref = {'LEOG'};
-opt.changrp(2).Fhp = 0.1;
-opt.changrp(2).Flp = 12;
+opt.changrp(2).Fhp = 0.3;
+opt.changrp(2).Flp = 15;
 opt.changrp(2).linecolor = 'r';
 opt.changrp(2).scaling = 1;
 
 opt.changrp(3).chantype = 'emg';
 opt.changrp(3).chan = {'EMG'};
 opt.changrp(3).ref = [];
-opt.changrp(3).Fhp = 0.3;
-opt.changrp(3).Flp = 35;
+opt.changrp(3).Fhp = 10;
+opt.changrp(3).Flp = 100;
 opt.changrp(3).linecolor = 'm';
 opt.changrp(3).scaling = 1;
 
