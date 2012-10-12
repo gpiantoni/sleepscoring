@@ -52,7 +52,7 @@ if strcmp(ftdir, '')
 end
 
 if nargin < 2 || isempty(opt)
-  opt = [fileparts(mfilename('fullpath')) filesep 'preference' filesep 'opt_default.m']; % default OPT
+  opt = [fileparts(mfilename('fullpath')) filesep 'preference' filesep 'opt_svui.m']; % default OPT
 end
 %-------------------------------------%
 
