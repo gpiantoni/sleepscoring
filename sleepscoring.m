@@ -106,8 +106,9 @@ opt.axis.fft = axes('parent', opt.h.fft, 'vis', 'off');
 %-info
 uicontrol(opt.h.info, 'sty', 'text', 'uni', 'norm', ...
   'pos', [.05 .95 .9 .05], 'str', 'Dataset:', 'tag', 'name_info');
+[~, optname] = fileparts(opt.optfile);
 uicontrol(opt.h.info, 'sty', 'text', 'uni', 'norm', ...
-  'pos', [.05 .9 .9 .05], 'str', ['OPT: ' opt.optname], 'tag', 'name_opt');
+  'pos', [.05 .9 .9 .05], 'str', ['OPT: ' optname], 'tag', 'name_opt');
 %-------%
 
 %-------%
@@ -281,7 +282,7 @@ opt = rmfield(opt, {'h' 'axis'});
 %-file to save
 [filename pathname] = uiputfile({'*.mat', 'Option file (*.mat)'}, 'Select OPT file');
 if ~filename; return; end
-opt.optname = filename;
+opt.optfile = [pathname filename];
 %-----------------%
 
 %-----------------%
@@ -291,7 +292,7 @@ save([pathname filename], 'opt')
 opt.h = h;
 opt.axis = axis;
 setappdata(0, 'opt', opt)
-set(findobj('tag', 'name_opt'), 'str', ['OPT: ' opt.optname]) 
+set(findobj('tag', 'name_opt'), 'str', ['OPT: ' filename]) 
 %-----------------%
 %-------------------------------------%
 
