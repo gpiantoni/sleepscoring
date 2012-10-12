@@ -1,10 +1,10 @@
-function opt = prepare_opt(optname, opt_old)
+function opt = prepare_opt(optfile, opt_old)
 %PREPARE_OPT read or prepare opt
 % Input can be a file ending in ".m" (such as "opt_svui.m") or a MAT
 % file with a "opt" variable.
 %
 % OPT
-%  .optname: name of the opt file
+%  .optfile: name of the opt file
 %
 %-channels
 %  .renamelabel: two-column cell, the first column is the labels read from
@@ -70,18 +70,18 @@ function opt = prepare_opt(optname, opt_old)
 
 %-------------------------------------%
 %-get opt
-if isstruct(optname)
+if isstruct(optfile)
   
   %---------------------------%
   %-already a struct
-  opt = optname;
+  opt = optfile;
   %---------------------------%
   
 else
   
   %---------------------------%
   %-read from file
-  [dirname, filename, ext] = fileparts(optname);
+  [dirname, filename, ext] = fileparts(optfile);
   
   
   if strcmp(ext, '.m') % if it's the .m file like opt_svui
@@ -99,12 +99,12 @@ else
     
     %-----------------%
     %-opt saved from previous analysis
-    load(optname, 'opt')
+    load(optfile, 'opt')
     %-----------------%
     
   end
   
-  opt.optname = filename;
+  opt.optfile = optfile;
   %---------------------------%
   
 end
@@ -123,5 +123,6 @@ end
 
 %-----------------%
 %rename OPT
-set(findobj( 'tag', 'name_opt'), 'str', ['OPT: ' opt.optname]);
+[~, optname] = fileparts(opt.optfile);
+set(findobj( 'tag', 'name_opt'), 'str', ['OPT: ' optname]);
 %-----------------%

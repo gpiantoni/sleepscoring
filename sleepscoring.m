@@ -227,7 +227,16 @@ save_info() % save previous info
 
 %-----------------%
 %-read OPT file
+%--------%
+%-move to directory with opt
+info = getappdata(0, 'info');
+wd = pwd;
+cd(fileparts(info.infofile))
+info = [];
+%--------%
+
 [filename pathname] = uigetfile({'*.mat', 'Dataset File (*.m, *.mat)'}, 'Select Dataset File');
+cd(wd)
 if ~filename; return; end
 
 info.infofile = [pathname filename];
@@ -261,8 +270,10 @@ opt = prepare_opt([pathname filename], opt);
 %-read and plot data
 setappdata(0, 'opt', opt)
 
-prepare_info_opt()
-cb_readplotdata()
+if ~isempty(getappdata(0, 'info'))
+  prepare_info_opt()
+  cb_readplotdata()
+end
 %-----------------%
 %-------------------------------------%
 
@@ -280,7 +291,15 @@ opt = rmfield(opt, {'h' 'axis'});
 
 %-----------------%
 %-file to save
+%--------%
+%-move to directory with opt
+wd = pwd;
+cd(fileparts(opt.optfile))
+%--------%
+
 [filename pathname] = uiputfile({'*.mat', 'Option file (*.mat)'}, 'Select OPT file');
+cd(wd)
+
 if ~filename; return; end
 opt.optfile = [pathname filename];
 %-----------------%

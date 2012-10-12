@@ -4,8 +4,35 @@ function prepare_info_opt
 %-----------------%
 info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
-opt.epoch = 1;
 %-----------------%
+
+%-----------------%
+%-assign optfile to info if it doesn't exist (for new datasets)
+if ~isfield(info, 'optfile')
+  info.optfile = opt.optfile;
+end
+%-----------------%
+
+%-----------------%
+%-if the opt files are different in the info and opt, let the user choose
+if ~strcmp(info.optfile, opt.optfile) 
+  opt_info = ['in the dataset: ' info.optfile];
+  opt_opt = ['in the option: ' opt.optfile];
+  
+   opt_chosen = questdlg(sprintf('The option file in the dataset and the one in memory do not match.\nWhich one do you want to use?'), ...
+                         'Option File to Use', ...
+                         opt_info, opt_opt, opt_info);
+                       
+   if strcmp(opt_chosen, opt_info) % in info, load the one present in info
+     opt = prepare_opt(info.optfile, opt);
+   else
+     info.optfile = opt.optfile;
+   end
+  
+end
+%-----------------%
+
+opt.epoch = 1;
 
 %-------------------------------------%
 %-CHANNELS
