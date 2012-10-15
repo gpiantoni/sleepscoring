@@ -231,7 +231,9 @@ save_info() % save previous info
 %-move to directory with opt
 info = getappdata(0, 'info');
 wd = pwd;
-cd(fileparts(info.infofile))
+if isfield(info, 'infofile')
+  cd(fileparts(info.infofile))
+end
 info = [];
 %--------%
 

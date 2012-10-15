@@ -88,7 +88,6 @@ else
     
     %-----------------%
     %-if .m file, move to that directory and run it
-    
     wd = pwd;
     cd(dirname)
     opt = feval(filename);
@@ -124,5 +123,5 @@ end
 %-----------------%
 %rename OPT
 [~, optname] = fileparts(opt.optfile);
-set(findobj( 'tag', 'name_opt'), 'str', ['OPT: ' optname]);
+set(findobj('tag', 'name_opt'), 'str', ['OPT: ' optname]);
 %-----------------%
