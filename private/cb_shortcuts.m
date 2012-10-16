@@ -1,8 +1,8 @@
 function cb_shortcuts(h0, eventdata)
 %SHORTCUTS
 %
-% k -> next epoch
-% j -> previous epoch
+% opt.short.next -> next epoch
+% opt.short.previous -> previous epoch
 % 0 to 9 -> sleep stage, depending on code
 
 info = getappdata(0, 'info');
