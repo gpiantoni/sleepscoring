@@ -32,7 +32,7 @@ stage(4).color = [0.1 0.1 0.75];
 stage(4).height = 2;
 
 stage(5).label = 'NREM 3';
-stage(5).code = 4;
+stage(5).code = 3;
 stage(5).color = [0.1 0.1 0.45];
 stage(5).height = 1;
 
