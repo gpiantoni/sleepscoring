@@ -19,8 +19,13 @@ function info = prepare_info(info)
 
 %-----------------%
 %-read INFO first, if no dataset
+% The infofile work-around is bc sometimes you move the file in the
+% different folder but this is not saved into the structure. Now it updates
+% the location of the file with the new filename.
 if ~isfield(info, 'dataset')
-  load(info.infofile, 'info')
+  infofile = info.file;
+  load(infofile, 'info')
+  info.infofile = infofile;
 end
 %-----------------%
 
