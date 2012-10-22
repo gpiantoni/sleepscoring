@@ -23,7 +23,7 @@ function info = prepare_info(info)
 % different folder but this is not saved into the structure. Now it updates
 % the location of the file with the new filename.
 if ~isfield(info, 'dataset')
-  infofile = info.file;
+  infofile = info.infofile;
   load(infofile, 'info')
   info.infofile = infofile;
 end
