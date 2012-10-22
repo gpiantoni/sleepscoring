@@ -4,5 +4,15 @@ function save_info
 info = getappdata(0, 'info');
 
 if isfield(info, 'infofile')
-  save(info.infofile, 'info')
+
+  fid = fopen(info.infofile, 'w');
+  if fid ~= -1
+    fclose(fid);
+    save(info.infofile, 'info')
+    
+  else
+    warning(['could not save ' info.infofile ', probably you don''t have write permissions'])
+    
+  end
+  
 end
