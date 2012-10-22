@@ -247,9 +247,9 @@ info = prepare_info(info);
 
 %-----------------%
 %-read and plot data
-save_info()
 setappdata(0, 'info', info)
-
+prepare_log('cb_openinfo')
+save_info()
 prepare_info_opt()
 cb_readplotdata()
 %-----------------%
@@ -515,6 +515,7 @@ cb_plotdata()
 %-callback: close figure
 function cb_closemain(h0, eventdata)
 
+prepare_log('cb_closemain')
 save_info()
 setappdata(0, 'info', []) % clean up info
 setappdata(0, 'opt', []) % clean up opt

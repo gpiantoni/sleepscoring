@@ -123,9 +123,10 @@ end
 %-update info
 info.rater = rater;
 info.score = score;
+info = prepare_log( get(h0, 'label'), info);
 
-save_info()
 setappdata(0, 'info', info)
+save_info()
 update_rater(info)
 cb_readplotdata()
 %-------------------------------------%

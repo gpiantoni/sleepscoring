@@ -4,7 +4,7 @@ function cb_newinfo(h0, eventdata)
 %-------------------------------------%
 %-new figure
 h_input = figure;
-set(h_input, 'tag', 'newinfo', 'Menubar', 'none')
+set(h_input, 'tag', 'newinfo', 'Menubar', 'none', 'name', 'New Dataset')
 
 set(h_input, 'pos', get(h_input, 'pos') .* [1 1 1 .5]) % half height
 
@@ -91,12 +91,12 @@ if ~isempty(info.dataset) && ...
   
   delete(findobj('tag', 'newinfo'))
   
-  info = prepare_info(info);
-  
   %-------%
   %-init
-  save_info()
+  info = prepare_info(info);
   setappdata(0, 'info', info)
+  prepare_log('cb_newinfo')
+  save_info()
   prepare_info_opt()
   cb_readplotdata()
   %-------%
