@@ -67,6 +67,7 @@ function opt = prepare_opt(optfile, opt_old)
 %    .fft: axis of fft panel
 
 % TODO: check opt
+disp('prepare_opt')
 
 %-------------------------------------%
 %-get opt
