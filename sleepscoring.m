@@ -244,7 +244,7 @@ opt = getappdata(0, 'opt');
 %-----------------%
 %-read OPT file
 wd = pwd;
-cd(fileparts(optfile))
+cd(fileparts(opt.optfile))
 [filename pathname] = uigetfile({'*.mat;*.m', 'Option file (*.m, *.mat)'}, 'Select OPT file');
 cd(wd)
 if ~filename; return; end

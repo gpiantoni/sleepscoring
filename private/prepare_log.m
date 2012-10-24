@@ -65,6 +65,18 @@ switch action
     log = [log 'IMPORTED SCORE FROM FAAST: N.A.'];
     %-----------------%
     
+    %-----------------%
+    %-changes in the score
+  case 'score_backup'
+    log = [log 'BACK UP SCORE' backup_score(info.score(:,info.rater))];
+    
+  case 'score_begin'
+    log = [log 'NEW SCORE BEGINS AT ' sprintf('% 12.3f', info.score{4,info.rater}(1))];
+    
+  case 'score_end'
+    log = [log 'NEW SCORE ENDS   AT ' sprintf('% 12.3f', info.score{4,info.rater}(2))];
+    %-----------------%
+    
   case 'cb_closemain'
     log = [log 'CLOSE DATASET'];
     
@@ -88,3 +100,47 @@ else
   varargout{1} = info;
 end
 %-------------------------------------%
+
+%-------------------------------------%
+function log = backup_score(score)
+
+%-----------------%
+%-general info
+log = sprintf(' (%s on % 4d % 3ds epochs) % 12.3f - % 12.3f\n', ...
+  score{2,1}, numel(score{1,1}), score{3,1}, score{4,1}(1), score{4,1}(2));
+%-----------------%
+
+%-----------------%
+%-actual scoring
+str_score = sprintf(' % 3d', score{1,1});
+log = [log '        ' str_score];
+%-----------------%
+
+%-----------------%
+%-artifacts
+str_art = '     art ';
+for i = 1:size(score{5,1},1)
+  str_art = [str_art sprintf('[%.3f-%.3f] ', score{5,1}(i,1), score{5,1}(i,2))];
+end
+log = [log sprintf('\n') str_art];
+%-----------------%
+
+%-----------------%
+%-movements
+str_move = '     move ';
+for i = 1:size(score{6,1},1)
+  str_move = [str_move sprintf('[%.3f-%.3f] ', score{6,1}(i,1), score{6,1}(i,2))];
+end
+log = [log sprintf('\n') str_move];
+%-----------------%
+
+%-----------------%
+%-arousals
+if size(score,1) > 6
+  str_arou = '     arou ';
+  for i = 1:size(score{7,1},1)
+    str_arou = [str_arou sprintf('[%.3f-%.3f] ', score{7,1}(i,1), score{7,1}(i,2))];
+  end
+  log = [log sprintf('\n') str_arou];
+end
+%-----------------%
