@@ -95,7 +95,7 @@ optfile = get(h0, 'str');
 
 wd = pwd;
 cd(fileparts(optfile))
-[filename pathname] = uigetfile;
+[filename pathname] = uigetfile({'*.mat;*.m', 'Option file (*.m, *.mat)'}, 'Select OPT file');
 cd(wd)
 
 if filename
