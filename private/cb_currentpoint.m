@@ -19,6 +19,8 @@ if strcmp(tag, 'a_dat')
     
     popup_str = get(findobj('tag', 'popupmarker'), 'str');
     popup_val = get(findobj('tag', 'popupmarker'), 'val');
+    if isempty(popup_str); return; end % no score
+    
     popup = popup_str{popup_val};
     
     if numel(popup) > 13 && ...
