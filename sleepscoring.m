@@ -173,29 +173,9 @@ uimenu(m_score, 'label', 'Delete Current Score', 'enable', 'off', 'call', @cb_ra
 uimenu(m_score, 'label', 'Import Score from FASST', 'call', @cb_rater)
 %-----------------%
 
-%-----------------%
-%-CHAN SELECTION
-m_chan = uimenu(opt.h.main, 'label', 'Channel Selection', 'enable', 'off');
-for i = 1:numel(opt.changrp)
-  uimenu(m_chan, 'label', opt.changrp(i).chantype, 'call', @cb_selchan);
-end
-%-----------------%
-
-%-----------------%
-%-FILTER
-m_filt = uimenu(opt.h.main, 'label', 'Filter', 'enable', 'off');
-for i = 1:numel(opt.changrp)
-  uimenu(m_filt, 'label', opt.changrp(i).chantype, 'call', @cb_filt);
-end
-%-----------------%
-
-%-----------------%
-%-REFERENCE
-m_ref = uimenu(opt.h.main, 'label', 'Reference', 'enable', 'off');
-for i = 1:numel(opt.changrp)
-  uimenu(m_ref, 'label', opt.changrp(i).chantype, 'call', @cb_ref);
-end
-%-----------------%
+uimenu(opt.h.main, 'label', 'Channel Selection', 'enable', 'off');
+uimenu(opt.h.main, 'label', 'Filter', 'enable', 'off');
+uimenu(opt.h.main, 'label', 'Reference', 'enable', 'off');
 %-------------------------------------%
 
 %-------------------------------------%
@@ -263,7 +243,10 @@ opt = getappdata(0, 'opt');
 
 %-----------------%
 %-read OPT file
+wd = pwd;
+cd(fileparts(optfile))
 [filename pathname] = uigetfile({'*.mat;*.m', 'Option file (*.m, *.mat)'}, 'Select OPT file');
+cd(wd)
 if ~filename; return; end
 opt = prepare_opt([pathname filename], opt);
 %-----------------%
@@ -314,101 +297,6 @@ opt.h = h;
 opt.axis = axis;
 setappdata(0, 'opt', opt)
 set(findobj('tag', 'name_opt'), 'str', ['OPT: ' filename]) 
-%-----------------%
-%-------------------------------------%
-
-%-------------------------------------%
-%-callback: select channels
-function cb_selchan(h0, eventdata)
-
-chantype = get(h0, 'label');
-
-info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
-
-changrp = strcmp(chantype, {opt.changrp.chantype});
-
-%-------%
-%-don't show labels belonging to another chantype
-nolabel = arrayfun(@(x) x.chan, opt.changrp(~changrp), 'uni', 0);
-nolabel = [nolabel{:}];
-[~, ilabel] = setdiff(info.label, nolabel);
-label = info.label(sort(ilabel));
-%-------%
-
-[~, chanindx] = intersect(label, opt.changrp(changrp).chan);
-chanindx = select_channel_list(label, sort(chanindx)); % fieldtrip/private function
-opt.changrp(changrp).chan = label(chanindx)';
-
-setappdata(0, 'opt', opt);
-cb_readplotdata()
-%-------------------------------------%
-
-%-------------------------------------%
-%-callback: select channels
-function cb_ref(h0, eventdata)
-
-chantype = get(h0, 'label');
-
-info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
-
-changrp = strcmp(chantype, {opt.changrp.chantype});
-
-[~, chanindx] = intersect(info.label, opt.changrp(changrp).ref);
-chanindx = select_channel_list(info.label, sort(chanindx)); % fieldtrip/private function
-opt.changrp(changrp).ref = info.label(chanindx)';
-
-setappdata(0, 'opt', opt);
-cb_readplotdata()
-%-------------------------------------%
-
-%-------------------------------------%
-%-callback: filter information
-function cb_filt(h0, eventdata)
-
-chantype = get(h0, 'label');
-
-opt = getappdata(0, 'opt');
-
-changrp = strcmp(chantype, {opt.changrp.chantype});
-Fhp = opt.changrp(changrp).Fhp;
-Flp = opt.changrp(changrp).Flp;
-
-%-----------------%
-%-popup
-prompt = {'High-Pass Filter (Hz)' 'Low-Pass Filter (Hz)'};
-name = ['Filter for ' chantype];
-numlines = 1;
-defaultanswer = {sprintf(' %1g', Fhp) sprintf(' %1g', Flp)};
-answer = inputdlg(prompt, name, numlines, defaultanswer);
-
-if ~isempty(answer) % cancel button
-  
-  %-------%
-  %-highpass filter
-  if ~isempty(answer{1})
-    Fhp = textscan(answer{1}, '%f');
-    opt.changrp(changrp).Fhp = Fhp{1};
-  else
-    opt.changrp(changrp).Fhp = [];
-  end
-  %-------%
-  
-  %-------%
-  %-lowpass filter
-  if ~isempty(answer{2})
-    Flp = textscan(answer{2}, '%f');
-    opt.changrp(changrp).Flp = Flp{1};
-  else
-    opt.changrp(changrp).Flp = [];
-  end
-  %-------%
-  
-  setappdata(0, 'opt', opt);
-  cb_readplotdata()
-  
-end
 %-----------------%
 %-------------------------------------%
 

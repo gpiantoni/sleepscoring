@@ -84,9 +84,34 @@ update_rater(info)
 %-----------------%
 %-working GUI
 set(findobj('label', 'Sleep Score'), 'enable', 'on')
-set(findobj('label', 'Channel Selection'), 'enable', 'on')
-set(findobj('label', 'Filter'), 'enable', 'on')
-set(findobj('label', 'Reference'), 'enable', 'on')
+delete(findobj('label', 'Channel Selection'))
+delete(findobj('label', 'Filter'))
+delete(findobj('label', 'Reference'))
+
+%-----------------%
+%-CHAN SELECTION
+m_chan = uimenu(opt.h.main, 'label', 'Channel Selection');
+for i = 1:numel(opt.changrp)
+  uimenu(m_chan, 'label', opt.changrp(i).chantype, 'call', @cb_select_channel);
+end
+%-----------------%
+
+%-----------------%
+%-FILTER
+m_filt = uimenu(opt.h.main, 'label', 'Filter');
+for i = 1:numel(opt.changrp)
+  uimenu(m_filt, 'label', opt.changrp(i).chantype, 'call', @cb_select_filter);
+end
+%-----------------%
+
+%-----------------%
+%-REFERENCE
+m_ref = uimenu(opt.h.main, 'label', 'Reference');
+for i = 1:numel(opt.changrp)
+  uimenu(m_ref, 'label', opt.changrp(i).chantype, 'call', @cb_select_reference);
+end
+%-----------------%
+
 set(opt.h.main, 'windowbuttonDownFcn', @cb_currentpoint)
 %-----------------%
 %-------------------------------------%
