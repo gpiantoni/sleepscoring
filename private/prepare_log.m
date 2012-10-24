@@ -8,6 +8,8 @@ if nargin == 1
 end
 if isfield(info, 'log')
   log = info.log;
+else
+  log = '';
 end
 %-------------------------------------%
 
