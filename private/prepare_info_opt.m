@@ -38,7 +38,7 @@ opt.epoch = 1;
 %-CHANNELS
 %-----------------%
 %-INFO: rename channels
-if isempty(setdiff(info.label, info.hdr.label)) % it they haven't been renamed yet
+if ~isempty(setdiff(info.label, info.hdr.label)) % it they haven't been renamed yet
   for i = 1:size(opt.renamelabel,1)
     info.label{strcmp(info.label, opt.renamelabel{i,1})} = opt.renamelabel{i,2};
   end
