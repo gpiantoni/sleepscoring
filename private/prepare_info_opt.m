@@ -1,6 +1,6 @@
 function prepare_info_opt
 %PREPARE_INFO_OPT combine information from info, opt and score
-
+disp('prepare_info_opt')
 %-----------------%
 info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
@@ -38,9 +38,15 @@ opt.epoch = 1;
 %-CHANNELS
 %-----------------%
 %-INFO: rename channels
-if ~isempty(setdiff(info.label, info.hdr.label)) % it they haven't been renamed yet
+if isempty(setdiff(info.label, info.hdr.label)) % it they haven't been renamed yet
   for i = 1:size(opt.renamelabel,1)
-    info.label{strcmp(info.label, opt.renamelabel{i,1})} = opt.renamelabel{i,2};
+    
+    i_lbl = strcmp(info.label, opt.renamelabel{i,1});
+    if any(i_lbl)
+      info.label{i_lbl} = opt.renamelabel{i,2};
+    else
+      warning(['could not find channel ' opt.renamelabel{i,1} ', so not renamed to ' opt.renamelabel{i,2}])
+    end
   end
 end
 %-----------------%
