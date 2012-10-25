@@ -1,4 +1,23 @@
 function dat = read_data(info, opt, hdr)
+%READ_DATA read data from disk
+% 
+% INFO
+%  .score {3}: window length
+%         {4}: beginning of epochs, in respect to beginning of the recordings
+%  .rater: index of info.rater
+%  .fsample: sampling frequency
+%  .dataset: to read the data from
+%
+% OPT
+%  .epoch: epoch of interest
+%  .changrp: groups of channels to read
+%    .chan: channel labels in the group
+%    .ref: channel labels of the reference for this group
+%    .scaling: rescale data
+%    .Fhp: high-pass filter
+%    .Flp: low-pass filter
+%
+% HDR
 
 %-----------------%
 %-samples to read

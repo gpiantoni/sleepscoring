@@ -217,18 +217,25 @@ end
 info = [];
 %--------%
 
+%--------%
+%-get files
 [filename pathname] = uigetfile({'*.mat', 'Dataset File (*.m, *.mat)'}, 'Select Dataset File');
 cd(wd)
 if ~filename; return; end
+%--------%
 
+%--------%
+%-log that the file was closed
+prepare_log('closeinfo')
+save_info()
+%--------%
+%-----------------%
+
+%-----------------%
+%-read and plot new info
 info.infofile = [pathname filename];
 info = prepare_info(info);
-%-----------------%
-
-%-----------------%
-%-read and plot data
 setappdata(0, 'info', info)
-prepare_log('cb_openinfo')
 save_info()
 prepare_info_opt()
 cb_readplotdata()
@@ -403,7 +410,7 @@ cb_plotdata()
 %-callback: close figure
 function cb_closemain(h0, eventdata)
 
-prepare_log('cb_closemain')
+prepare_log('closeinfo')
 save_info()
 setappdata(0, 'info', []) % clean up info
 setappdata(0, 'opt', []) % clean up opt

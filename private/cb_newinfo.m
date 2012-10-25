@@ -122,7 +122,6 @@ if ~isempty(info.dataset) && ...
   %-init
   info = prepare_info(info);
   setappdata(0, 'info', info)
-  prepare_log('cb_newinfo')
   save_info()
   
   opt_old = getappdata(0, 'opt'); % necessary for figure handles

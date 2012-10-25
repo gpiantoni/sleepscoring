@@ -1,7 +1,7 @@
 function info = prepare_info(info)
 %PREPARE_INFO create info based on dataset
 %
-% Input is info.dataset and info.infofile and optionally info.hdr
+% Input is info.dataset and info.infofile
 % The function will fill up all the other fields
 %
 % info
@@ -20,13 +20,22 @@ disp('prepare_info')
 
 %-----------------%
 %-read INFO first, if no dataset
-% The infofile work-around is bc sometimes you move the file in the
-% different folder but this is not saved into the structure. Now it updates
-% the location of the file with the new filename.
 if ~isfield(info, 'dataset')
+  
+  %-------%
+  %-The infofile work-around is bc sometimes you move the file in the
+  % different folder but this is not saved into the structure. Now it updates
+  % the location of the file with the new filename.
   infofile = info.infofile;
   load(infofile, 'info')
   info.infofile = infofile;
+  %-------%
+  
+  prepare_log('openinfo')
+
+else
+  prepare_log('newinfo')
+  
 end
 %-----------------%
 
@@ -39,7 +48,6 @@ setappdata(0, 'hdr', hdr)
 
 %-----------------%
 %-FSAMPLE
-% only for MFF at the moment
 info.fsample = hdr.Fs;
 %-----------------%
 

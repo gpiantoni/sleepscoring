@@ -41,10 +41,10 @@ log = [log ' fieldtrip: ' ft_ver ', sleep scoring: ' sleep_ver];
 %-ACTION
 switch action
   
-  case 'cb_newinfo'
+  case 'newinfo'
     log = [log 'NEW DATASET: ' info.infofile ' based on ' info.dataset];
     
-  case 'cb_openinfo'
+  case 'openinfo'
     log = [log 'OPEN DATASET: ' info.infofile ' based on ' info.dataset];
     
     %-----------------%
@@ -77,7 +77,7 @@ switch action
     log = [log 'NEW SCORE ENDS   AT ' sprintf('% 12.3f', info.score{4,info.rater}(2))];
     %-----------------%
     
-  case 'cb_closemain'
+  case 'closeinfo'
     log = [log 'CLOSE DATASET'];
     
     %-----------------%
