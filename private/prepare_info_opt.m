@@ -15,19 +15,19 @@ end
 
 %-----------------%
 %-if the opt files are different in the info and opt, let the user choose
-if ~strcmp(info.optfile, opt.optfile) 
+if ~strcmp(info.optfile, opt.optfile)
   opt_info = ['in the dataset: ' info.optfile];
   opt_opt = ['in the option: ' opt.optfile];
   
-   opt_chosen = questdlg(sprintf('The option file in the dataset and the one in memory do not match.\nWhich one do you want to use?'), ...
-                         'Option File to Use', ...
-                         opt_info, opt_opt, opt_info);
-                       
-   if strcmp(opt_chosen, opt_info) % in info, load the one present in info
-     opt = prepare_opt(info.optfile, opt);
-   else
-     info.optfile = opt.optfile;
-   end
+  opt_chosen = questdlg(sprintf('The option file in the dataset and the one in memory do not match.\nWhich one do you want to use?'), ...
+    'Option File to Use', ...
+    opt_info, opt_opt, opt_info);
+  
+  if strcmp(opt_chosen, opt_info) % in info, load the one present in info
+    opt = prepare_opt(info.optfile, opt);
+  else
+    info.optfile = opt.optfile;
+  end
   
 end
 %-----------------%
