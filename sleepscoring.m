@@ -20,8 +20,8 @@ function sleepscoring(info, opt)
 % 
 %   SLEEPSCORING(INFO) where INFO contains at least a field called 
 %                     .dataset which points to the dataset to read
-%                     If you specify a .fileinfo, it'll save the INFO
-%                     variable in the file .fileinfo.
+%                     If you specify a .infofile, it'll save the INFO
+%                     variable in the file .infofile.
 %
 %   SLEEPSCORING(INFO, OPT) where OPT is a file similar to "opt_svui.m",
 %                           but modified by you for your parameters 
