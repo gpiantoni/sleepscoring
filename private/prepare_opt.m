@@ -99,7 +99,17 @@ else
     
     %-----------------%
     %-opt saved from previous analysis
-    load(optfile, 'opt')
+    fid = fopen(optfile, 'r');
+    if fid ~= -1
+      fclose(fid);
+      load(optfile, 'opt')
+      
+    else
+      warning(['could not load ' optfile ', probably you don''t have read permissions. Using previous option file'])
+      opt = opt_old;
+      
+    end
+    
     %-----------------%
     
   end
