@@ -19,6 +19,7 @@ if isempty(info.score{2,1})
   set(findobj('label', 'Rename Rater'), 'enable', 'off')
   set(findobj('label', 'Copy Current Score'), 'enable', 'off')
   set(findobj('label', 'Delete Current Score'), 'enable', 'off')
+  set(findobj('label', 'Score Statistics'), 'enable', 'off')
   set(findobj('tag', 'p_hypno'), 'Title', 'Recording')
   %-------%
   
@@ -31,11 +32,12 @@ if isempty(info.score{2,1})
 else
   
   %-------%
-  %-disable buttons
+  %-enable buttons
   set(m_rater, 'enable', 'on')
   set(findobj('label', 'Rename Rater'), 'enable', 'on')
   set(findobj('label', 'Copy Current Score'), 'enable', 'on')
   set(findobj('label', 'Delete Current Score'), 'enable', 'on')
+  set(findobj('label', 'Score Statistics'), 'enable', 'on')
   %-------%
   
   %-------%

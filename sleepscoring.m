@@ -171,6 +171,7 @@ uimenu(m_score, 'label', 'Rename Rater', 'enable', 'off', 'call', @cb_rater)
 uimenu(m_score, 'label', 'Copy Current Score', 'enable', 'off', 'call', @cb_rater)
 uimenu(m_score, 'label', 'Delete Current Score', 'enable', 'off', 'call', @cb_rater)
 uimenu(m_score, 'label', 'Import Score from FASST', 'call', @cb_rater)
+uimenu(m_score, 'label', 'Score Statistics', 'sep', 'on', 'call', @cb_statistics)
 %-----------------%
 
 uimenu(opt.h.main, 'label', 'Channel Selection', 'enable', 'off');
