@@ -34,8 +34,12 @@ info_time = info.beginrec * 24 * 60 * 60; % absolute time of the beginning of th
 %-calculate beginning
 rec_begin_end = cat(1, score{4,:})'; % in seconds
 rec_begin = rec_begin_end(1,:); % 1) proper way, sleep is marked using right-click on sleep scoring
+i_first_notnan = nan(1,n_rater);
 for r = 1:n_rater
-  i_first_notnan(1,r) = find(~isnan(score{1,r}), 1) - 1; % index of the first non-nan
+  i_notnan = find(~isnan(score{1,r}), 1);
+  if i_notnan
+    i_first_notnan(1,r) = i_notnan - 1; % index of the first non-nan
+  end
 end
 rec_begin = rec_begin + i_first_notnan .* epoch_dur;
 rec_begin_abs = rec_begin + info_time; % in absolute terms
@@ -43,8 +47,12 @@ rec_begin_abs = rec_begin + info_time; % in absolute terms
 
 %-----------------%
 %-calculate end
+i_last_notnan = nan(1,n_rater);
 for r = 1:n_rater
-  i_last_notnan(1,r) = find(~isnan(score{1,r}), 1, 'last'); % index of the first non-nan
+  i_notnan = find(~isnan(score{1,r}), 1, 'last');
+  if i_notnan
+    i_last_notnan(1,r) = i_notnan; % index of the first non-nan
+  end
 end
 rec_end = rec_begin_end(1,:) + i_last_notnan .* epoch_dur;
 rec_end_abs = rec_end + info_time; % in absolute terms
