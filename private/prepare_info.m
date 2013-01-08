@@ -55,7 +55,11 @@ if ~strcmp(ext, '.mat')
   info.infofile = fullfile(path, [name ext]);
  
 end
-  
+%-----------------%
+
+%-----------------%
+%-check if dataset exists or find one similar
+info = find_dataset(info);
 %-----------------%
 
 %-----------------%
