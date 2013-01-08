@@ -4,6 +4,7 @@ function scorestatistics(info)
 % Sleep is scored according to R&K or ASSM 2007.
 
 tab_number = 3; % number of tabs for realignment
+tab = @(x)[x repmat('\t', 1, tab_number - floor(numel(x)/8))];
 
 %-------------------------------------%
 %-prepare input
@@ -137,8 +138,6 @@ waso = ep_wake - sl;
 %-------------------------------------%
 %-give output based on AASM 2007 manual
 % each \t is every 8 characters
-tab = @(x)[x repmat('\t', 1, tab_number - floor(numel(x)/8))];
-
 %-----------------%
 %-name of the rater
 fprintf('\t\t\t')
@@ -250,6 +249,8 @@ if n_rater == 1
   return
 end
 
+%---------------------------%
+%-subject X subject matrix
 fprintf('\nInter-rater agreement (Cohen''s kappa)\n\n')
 
 %-----------------%
@@ -267,7 +268,13 @@ for r1 = 1:n_rater
   for r2 = 1:n_rater
     
     if r1 > r2
-      fprintf('% 10.2f \t\t', kappa(score{1,r1}, score{1,r2}))
+      
+      if score{3,r1} == score{3,r2}
+        fprintf('% 10.2f \t\t', kappa(score{1,r1}, score{1,r2}))
+      else
+        fprintf('  diff wndw\t\t') % different scoring windows
+      end
+      
     else
       fprintf('\t\t\t')
     end
@@ -276,6 +283,77 @@ for r1 = 1:n_rater
   fprintf('\n')
   
 end
+%---------------------------%
+
+%---------------------------%
+%-compare subjects one-against-one
+tab_number = 2; % number of tabs for realignment
+tab = @(x)[x repmat('\t', 1, tab_number - floor(numel(x)/8))];
+
+for r1 = 1:n_rater
+  for r2 = r1+1:n_rater
+    fprintf('\n---------------------------\n')
+    fprintf('%s - %s\n', score{2,r1}, score{2,r2})
+    
+    if score{3,r1} == score{3,r2}
+      
+      score1 = score{1, r1};
+      score2 = score{1, r2};
+      stagecode = [opt.stage.code];
+      
+      %-------%
+      %-unique identifier, instead of nan
+      betternan = max([stagecode]) + 1;
+      score1(isnan(score1)) = betternan;
+      score2(isnan(score2)) = betternan;
+      stagecode(isnan(stagecode)) = betternan;
+      %-------%
+      
+      %-----------------%
+      %-matrix where each column corresponds to opt.stage
+      c = zeros(n_stage);
+      for s1 = 1:n_stage
+        for s2 = 1:n_stage
+          c(s1,s2) = numel(find(score1 == stagecode(s1) & score2 == stagecode(s2)));
+        end
+      end
+      %-----------------%
+      
+      %-----------------%
+      %-plots
+      %-------%
+      %-column headers
+      fprintf(tab(''))
+      for s = 1:n_stage
+        fprintf(tab(opt.stage(s).label))
+      end
+      fprintf('\n')
+      %-------%
+      
+      %-------%
+      %-body
+      for s = 1:n_stage
+        
+        fprintf(tab(opt.stage(s).label))
+        fprintf('% 8d\t', c(s,:))
+        fprintf('\n')
+        
+      end
+      %-------%
+      %-----------------%
+      
+    else
+      fprintf('Scoring window is different between two raters:\n%s % 3ds and %s % 3ds\n', ...
+        score{2,r1}, score{3,r1}, score{2,r2}, score{3,r2})
+      
+    end
+    
+        
+  end
+  
+end
+fprintf('\n---------------------------\n')
+%---------------------------%
 %-------------------------------------%
 
 %-------------------------------------%
