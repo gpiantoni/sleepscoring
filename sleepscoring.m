@@ -183,7 +183,7 @@ uimenu(opt.h.main, 'label', 'Reference', 'enable', 'off');
 %-read the data if present in info
 setappdata(0, 'opt', opt)
 
-if nargin > 0 && isfield(info, 'dataset') 
+if nargin > 0 && (isfield(info, 'dataset') || isfield(info, 'infofile'))
   
   info = prepare_info(info);
   
