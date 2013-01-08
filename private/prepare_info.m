@@ -40,6 +40,25 @@ end
 %-----------------%
 
 %-----------------%
+%-force .mat extension
+[path name ext] = fileparts(info.infofile);
+
+if ~strcmp(ext, '.mat')
+  
+  if strcmp(ext, '')
+    fprintf('Appending extension .mat to file\n')
+  else
+    fprintf('Changing extension from %s to .mat\n', ext)
+  end
+  
+  ext = '.mat'; % force extension to be mat
+  info.infofile = fullfile(path, [name ext]);
+ 
+end
+  
+%-----------------%
+
+%-----------------%
 %-HDR (read it every time)
 hdr = ft_read_header(info.dataset);
 info.hdr = rmfield(hdr, 'orig'); % this is really large,  but it's needed by ft_read_data
