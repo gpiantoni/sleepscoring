@@ -3,6 +3,8 @@ function save_info
 
 info = getappdata(0, 'info');
 
+%-----------------%
+%-save to file
 if isfield(info, 'infofile')
 
   fid = fopen(info.infofile, 'w');
@@ -16,3 +18,4 @@ if isfield(info, 'infofile')
   end
   
 end
+%-----------------%
