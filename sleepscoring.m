@@ -169,6 +169,7 @@ uimenu(m_score, 'label', 'Rater', 'tag', 'uimenu_rater', 'enable', 'off')
 uimenu(m_score, 'label', 'New Rater', 'sep', 'on', 'call', @cb_rater)
 uimenu(m_score, 'label', 'Rename Rater', 'enable', 'off', 'call', @cb_rater)
 uimenu(m_score, 'label', 'Copy Current Score', 'enable', 'off', 'call', @cb_rater)
+uimenu(m_score, 'label', 'Merge Scores', 'enable', 'off', 'call', @cb_rater)
 uimenu(m_score, 'label', 'Delete Current Score', 'enable', 'off', 'call', @cb_rater)
 uimenu(m_score, 'label', 'Import Score from FASST', 'call', @cb_rater)
 uimenu(m_score, 'label', 'Score Statistics', 'sep', 'on', 'call', @cb_statistics)
@@ -182,6 +183,12 @@ uimenu(opt.h.main, 'label', 'Reference', 'enable', 'off');
 %-------------------------------------%
 %-read the data if present in info
 setappdata(0, 'opt', opt)
+
+if nargin > 0 && ischar(info)
+  infofile = info;
+  info = [];
+  info.infofile = infofile;
+end
 
 if nargin > 0 && (isfield(info, 'dataset') || isfield(info, 'infofile'))
   
