@@ -8,7 +8,7 @@ function scorestatistics(varargin)
 if nargin == 1
   info = varargin{1};
 else
-  info = concat_score(varargin);
+  info = concat_score(varargin{:});
 end
 %-------------------------------------%
 
