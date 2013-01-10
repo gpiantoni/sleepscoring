@@ -66,6 +66,22 @@ switch get(h0, 'label')
     rater = nrater + 1;
     %-----------------%
     
+  case 'Merge Scores'
+    
+    %-----------------%
+    %-prompt
+    to_merge = select_merge_score(score(2,:));
+    if isempty(to_merge)
+      return
+    end
+    %-----------------%
+    
+    %-----------------%
+    %-update score
+    rater = nrater + 1;
+    score(:, rater) = merge_score(score(:, logical(to_merge)));
+    %-----------------%
+    
   case 'Delete Current Score'
     
     %-----------------%

@@ -57,6 +57,9 @@ switch action
     
   case 'Copy Current Score'
     log = [log 'COPY RATER: ' info.score{2,info.rater}];
+
+  case 'Merge Scores'
+    log = [log 'MERGE RATERS INTO: ' info.score{2,info.rater}];
     
   case 'Delete Current Score'
     log = [log 'DELETE SCORE: N.A.']; % original name is not available
