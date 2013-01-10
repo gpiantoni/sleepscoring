@@ -4,7 +4,17 @@ function scorestatistics(varargin)
 % Sleep is scored according to R&K or ASSM 2007.
 
 %-------------------------------------%
-%-
+%-check input
+
+for i = 1:nargin
+  
+  if ischar(varargin{i})
+    load(varargin{i}, 'info')
+    varargin{i} = info;
+  end
+  
+end
+
 if nargin == 1
   info = varargin{1};
 else

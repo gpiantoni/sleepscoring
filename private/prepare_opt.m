@@ -84,7 +84,6 @@ else
   %-read from file
   [dirname, filename, ext] = fileparts(optfile);
   
-  
   if strcmp(ext, '.m') % if it's the .m file like opt_svui
     
     %-----------------%
@@ -106,8 +105,14 @@ else
       
     else
       warning(['could not load ' optfile ', probably you don''t have read permissions. Using previous option file'])
-      opt = opt_old;
       
+      if nargin == 2
+        opt = opt_old;
+        
+      else
+        opt = prepare_opt([fileparts(fileparts(mfilename('fullpath'))) filesep 'preference' filesep 'opt_ssmd_egi.m']);
+        
+      end
     end
     
     %-----------------%
