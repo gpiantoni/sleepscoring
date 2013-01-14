@@ -102,7 +102,7 @@ THIS_OPTIONS = {'starttime', 'endtime', 'startrec', 'endrec', ...
 
 % Default parameter values
 signaltype          = {};
-verbose             = eegpipe.globals.get.Verbose;
+verbose             = true;
 endtime             = [];
 starttime           = [];
 startrec            = [];

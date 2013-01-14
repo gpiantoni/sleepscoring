@@ -36,17 +36,20 @@ classdef (Sealed) globals < dynamicprops
     
     % Private constructor
     methods (Access = protected)
-        function obj = globals
+         function obj = globals
             import misc.strtrim;           
             import mperl.file.spec.catfile;
-            import globals.root_path;
             
             % Read globals from settings file
             path         = fileparts(mfilename('fullpath'));
-            obj.File     = [path filesep 'globals.txt'];            
-          
-            obj.UserFile = catfile(globals.root_path, '+pset', '+node', ...
-                'globals.txt');
+            obj.File     = [path filesep 'globals.txt'];
+            
+            stem = regexprep(obj.File, '^([^+@]*)(\+|@).+$', '$1');
+            pkg  = regexprep(obj.File, ...
+                ['^' strrep(stem, '\', '\\') '(\+*.*)@.+globals.txt$'], ...
+                '$1');
+            
+            obj.UserFile = catfile(stem, '+globals', pkg, 'globals.txt');
             
             obj = io.edfplus.globals.read_file(obj);
             
