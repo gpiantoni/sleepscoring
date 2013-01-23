@@ -23,7 +23,8 @@ else
   user = getenv('username');
 end
 
-ft_ver = ft_version;
+gitrepo = fullfile(fileparts(which('ft_defaults')), '.git');
+[~, ft_ver] = system(['git --git-dir=' gitrepo ' log |  awk ''NR==1'' | awk ''{print $2}''']);
 gitrepo = fullfile(fileparts(which('sleepscoring')), '.git');
 [~, sleep_ver] = system(['git --git-dir=' gitrepo ' log |  awk ''NR==1'' | awk ''{print $2}''']);
 %-----------------%
