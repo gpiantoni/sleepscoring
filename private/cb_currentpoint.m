@@ -17,6 +17,7 @@ if strcmp(tag, 'a_dat')
     
   else
     
+    
     popup_str = get(findobj('tag', 'popupmarker'), 'str');
     popup_val = get(findobj('tag', 'popupmarker'), 'val');
     if isempty(popup_str); return; end % no score
@@ -30,8 +31,34 @@ if strcmp(tag, 'a_dat')
       
     else
       
-      set(h, 'WindowButtonMotionFcn', {@cb_range, pos})
-      set(h, 'WindowButtonUpFcn', {@cb_marker, pos})
+      %-----------------%
+      %-check if mark already exists
+      info = getappdata(0, 'info');
+      mrktype = get_markertype;
+      if isempty(info.score{mrktype,info.rater})
+        posmrk = false;
+      else
+        posmrk = pos(1,1) >= info.score{mrktype,info.rater}(:,1) & pos(1,1) <= info.score{mrktype,info.rater}(:,2);
+      end
+      %-----------------%
+      
+      if any(posmrk)
+        
+        %-----------------%
+        %-delete old mark if inside
+        info.score{mrktype,info.rater}(posmrk,:) = [];
+        setappdata(0, 'info', info);
+        save_info()
+        cb_plotdata()
+        %-----------------%
+        
+      else
+        %-----------------%
+        %-make new mark
+        set(h, 'WindowButtonMotionFcn', {@cb_range, pos})
+        set(h, 'WindowButtonUpFcn', {@cb_marker, pos})
+        %-----------------%
+      end
       
     end
     
@@ -160,15 +187,7 @@ make_marker(pos1, pos2)
 function make_marker(pos1, pos2)
 
 info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
-
-mrk_h = findobj('tag', 'popupmarker');
-mrk_str = get(mrk_h, 'str');
-mrk_val = get(mrk_h, 'val');
-
-mrktype = find(strcmp(opt.marker.name, mrk_str{mrk_val}));
-mrktype = mrktype + 4; % row in FASST score
-
+mrktype = get_markertype;
 newmrk = sort([pos1(1,1) pos2(1,1)]);
 
 %-----------------%
@@ -205,9 +224,23 @@ end
 
 %-----------------%
 %-save info and replot
-save_info()
 setappdata(0, 'info', info);
+save_info()
 cb_plotdata()
 %-----------------%
+%-------------------------------------%
+
+%-------------------------------------%
+%-Get Marker type
+function mrktype = get_markertype
+
+mrk_h = findobj('tag', 'popupmarker');
+mrk_str = get(mrk_h, 'str');
+mrk_val = get(mrk_h, 'val');
+
+opt = getappdata(0, 'opt');
+
+mrktype = find(strcmp(opt.marker.name, mrk_str{mrk_val}));
+mrktype = mrktype + 4; % row in FASST score
 %-------------------------------------%
 %---------------------------------------------------------%
