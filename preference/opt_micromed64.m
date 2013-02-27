@@ -62,7 +62,7 @@ opt.short.previous = 'j';
 % 'artifacts' 'movements'  'events of interest' are hardcoded in FAAST score
 % there are saved in the 5th, 6th or 7th column respectively of FASST score
 % beginning and end of sleep scoring matches FAAST score{4,1}
-opt.marker.selcolor = 'm'; % color used for selection
+opt.marker.selcolor = [.7 .7 .7]; % color used for selection
 opt.marker.name = {'artifacts' 'movements'  'events of interest' 'sleep scoring begins (!)' 'sleep scoring ends (!)'};
 opt.marker.i = 1; % default index of opt.marker.name
 opt.marker.color = {[1 .5 1] [.5 1 1] [1 1 .5] '' ''}; % the # of opt.marker.color should match the # of opt.marker.name

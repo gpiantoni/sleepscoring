@@ -161,7 +161,7 @@ yrange(2) = 0;
 hold on
 h_f = fill([pos1(1,1) pos1(1,1) pos2(1,1) pos2(1,1)], ...
   yrange([1 2 2 1]), opt.marker.selcolor);
-set(h_f, 'tag', 'sel_marker')
+set(h_f, 'tag', 'sel_marker', 'facealpha', .5)
 drawnow
 %-----------------%
 %-------------------------------------%
