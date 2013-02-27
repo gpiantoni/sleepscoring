@@ -98,17 +98,6 @@ set(p_txt, 'tag', 'Selecting', 'BackgroundColor', [0 0 0], 'Color', [1 1 1])
 
 drawnow
 %-----------------%
-
-% %-----------------%
-% %-fft %TODO: too slow, why is the FASST implementation faster?
-% %-channel (TODO: check if correct)
-% i_chan = -1 * round(pos1(1,2));
-% 
-% %-time in sample
-% epoch_beg = (opt.epoch - 1) * info.wndw + opt.beginsleep; % add the beginning of the scoring period
-% i_dat = sort(round(([pos1(1,1) pos2(1,1)] - epoch_beg) * info.fsample));
-% plotfft(i_chan, i_dat); 
-% %-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
@@ -189,7 +178,30 @@ if newmrk(1) < xlim(1); newmrk(1) = xlim(1); end
 if newmrk(2) > xlim(2); newmrk(2) = xlim(2); end
 %-----------------%
 
-info.score{mrktype,info.rater} = [info.score{mrktype,info.rater}; newmrk];
+%-----------------%
+%-make windows longer if new marker includes part of older marker
+% TODO: With this implementation, it's impossible to "connect" two existing marks and to make one bigger on both sides
+if isempty(info.score{mrktype,info.rater})
+  addbeg = false;
+  addend = false;
+  
+else
+  addbeg = newmrk(1) <= info.score{mrktype,info.rater}(:,1) & newmrk(2) >= info.score{mrktype,info.rater}(:,1);
+  addend = newmrk(1) <= info.score{mrktype,info.rater}(:,2) & newmrk(2) >= info.score{mrktype,info.rater}(:,2);
+  
+end
+
+if any(addbeg)
+  info.score{mrktype,info.rater}(addbeg,1) = newmrk(1);
+  
+elseif any(addend)
+  info.score{mrktype,info.rater}(addend,2) = newmrk(2);
+  
+else
+  info.score{mrktype,info.rater} = [info.score{mrktype,info.rater}; newmrk];
+  
+end
+%-----------------%
 
 %-----------------%
 %-save info and replot
