@@ -11,6 +11,12 @@ tab = @(x)[x repmat('\t', 1, tab_size - floor(numel(x)/8))];
 score = info.score;
 n_stage = numel(stage);
 n_rater = size(score,2);
+
+%-----------------%
+%-get markers
+opt = prepare_opt(info.optfile); % for the names of the markers
+i_mrk = find(cellfun(@isempty, strfind(opt.marker.name, 'sleep scoring'))); % index of the actual markers
+%-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
@@ -60,6 +66,8 @@ rec_time = rec_end - rec_begin;
 %-collect scores, across raters
 ep = zeros(n_stage, n_rater); % n of epochs in each stage
 l = nan(n_stage, n_rater); % latency
+mrk_n = zeros(numel(i_mrk), n_rater); % number of markers
+mrk_d = zeros(numel(i_mrk), n_rater); % duration of markers
 
 for r = 1:n_rater;
   
@@ -86,8 +94,11 @@ for r = 1:n_rater;
   %-----------------%
   
   %-----------------%
-  %-artifacts
-  %TODO: count artifacts
+  %-markers
+  for i = i_mrk
+    mrk_n(i,r) = size(score{i + 4,r},1);
+    mrk_d(i,r) = sum(diff(score{i + 4,r}, [], 2));
+  end
   %-----------------%
   
 end
@@ -233,6 +244,20 @@ for s = 1:n_stage
     
   end
   
+end
+fprintf('\n')
+%-----------------%
+
+%-----------------%
+%-markers
+for i = i_mrk
+  fprintf('%s (num)\t\t', opt.marker.name{i})
+  fprintf('% 7d\t\t\t', mrk_n(i,:))
+  fprintf('\n')
+  
+  fprintf('  - (dur)\t\t')
+  fprintf('% 10.2fs\t\t', mrk_d(i,:))
+  fprintf('\n')
 end
 %-----------------%
 %-------------------------------------%
