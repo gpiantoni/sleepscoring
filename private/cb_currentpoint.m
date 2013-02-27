@@ -176,7 +176,11 @@ delete(findobj('tag', 'sel_marker'))
 set(h0,'WindowButtonMotionFcn', '')
 set(h0,'WindowButtonUpFcn', '')
 
-make_marker(pos1, pos2)
+disp(pos1(1,1))
+disp(pos2(1,1))
+if abs(diff([pos1(1,1), pos2(1,1)])) > .05 % has to be at least 50ms long
+  make_marker(pos1, pos2)
+end
 %-------------------------------------%
 %---------------------------------------------------------%
 
