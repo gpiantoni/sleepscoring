@@ -1,6 +1,9 @@
 function score_retime(pos, popup)
 %SCORE_RETIME recreate the scoring epochs after you indicated the beginning
 % and end of the sleep scoring
+%
+% Called by
+%  - cb_currentpoint
 
 info = getappdata(0, 'info');
 
@@ -17,11 +20,11 @@ info = prepare_log('score_backup', info);
 pos = round(pos(1,1) * info.fsample) / info.fsample;
 
 if strcmp(popup, 'sleep scoring begins (!)')
-  info.score{4, info.rater}(1) = pos;
+  info.score(info.rater).score_beg = pos * info.fsample;
   info = prepare_log('score_begin', info);
   
 else
-  info.score{4, info.rater}(2) = pos;
+  info.score(info.rater).score_end = pos * info.fsample;
   info = prepare_log('score_end', info);
   
 end
@@ -29,8 +32,9 @@ end
 
 %-----------------%
 %-modify score timing
-score = prepare_score(info.score(:,info.rater));
-info.score(:,info.rater) = score;
+dur = info.score(info.rater).score_end - info.score(info.rater).score_beg;
+nscore = floor(dur / info.score(info.rater).wndw);
+info.score(info.rater).stage = cell(1, nscore);
 
 setappdata(0, 'info', info);
 %-----------------%
