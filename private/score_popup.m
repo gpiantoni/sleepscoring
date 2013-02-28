@@ -44,7 +44,7 @@ end
 %-CALLBACKS
 %---------------------------------------------------------%
 %-------------------------------------%
-function cb_score(h0, eventdata)
+function cb_score(h, eventdata)
 
 info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
@@ -54,7 +54,7 @@ info.score(info.rater).stage{opt.epoch} = opt.stage(i_score).label;
 
 opt.epoch = opt.epoch + 1;
 setappdata(0, 'info', info)
-save_info()
+save_info(info)
 setappdata(0, 'opt', opt)
 cb_readplotdata()
 %-------------------------------------%

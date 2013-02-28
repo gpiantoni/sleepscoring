@@ -1,14 +1,15 @@
-function update_rater(info)
+function update_rater(h0, info)
 %UPDATE_RATER update the rater dropdown menu
 % It's a subfunction of cb_rater, but it's called by prepare_info_opt as
 % well (in case, the info contains already a score)
 %
 % Called by
+%  - cb_rater
 %  - prepare_info_opt
 
 %-----------------%
 %-activate menu rater
-m_rater = findobj('tag', 'uimenu_rater');
+m_rater = findobj(h0, 'tag', 'uimenu_rater');
 delete(get(m_rater, 'child'))
 %-----------------%
 
@@ -19,18 +20,18 @@ if isempty(info.score(info.rater).rater)
   %-------%
   %-disable buttons
   set(m_rater, 'enable', 'off')
-  set(findobj('label', 'Rename Rater'), 'enable', 'off')
-  set(findobj('label', 'Copy Current Score'), 'enable', 'off')
-  set(findobj('label', 'Merge Scores'), 'enable', 'off')
-  set(findobj('label', 'Delete Current Score'), 'enable', 'off')
-  set(findobj('label', 'Score Statistics'), 'enable', 'off')
-  set(findobj('tag', 'p_hypno'), 'Title', 'Recording')
+  set(findobj(h0, 'label', 'Rename Rater'), 'enable', 'off')
+  set(findobj(h0, 'label', 'Copy Current Score'), 'enable', 'off')
+  set(findobj(h0, 'label', 'Merge Scores'), 'enable', 'off')
+  set(findobj(h0, 'label', 'Delete Current Score'), 'enable', 'off')
+  set(findobj(h0, 'label', 'Score Statistics'), 'enable', 'off')
+  set(findobj(h0, 'tag', 'p_hypno'), 'Title', 'Recording')
   %-------%
   
   %-------%
   % delete popupmarker
-  delete(findobj('tag', 'popupmarker'))
-  delete(findobj('tag', 'popupscore'))
+  delete(findobj(h0, 'tag', 'popupmarker'))
+  delete(findobj(h0, 'tag', 'popupscore'))
   %-------%
   
 else
@@ -38,11 +39,11 @@ else
   %-------%
   %-enable buttons
   set(m_rater, 'enable', 'on')
-  set(findobj('label', 'Rename Rater'), 'enable', 'on')
-  set(findobj('label', 'Copy Current Score'), 'enable', 'on')
-  set(findobj('label', 'Merge Scores'), 'enable', 'on')
-  set(findobj('label', 'Delete Current Score'), 'enable', 'on')
-  set(findobj('label', 'Score Statistics'), 'enable', 'on')
+  set(findobj(h0, 'label', 'Rename Rater'), 'enable', 'on')
+  set(findobj(h0, 'label', 'Copy Current Score'), 'enable', 'on')
+  set(findobj(h0, 'label', 'Merge Scores'), 'enable', 'on')
+  set(findobj(h0, 'label', 'Delete Current Score'), 'enable', 'on')
+  set(findobj(h0, 'label', 'Score Statistics'), 'enable', 'on')
   %-------%
   
   %-------%
@@ -53,7 +54,7 @@ else
     
     if i == info.rater
       set(h_m, 'check', 'on')
-      set(findobj('tag', 'p_hypno'), 'Title', ['Hypnogram: ' info.score{2,i}])
+      set(findobj(h0, 'tag', 'p_hypno'), 'Title', ['Hypnogram: ' info.score{2,i}])
     end
     %-------%
   end

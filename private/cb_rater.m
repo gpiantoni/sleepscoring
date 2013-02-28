@@ -1,4 +1,4 @@
-function cb_rater(h0, eventdata)
+function cb_rater(h, eventdata)
 %CB_RATER deals with all the functions about scoring
 %
 % Called by
@@ -6,7 +6,8 @@ function cb_rater(h0, eventdata)
 
 %-------------------------------------%
 %-INFO about scores
-info = getappdata(0, 'info');
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
 score = info.score;
 rater = info.rater;
 
@@ -22,7 +23,7 @@ end
 
 %-------------------------------------%
 %-operation depends on button press
-switch get(h0, 'label')
+switch get(h, 'label')
   
   case 'New Rater'
     
@@ -132,7 +133,7 @@ switch get(h0, 'label')
     
     %-----------------%
     % name of the rater, called by update_rater
-    rater = find(strcmp({score.rater}, get(h0, 'label')));
+    rater = find(strcmp({score.rater}, get(h, 'label')));
     %-----------------%
     
 end
@@ -142,11 +143,12 @@ end
 %-update info
 info.rater = rater;
 info.score = score;
-info = prepare_log(info, get(h0, 'label'));
+info = prepare_log(info, get(h, 'label'));
 
-setappdata(0, 'info', info)
-save_info()
+save_info(info)
+setappdata(h0, 'info', info)
+
 update_rater(info)
-cb_readplotdata()
+cb_readplotdata(h0)
 %-------------------------------------%
 

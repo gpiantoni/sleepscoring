@@ -1,4 +1,4 @@
-function cb_newinfo(h0, eventdata)
+function cb_newinfo(h, eventdata)
 %CB_NEWINFO create GUI to enter information for a new dataset
 %
 % Called by
@@ -6,7 +6,8 @@ function cb_newinfo(h0, eventdata)
 
 %-------------------------------------%
 %-new figure
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 
 h_input = figure;
 set(h_input, 'tag', 'newinfo', 'Menubar', 'none', 'name', 'New Dataset')
@@ -56,26 +57,30 @@ uiwait(h_input)
 %-callback
 %-----------------%
 %-cb_uigetdir
-function cb_uigetdir(h0, eventdata)
+function cb_uigetdir(h, eventdata)
 dirname = uigetdir;
 
 if dirname
-  set(h0, 'str', dirname)
-  set(findobj('tag', 'datasetfile'), 'enable', 'off')
-  set(findobj('tag', 'datasetdir'), 'tag', 'dataset2read')
+  
+  h0 = get_parent_fig(h);
+  set(h, 'str', dirname)
+  set(findobj(h0, 'tag', 'datasetfile'), 'enable', 'off')
+  set(findobj(h0, 'tag', 'datasetdir'), 'tag', 'dataset2read')
   
 end
 %-----------------%
 
 %-----------------%
 %-cb_uigetfile
-function cb_uigetfile(h0, eventdata)
+function cb_uigetfile(h, eventdata)
 [filename pathname] = uigetfile;
 
 if filename
-  set(h0, 'str', [pathname filename])
-  set(findobj('tag', 'datasetdir'), 'enable', 'off')
-  set(findobj('tag', 'datasetfile'), 'tag', 'dataset2read')
+  
+  h0 = get_parent_fig(h);
+  set(h, 'str', [pathname filename])
+  set(findobj(h0, 'tag', 'datasetdir'), 'enable', 'off')
+  set(findobj(h0, 'tag', 'datasetfile'), 'tag', 'dataset2read')
   
 end
 %-----------------%
@@ -93,7 +98,6 @@ end
 %-----------------%
 %-cb_uigetopt
 function cb_uigetopt(h0, eventdata)
-
 optfile = get(h0, 'str');
 
 wd = pwd;
@@ -108,30 +112,33 @@ end
 
 %-----------------%
 %-cb_ok
-function cb_ok(h0, eventdata)
+function cb_ok(h, eventdata)
+
+h0 = get_parent_fig(h);
 
 info = [];
-info.dataset = get(findobj('tag', 'dataset2read'), 'str');
-info.infofile = get(findobj('tag', 'infofile'), 'str');
-optfile = get(findobj('tag', 'optfile'), 'str');
+info.dataset = get(findobj(h0, 'tag', 'dataset2read'), 'str');
+info.infofile = get(findobj(h0, 'tag', 'infofile'), 'str');
+optfile = get(findobj(h0, 'tag', 'optfile'), 'str');
 
 if ~isempty(info.dataset) && ...
     ~strcmp(info.infofile, '(click to select)')
   
-  delete(findobj('tag', 'newinfo'))
+  delete(findobj(h0, 'tag', 'newinfo'))
   drawnow
   
   %-------%
   %-init
   info = prepare_info(info);
+  save_info(info)
   setappdata(0, 'info', info)
-  save_info()
-  
-  opt_old = getappdata(0, 'opt'); % necessary for figure handles
+    
+  opt_old = getappdata(h0, 'opt'); % necessary for figure handles
   opt = prepare_opt(optfile, opt_old);
-  setappdata(0, 'opt', opt)
-  prepare_info_opt()
-  cb_readplotdata()
+  setappdata(h0, 'opt', opt)
+
+  prepare_info_opt(h0)
+  cb_readplotdata(h0)
   %-------%
   
 end
@@ -139,8 +146,9 @@ end
 
 %-----------------%
 %-cb_cancel
-function cb_cancel(h0, eventdat)
+function cb_cancel(h, eventdat)
 
-delete(findobj('tag', 'newinfo'))
+h0 = get_parent_fig(h);
+delete(findobj(h0, 'tag', 'newinfo'))
 %-----------------%
 %-------------------------------------%

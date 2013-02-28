@@ -44,12 +44,13 @@ switch eventdata.Key
       
       if ~isempty(i_score)
         info.score{1, info.rater}(opt.epoch) = opt.stage(i_score).code;
-        save_info()
+        save_info(info)
         
         opt.epoch = opt.epoch + 1;
         
         setappdata(h0, 'info', info)
         setappdata(h0, 'opt', opt)
+        
         cb_readplotdata(h0)
         
       else

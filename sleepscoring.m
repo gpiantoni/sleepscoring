@@ -60,7 +60,7 @@ opt = prepare_opt(opt);
 
 %-------------------------------------%
 %-create new figure
-h = findobj('tag', 'sleepscoring');
+h = findobj('tag', 'sleepscoring'); % TODO: remove these lines with multiple windows
 if h; delete(h); end
 
 opt.h.main = figure;
@@ -209,13 +209,12 @@ end
 function cb_openinfo(h, eventdata)
 
 h0 = get_parent_fig(h);
-save_info() % save previous info
+info = getappdata(h0, 'info');
 
 %-----------------%
-%-read OPT file
+%-open directory of old info
 %--------%
-%-move to directory with opt
-info = getappdata(h0, 'info');
+%-move to directory with info
 wd = pwd;
 if isfield(info, 'infofile')
   cd(fileparts(info.infofile))
@@ -232,8 +231,8 @@ if ~filename; return; end
 
 %--------%
 %-log that the previous file was closed
-info = prepare_log(info, 'closeinfo'); % TODO: save info
-save_info()
+info = prepare_log(info, 'closeinfo');
+save_info(info) % save previous info
 %--------%
 %-----------------%
 
@@ -241,8 +240,9 @@ save_info()
 %-read and plot new info
 info.infofile = [pathname filename];
 info = prepare_info(info);
+save_info(info)
 setappdata(h0, 'info', info)
-save_info()
+
 prepare_info_opt(h0)
 cb_readplotdata(h0)
 %-----------------%
@@ -415,15 +415,13 @@ cb_plotdata(h0)
 
 %-------------------------------------%
 %-callback: close figure
-function cb_closemain(h0, eventdata)
+function cb_closemain(h, eventdata)
 
-info = prepare_log(info, 'closeinfo'); % TODO: save info
-save_info()
-setappdata(0, 'info', []) % clean up info
-setappdata(0, 'opt', []) % clean up opt
-setappdata(0, 'hdr', [])
-setappdata(0, 'dat', [])
-setappdata(0, 'tmp', [])
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
+info = prepare_log(info, 'closeinfo');
+save_info(info)
+
 delete(h0);
 %-------------------------------------%
 %---------------------------------------------------------%

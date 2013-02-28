@@ -87,7 +87,7 @@ setappdata(h0, 'opt', opt)
 
 %-----------------%
 score_popup(info, opt)
-update_rater(info)
+update_rater(h0, info)
 %-----------------%
 
 %-----------------%

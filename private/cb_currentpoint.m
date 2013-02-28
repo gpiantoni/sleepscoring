@@ -48,8 +48,9 @@ if strcmp(tag, 'a_dat')
         %-----------------%
         %-delete old mark if inside
         info.score{mrktype,info.rater}(posmrk,:) = [];
+        save_info(info)
         setappdata(h0, 'info', info);
-        save_info()
+        
         cb_plotdata(h0)
         %-----------------%
         
@@ -101,12 +102,11 @@ end
 %-------------------------------------%
 %-callback: when mouse is moving
 function cb_box(h0, eventdata, pos1)
-% TODO: this does not take into account the scaling
 
 opt = getappdata(h0, 'opt');
 pos2 = get(gca, 'CurrentPoint');
 
-delete(findobj('tag', 'Selecting'))
+delete(findobj(h0, 'tag', 'Selecting'))
 
 %-----------------%
 %-black line
@@ -149,7 +149,7 @@ function cb_range(h0, eventdata, pos1)
 opt = getappdata(h0, 'opt');
 pos2 = get(gca, 'CurrentPoint');
 
-delete(findobj('tag', 'sel_marker'))
+delete(findobj(h0, 'tag', 'sel_marker'))
 
 %-----------------%
 %-range on yaxis
@@ -227,8 +227,9 @@ end
 
 %-----------------%
 %-save info and replot
+save_info(info)
 setappdata(h0, 'info', info);
-save_info()
+
 cb_plotdata(h0)
 %-----------------%
 %-------------------------------------%
