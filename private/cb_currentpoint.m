@@ -1,8 +1,8 @@
 function cb_currentpoint(h, eventdata)
 %CB_CURRENTPOINT detect position of current point and act
-% 
+%
 % Called by
-%  - 
+%  -
 
 h0 = get_parent_fig(h);
 tag = get(gca, 'tag');
@@ -20,48 +20,36 @@ if strcmp(tag, 'a_dat')
   else
     
     popup_str = get(findobj('tag', 'popupmarker'), 'str');
-    popup_val = get(findobj('tag', 'popupmarker'), 'val');
     if isempty(popup_str); return; end % no score
     
-    popup = popup_str{popup_val};
+    %-----------------%
+    %-check if mark already exists
+    info = getappdata(h0, 'info');
+    mrktype = get_markertype;
+    if isempty(info.score(info.rater).marker(mrktype))
+      posmrk = false;
+    else
+      posmrk = pos(1,1) >= info.score{mrktype,info.rater}(:,1) & pos(1,1) <= info.score{mrktype,info.rater}(:,2);
+    end
+    %-----------------%
     
-    if numel(popup) > 13 && ...
-        strcmp(popup(1:13), 'sleep scoring')
+    if any(posmrk)
       
-      score_retime(pos, popup)
+      %-----------------%
+      %-delete old mark if inside
+      info.score{mrktype,info.rater}(posmrk,:) = [];
+      save_info(info)
+      setappdata(h0, 'info', info);
+      
+      cb_plotdata(h0)
+      %-----------------%
       
     else
-      
       %-----------------%
-      %-check if mark already exists
-      info = getappdata(h0, 'info');
-      mrktype = get_markertype;
-      if isempty(info.score(info.rater).marker(mrktype))
-        posmrk = false;
-      else
-        posmrk = pos(1,1) >= info.score{mrktype,info.rater}(:,1) & pos(1,1) <= info.score{mrktype,info.rater}(:,2);
-      end
+      %-make new mark
+      set(h, 'WindowButtonMotionFcn', {@cb_range, pos})
+      set(h, 'WindowButtonUpFcn', {@cb_marker, pos})
       %-----------------%
-      
-      if any(posmrk)
-        
-        %-----------------%
-        %-delete old mark if inside
-        info.score{mrktype,info.rater}(posmrk,:) = [];
-        save_info(info)
-        setappdata(h0, 'info', info);
-        
-        cb_plotdata(h0)
-        %-----------------%
-        
-      else
-        %-----------------%
-        %-make new mark
-        set(h, 'WindowButtonMotionFcn', {@cb_range, pos})
-        set(h, 'WindowButtonUpFcn', {@cb_marker, pos})
-        %-----------------%
-      end
-      
     end
     
   end
@@ -81,7 +69,7 @@ elseif strcmp(tag, 'a_hypno')
     info = getappdata(h0, 'info');
     opt = getappdata(h0, 'opt');
     wndw = info.score{3,info.rater};
-    beginsleep = info.score{4,info.rater}(1); 
+    beginsleep = info.score{4,info.rater}(1);
     
     pnt = pos(2,1) - beginsleep;
     opt.epoch = round(pnt / wndw);
@@ -120,7 +108,7 @@ set(p_l, 'tag', 'Selecting', 'Color', 'k', 'LineWidth', 2)
 %-----------------%
 %-text
 seltxt = sprintf('%1.2f s\n%1.1f uV', ...
-                abs(pos2(1,1) - pos1(1,1)), abs((pos2(1,2) - pos1(1,2)) * opt.ylim(2)));
+  abs(pos2(1,1) - pos1(1,1)), abs((pos2(1,2) - pos1(1,2)) * opt.ylim(2)));
 p_txt = ft_plot_text(pos1(1,1), pos1(1,2), seltxt);
 set(p_txt, 'tag', 'Selecting', 'BackgroundColor', [0 0 0], 'Color', [1 1 1])
 

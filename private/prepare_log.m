@@ -4,7 +4,6 @@ function info = prepare_log(info, action)
 % Called by:
 %  - cb_rater
 %  - prepare_info
-%  - score_retime
 %  - sleepscoring>cb_closemain
 %  - sleepscoring>cb_openinfo
 
@@ -77,12 +76,6 @@ switch action
     %-changes in the score
   case 'score_backup'
     log = [log 'BACK UP SCORE' backup_score(info.score(info.rater))];
-    
-  case 'score_begin'
-    log = [log 'NEW SCORE BEGINS AT ' sprintf('% 12.3f', info.score(info.rater).score_beg)];
-    
-  case 'score_end'
-    log = [log 'NEW SCORE ENDS   AT ' sprintf('% 12.3f', info.score(info.rater).score_end)];
     %-----------------%
     
   case 'closeinfo'
