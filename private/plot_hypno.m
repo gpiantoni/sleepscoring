@@ -64,7 +64,7 @@ for i = 1:numel(opt.stage)
     % consecutive, it messes up the proportions
     bar_y = [ones(size(epochs)) * opt.stage(i).height NaN];
     epochs(end+1) = epochs(end) + 1;
-    bar_x = epochs * score{3,1} - score{3,1}/2 + score{4}(1); % convert into s
+    bar_x = epochs * score.wndw - score.wndw/2 + score.score_beg; % convert into s
     %-------%
     
     bar(bar_x, bar_y, 1, 'LineStyle', 'none', 'FaceColor', opt.stage(i).color)
