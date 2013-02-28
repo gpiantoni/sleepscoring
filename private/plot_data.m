@@ -1,8 +1,12 @@
 function plot_data(info, opt, dat)
+%PLOT_DATA actual plotting of the data
+%
+% Called by
+%  - cb_plotdata
 
 % All the options should be specified in opt
-wndw = info.score{3,info.rater};
-beginsleep = info.score{4,info.rater}(1);
+wndw = info.score(info.rater).wndw;
+beginsleep = info.score(info.rater).score_beg;
 
 epoch_beg = (opt.epoch - 1) * wndw + beginsleep; % add the beginning of the scoring period
 epoch_end = epoch_beg + wndw - 1/info.fsample; % add length of time window and remove one sample
