@@ -1,13 +1,16 @@
-function plot_artifact
-%PLOT_ARTIFACT function to plot artifact and other markers
+function plot_marker
+%PLOT_MARKER function to plot markers
+%
+% Called by
+%  - cb_plotdata
 
 info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
 
 %-----------------%
 %-time window
-wndw = info.score{3,info.rater};
-beginsleep = info.score{4,info.rater}(1);
+wndw = info.score(info.rater).wndw;
+beginsleep = info.score(info.rater).score_beg;
 
 epoch_beg = (opt.epoch - 1) * wndw + beginsleep; % add the beginning of the scoring period
 epoch_end = epoch_beg + wndw - 1/info.fsample; % add length of time window and remove one sample
@@ -20,26 +23,26 @@ yrange(2) = 0;
 %-----------------%
 
 %-------------------------------------%
-%-plot artifacts and other markers
-for i = 1:3
-  mrktype = i + 4; % row in FASST score
+%-plot markers
+for mrktype = 1:numel(info.score(info.rater).marker)
   
-  art = info.score{mrktype, info.rater};
+  mrk = info.score(info.rater).marker(mrktype).time;
   
-  if ~isempty(art)
+  if ~isempty(mrk)
     
     %-----------------%
     %-only artifact in epoch
-    art_in_epoch = art(:,1) < epoch_end & art(:,2) > epoch_beg;
-    art = art(art_in_epoch,:);
+    mrk_in_epoch = mrk(:,1) < epoch_end & mrk(:,2) > epoch_beg;
+    mrk = mrk(mrk_in_epoch,:);
     %-----------------%
     
-    for j = 1:size(art,1)
+    for j = 1:size(mrk,1)
       
       %-----------------%
       %-range
       hold on
-      h_f = fill(art(j,[1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{i});
+      i_col = mod(numel(opt.marker.color), mrktype);
+      h_f = fill(mrk(j,[1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{i_col});
       set(h_f, 'tag', 'artifact')
       %-----------------%
       
