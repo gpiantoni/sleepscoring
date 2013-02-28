@@ -9,6 +9,7 @@ function stage = hypnogram_RK
 % terminology, techniques and scoring system for sleep stages of human
 % subjects (Los Angeles, CA: BIS/BRI, UCLA).  
 
+%-the first group is used as default
 stage(1).label = 'NOT SCORED';
 stage(1).color = [1 1 1];
 stage(1).height = 0;

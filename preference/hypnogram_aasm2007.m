@@ -10,6 +10,7 @@ function stage = hypnogram_aasm2007
 % terminology, and technical specifications (Westchester, IL: American
 % Academy of Sleep Medicine).
 
+%-the first group is used as default
 stage(1).label = 'NOT SCORED';
 stage(1).color = [1 1 1];
 stage(1).height = 0;
