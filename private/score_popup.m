@@ -13,7 +13,7 @@ if ~isempty(info.score(info.rater))
   %-----------------%
   %-find i_score, index of the current scoring
   stages = {opt.stage.label};
-  score = info.score(1, info.rater).stage{opt.epoch};
+  score = info.score(info.rater).stage{opt.epoch};
   if isempty(score)
     score = stages(1); % default
   end
@@ -32,7 +32,7 @@ if ~isempty(info.score(info.rater))
   %-markers
   delete(findobj('tag', 'popupmarker')) % delete in case it already exists
   uicontrol(opt.h.info, 'sty', 'popup', 'uni', 'norm', ...
-    'pos', [.05 .25 .9 .1], 'str', opt.marker.name, 'val', opt.marker.i, 'tag', 'popupmarker', ...
+    'pos', [.05 .25 .9 .1], 'str', {info.score(info.rater).marker.name}, 'val', opt.marker.i, 'tag', 'popupmarker', ...
     'call', @cb_marker);
   %-----------------%
   
@@ -50,11 +50,11 @@ info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
 
 i_score = get(h0, 'val');
-info.score{1, info.rater}(opt.epoch) = opt.stage(i_score).code;
-save_info()
+info.score(info.rater).stage{opt.epoch} = opt.stage(i_score).label;
 
 opt.epoch = opt.epoch + 1;
 setappdata(0, 'info', info)
+save_info()
 setappdata(0, 'opt', opt)
 cb_readplotdata()
 %-------------------------------------%
