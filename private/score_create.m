@@ -24,7 +24,7 @@ if isempty(wndw); wndw = 30; end
 score = [];
 
 score.rater = rater; % can be empty
-score.wdnw = wndw;
+score.wndw = wndw;
 score.score_beg = 1 / info.fsample;
 score.score_end = info.hdr.nSamples / info.fsample;
 score.marker = [];

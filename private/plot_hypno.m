@@ -32,8 +32,9 @@ ylim([st_h(1) st_h(end) + 1]) % 1 is roughly for the arrow
 
 %-----------------%
 %-x axes
-xlim(score{4})
-timetick = (1:floor(score{4}(2) / 60 / opt.hypnogrid)); % number of ticks
+xlim([score.score_beg score.score_end])
+timetick = (1:floor(score.score_end / 60 / opt.hypnogrid)); % number of ticks
+% timetick = (1:floor( (score.score_end - score.score_beg) / 60 / opt.hypnogrid)); % TODO: why not this?
 timetick_s = timetick * opt.hypnogrid * 60; % in seconds
 
 %-grid
@@ -63,7 +64,7 @@ for i = 1:numel(opt.stage)
     bar_x = epochs * score{3,1} - score{3,1}/2 + score{4}(1); % convert into s
     %-------%
     
-     bar(bar_x, bar_y, 1, 'LineStyle', 'none', 'FaceColor', opt.stage(i).color)
+    bar(bar_x, bar_y, 1, 'LineStyle', 'none', 'FaceColor', opt.stage(i).color)
   end
 end
 %-----------------%

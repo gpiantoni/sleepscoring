@@ -2,6 +2,9 @@ function update_rater(info)
 %UPDATE_RATER update the rater dropdown menu
 % It's a subfunction of cb_rater, but it's called by prepare_info_opt as
 % well (in case, the info contains already a score)
+%
+% Called by
+%  - prepare_info_opt
 
 %-----------------%
 %-activate menu rater
@@ -11,7 +14,7 @@ delete(get(m_rater, 'child'))
 
 %-----------------%
 %-check if real data
-if isempty(info.score{2,1})
+if isempty(info.score(info.rater).rater)
   
   %-------%
   %-disable buttons

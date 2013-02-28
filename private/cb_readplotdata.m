@@ -1,5 +1,8 @@
 function cb_readplotdata(h0, eventdata)
 %CB_READPLOTDATA: callback which reads data and plots them
+%
+% Called by
+%  - cb_newinfo>cb_ok
 
 info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
