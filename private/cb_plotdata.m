@@ -38,7 +38,7 @@ opt.wndw = info.score(info.rater).wndw;
 
 plot_hypno(opt, info.score(info.rater))
 
-popup_score(info, opt)
+score_popup(info, opt)
 %-------------------------------------%
 
 drawnow

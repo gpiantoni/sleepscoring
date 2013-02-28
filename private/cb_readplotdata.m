@@ -49,8 +49,8 @@ plot_fft()
 %-----------------%
 %-read data for following epoch
 opt.epoch = opt.epoch + 1;
-if opt.epoch > nepoch
-  opt.epoch = nepoch;
+if opt.epoch > info.score(info.rater).nepoch
+  opt.epoch = info.score(info.rater).nepoch;
 end
 tmp.epoch = opt.epoch;
 tmp.dat = read_data(info, opt, hdr);
