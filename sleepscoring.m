@@ -37,7 +37,6 @@ function sleepscoring(info, opt)
 % - multiple windows
 % - automatic detection of SW and spindles
 % - automatic scoring
-% - notes for each epoch
 
 %---------------------------------------------------------%
 %-GUI FUNCTION

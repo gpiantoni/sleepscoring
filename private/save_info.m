@@ -1,5 +1,8 @@
 function save_info
 %SAVE_INFO save dataset information, to be called after each modification
+%
+% Called by
+%  - sleepscoring
 
 info = getappdata(0, 'info');
 

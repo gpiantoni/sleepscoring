@@ -65,9 +65,10 @@ function opt = prepare_opt(optfile, opt_old)
 %    .data: axis of the data panel
 %    .hypno: axis of hypno panel
 %    .fft: axis of fft panel
+%
+% Called by
+%  - sleepscoring
 
-% TODO: check opt
-disp('prepare_opt')
 
 %-------------------------------------%
 %-get opt

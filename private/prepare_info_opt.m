@@ -2,6 +2,7 @@ function prepare_info_opt
 %PREPARE_INFO_OPT combine information from info, opt and score
 %
 % Called by
+%  - sleepscoring
 %  - cb_newinfo>cb_ok
 
 %-----------------%

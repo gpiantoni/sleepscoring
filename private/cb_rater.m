@@ -1,5 +1,8 @@
 function cb_rater(h0, eventdata)
 %CB_RATER deals with all the functions about scoring
+%
+% Called by
+%  - sleepscoring
 
 %-------------------------------------%
 %-INFO about scores

@@ -16,7 +16,9 @@ function info = prepare_info(info)
 %
 % This function is always followed by prepare_info_opt, which takes the
 % input from info and opt, and uses them together
-disp('prepare_info')
+%
+% Called by
+%  - sleepscoring
 
 %-----------------%
 %-read INFO first, if no dataset

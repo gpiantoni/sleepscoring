@@ -4,6 +4,9 @@ function cb_shortcuts(h0, eventdata)
 % opt.short.next -> next epoch
 % opt.short.previous -> previous epoch
 % 0 to 9 -> sleep stage, depending on code
+%
+% Called by
+%  - sleepscoring
 
 info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
