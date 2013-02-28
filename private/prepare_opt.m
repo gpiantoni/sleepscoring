@@ -90,7 +90,7 @@ else
     %-if .m file, move to that directory and run it
     wd = pwd;
     cd(dirname)
-    opt = feval(filename);
+    opt = feval(filename); % feval does not notice the change in the subfunction, only compile it once
     cd(wd)
     %-----------------%
     

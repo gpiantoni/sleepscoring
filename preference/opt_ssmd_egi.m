@@ -65,7 +65,7 @@ opt.height.u = 1 - opt.marg.u - opt.marg.d; % height of objects above
 %-------------------------------------%
 % Choose scoring standard
 % hypnogram_RK for Rechtschaffen & Kales
-% hypnogram_aasm2007 for AASM 2007 (does not have "movement time" nor "stage 3"
+% hypnogram_aasm2007 for AASM 2007 (does not have "movement time" nor "stage 3")
 stage = hypnogram_aasm2007;
 opt.stage = stage;
 
