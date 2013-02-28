@@ -38,8 +38,8 @@ switch get(h0, 'label')
     
     %-----------------%
     %-update score
-    newscore = prepare_score(info, newrater, wndw);
-    score(:, nrater + 1) = newscore;
+    newscore = score_create(info, newrater, wndw);
+    score(nrater + 1) = newscore;
     rater = nrater + 1;
     %-----------------%
     
@@ -49,7 +49,7 @@ switch get(h0, 'label')
     %-prompt
     prompt = {'Rater Name'};
     name = 'Rename Rater Name';
-    defaultanswer = score(2, rater); % default is the current name
+    defaultanswer = score(rater).rater; % default is the current name
     answer = inputdlg(prompt, name, 1, defaultanswer);
     if isempty(answer); return; end
     
@@ -60,8 +60,8 @@ switch get(h0, 'label')
     
     %-----------------%
     %-update score
-    score(:, nrater + 1) = score(:, rater);
-    score{2, nrater + 1} = [score{2, rater} ' (copy)'];
+    score(nrater + 1) = score(rater);
+    score(nrater + 1).rater = [score(rater).rater ' (copy)'];
     
     rater = nrater + 1;
     %-----------------%
@@ -70,7 +70,7 @@ switch get(h0, 'label')
     
     %-----------------%
     %-prompt
-    to_merge = select_merge_score(score(2,:));
+    to_merge = score_merge_select(score(2,:));
     if isempty(to_merge)
       return
     end
@@ -79,7 +79,7 @@ switch get(h0, 'label')
     %-----------------%
     %-update score
     rater = nrater + 1;
-    score(:, rater) = merge_score(score(:, logical(to_merge)));
+    score(:, rater) = score_merge(score(:, logical(to_merge)));
     %-----------------%
     
   case 'Delete Current Score'
@@ -93,8 +93,8 @@ switch get(h0, 'label')
     
     %-----------------%
     %-update score
-    if size(score, 2) == 1 % only one, delete all scoring
-      score = prepare_score(info);
+    if numel(score) == 1 % only one, delete all scoring
+      score = score_create(info, [], []);
       rater = 1;
     else
       score(:, rater) = [];
@@ -102,7 +102,7 @@ switch get(h0, 'label')
     end
     %-----------------%
     
-  case 'Import Score from FASST'
+  case 'Import Score from FASST' % to do
     
     %-----------------%
     %-prompt
@@ -129,7 +129,7 @@ switch get(h0, 'label')
     
     %-----------------%
     % name of the rater, called by update_rater
-    rater = find(strcmp(score(2,:), get(h0, 'label')));
+    rater = find(strcmp({score.rater}, get(h0, 'label')));
     %-----------------%
     
 end

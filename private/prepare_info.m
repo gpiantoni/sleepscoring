@@ -111,12 +111,12 @@ end
 info.label = hdr.label;
 %-----------------%
 
-%-----------------%
-%-SCORE
-if ~isfield(info, 'score')
-  info.score = prepare_score(info);
-end
-%-----------------%
+% %-----------------%
+% %-SCORE
+% if ~isfield(info, 'score')
+%   info.score = prepare_score(info);
+% end
+% %-----------------%
 
 %-----------------%
 %-RATER
