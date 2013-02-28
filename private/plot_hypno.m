@@ -18,7 +18,10 @@ function plot_hypno(opt, score)
 %    .color: the color used for plotting
 %    .height: the height of the bar
 %
-% SCORE as one-column cell from FASST
+% SCORE 
+%
+% Called by
+%  - cb_plotdata
 
 hold on
 
@@ -52,7 +55,7 @@ set(gca, 'xtick', timetick_s, 'xticklabel', timelabel)
 %-plot BAR for each stage
 %plotbar as last because it covers the grid
 for i = 1:numel(opt.stage)
-  epochs = find(score{1,1} == opt.stage(i).code);
+  epochs = find(strcmp(score.stage, opt.stage(i).label));
   
   if ~isempty(epochs)
     
@@ -71,7 +74,7 @@ end
 
 %-----------------%
 if isfield(opt, 'epoch')
-  epochpos = [(opt.epoch - 1) * score{3,1} (opt.epoch) * score{3,1}] + score{4}(1);
+  epochpos = [(opt.epoch - 1) * score.wndw (opt.epoch) * score.wndw] + score.score_beg;
   xfill = [epochpos mean(epochpos)];
   yfill = st_h(end) + [1 1 0];
   fill(xfill, yfill, opt.arrowcolor)

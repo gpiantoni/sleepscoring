@@ -33,10 +33,10 @@ axes('parent', findobj('tag', 'p_hypno'), 'tag', 'a_hypno');
 %-------%
 %-info to hypnogram
 opt.beginrec = info.beginrec;
-opt.wndw = info.score{3, info.rater};
+opt.wndw = info.score(info.rater).wndw;
 %-------%
 
-plot_hypno(opt, info.score(:, info.rater))
+plot_hypno(opt, info.score(info.rater))
 
 popup_score(info, opt)
 %-------------------------------------%

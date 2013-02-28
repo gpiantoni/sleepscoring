@@ -84,13 +84,15 @@ end
 
 %-----------------%
 %-plot score on top
-if ~isempty(info.score)
-  score = info.score{1,info.rater}(opt.epoch);
+if ~isempty(info.score(info.rater).rater)
+
+  stages = {opt.stage.label};
+  score = info.score(info.rater).stage{opt.epoch};
   
-  i_score = find([opt.stage.code] == score);
-  if isempty(i_score)
-    i_score = find(isnan([opt.stage.code]));
+  if isempty(score)
+    score = stages(1); % default
   end
+  i_score = strcmp(stages, score);
   
  ft_plot_box([timescale([1 end]) -opt.scoreheight 0], 'FaceColor', opt.stage(i_score).color)
   
