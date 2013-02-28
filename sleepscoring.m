@@ -355,7 +355,7 @@ opt.ylim = opt.ylim / 1.1;
 setappdata(0, 'opt', opt);
 
 cb_ylim()
-cb_plotdata()
+cb_plotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
@@ -367,7 +367,7 @@ opt.ylim = opt.ylim * 1.1;
 setappdata(0, 'opt', opt);
 
 cb_ylim()
-cb_plotdata()
+cb_plotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
@@ -380,7 +380,7 @@ if nargin > 0
   
   opt.ylim = [-1 1] * str2double(get(h0, 'str'));
   setappdata(0, 'opt', opt);
-  cb_plotdata()
+  cb_plotdata(h0)
   
 else
   set(findobj('tag', 'ylimval'), 'str', num2str(opt.ylim(2)));
@@ -397,7 +397,7 @@ opt.grid75 = ~opt.grid75;
 setappdata(0, 'opt', opt);
 
 set(findobj('str', '75uV'), 'val', opt.grid75)
-cb_plotdata()
+cb_plotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
@@ -409,7 +409,7 @@ opt.grid1s = ~opt.grid1s;
 setappdata(0, 'opt', opt);
 
 set(findobj('str', '1s'), 'val', opt.grid1s)
-cb_plotdata()
+cb_plotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%

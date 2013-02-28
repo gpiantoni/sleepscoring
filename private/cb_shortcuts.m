@@ -1,4 +1,4 @@
-function cb_shortcuts(h0, eventdata)
+function cb_shortcuts(h, eventdata)
 %SHORTCUTS
 %
 % opt.short.next -> next epoch
@@ -8,29 +8,30 @@ function cb_shortcuts(h0, eventdata)
 % Called by
 %  - sleepscoring
 
-info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
 
 switch eventdata.Key
   
   case opt.short.next
     %-----------------%
     %-next epoch
-    opt = getappdata(0, 'opt');
+    opt = getappdata(h0, 'opt');
     opt.epoch = opt.epoch + 1;
-    setappdata(0, 'opt', opt);
+    setappdata(h0, 'opt', opt);
     
-    cb_readplotdata()
+    cb_readplotdata(h0)
     %-----------------%
     
   case opt.short.previous
     %-----------------%
     %-previous epoch
-    opt = getappdata(0, 'opt');
+    opt = getappdata(h0, 'opt');
     opt.epoch = opt.epoch - 1;
-    setappdata(0, 'opt', opt);
+    setappdata(h0, 'opt', opt);
     
-    cb_readplotdata()
+    cb_readplotdata(h0)
     %-----------------%
     
   case {'1' '2' '3' '4' '5' '6' '7' '8' '9' '0'}
@@ -47,9 +48,9 @@ switch eventdata.Key
         
         opt.epoch = opt.epoch + 1;
         
-        setappdata(0, 'info', info)
-        setappdata(0, 'opt', opt)
-        cb_readplotdata()
+        setappdata(h0, 'info', info)
+        setappdata(h0, 'opt', opt)
+        cb_readplotdata(h0)
         
       else
         fprintf('Button %s does not match any sleep stage (%s)\n', eventdata.Key, sprintf(' %d', [opt.stage.code]))

@@ -69,7 +69,6 @@ function opt = prepare_opt(optfile, opt_old)
 % Called by
 %  - sleepscoring
 
-
 %-------------------------------------%
 %-get opt
 if isstruct(optfile)

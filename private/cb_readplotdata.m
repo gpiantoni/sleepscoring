@@ -1,4 +1,4 @@
-function cb_readplotdata(h0, eventdata)
+function cb_readplotdata(h, eventdata)
 %CB_READPLOTDATA: callback which reads data and plots them
 %
 % Called by
@@ -8,9 +8,10 @@ function cb_readplotdata(h0, eventdata)
 %  - sleepscoring>cb_epoch
 %  - sleepscoring>cb_ff
 
-info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
-hdr = getappdata(0, 'hdr');
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
+hdr = getappdata(h0, 'hdr');
 
 %-----------------%
 %-data to read
@@ -28,25 +29,25 @@ end
 %-------%
 %-update epoch info
 set(findobj('tag', 'epochnumber'), 'str', num2str(opt.epoch))
-setappdata(0, 'opt', opt);
+setappdata(h0, 'opt', opt);
 %-------%
 %-----------------%
 
 %-----------------%
 %-read preallocated data or read from disk
-tmp = getappdata(0, 'tmp');
+tmp = getappdata(h0, 'tmp');
 if ~isempty(tmp) && tmp.epoch == opt.epoch
   dat = tmp.dat;
 else
   dat = read_data(info, opt, hdr);
 end
-setappdata(0, 'dat', dat);
+setappdata(h0, 'dat', dat);
 %-----------------%
 
 %-----------------%
 %-plot data
-cb_plotdata()
-plot_fft()
+cb_plotdata(h0)
+plot_fft(h0)
 %-----------------%
 
 %-----------------%
@@ -57,5 +58,5 @@ if opt.epoch > info.score(info.rater).nepoch
 end
 tmp.epoch = opt.epoch;
 tmp.dat = read_data(info, opt, hdr);
-setappdata(0, 'tmp', tmp);
+setappdata(h0, 'tmp', tmp);
 %-----------------%
