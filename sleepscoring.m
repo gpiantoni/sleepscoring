@@ -189,10 +189,11 @@ end
 
 if nargin > 0 && (isfield(info, 'dataset') || isfield(info, 'infofile'))
   
-  info = prepare_info(info);
+  [info hdr] = prepare_info(info);
   
-  setappdata(opt.h.main, 'info', info)
   save_info(opt.h.main)
+  setappdata(opt.h.main, 'info', info)
+  setappdata(opt.h.main, 'hdr', hdr)
     
   prepare_info_opt(opt.h.main)
   cb_readplotdata(opt.h.main)
@@ -239,9 +240,10 @@ save_info(info) % save previous info
 %-----------------%
 %-read and plot new info
 info.infofile = [pathname filename];
-info = prepare_info(info);
+[info hdr] = prepare_info(info);
 save_info(info)
 setappdata(h0, 'info', info)
+setappdata(h0, 'hdr', hdr)
 
 prepare_info_opt(h0)
 cb_readplotdata(h0)
@@ -278,11 +280,12 @@ end
 
 %-------------------------------------%
 %-callback: load opt
-function cb_saveopt(h0, eventdata) % OK
+function cb_saveopt(h, eventdata) % OK
 
 %-----------------%
 %-get current opt and remove handles
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 h = opt.h;
 axis = opt.axis;
 opt = rmfield(opt, {'h' 'axis'});
@@ -316,44 +319,48 @@ set(findobj('tag', 'name_opt'), 'str', ['OPT: ' filename])
 
 %-------------------------------------%
 %-callback: go back
-function cb_bb(h0, eventdata)
+function cb_bb(h, eventdata)
 
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 opt.epoch = opt.epoch - 1;
-setappdata(0, 'opt', opt);
+setappdata(h0, 'opt', opt);
 
-cb_readplotdata()
+cb_readplotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: go forward
-function cb_ff(h0, eventdata)
+function cb_ff(h, eventdata)
 
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 opt.epoch = opt.epoch + 1;
-setappdata(0, 'opt', opt);
+setappdata(h0, 'opt', opt);
 
-cb_readplotdata()
+cb_readplotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: change epoch
-function cb_epoch(h0, eventdata)
+function cb_epoch(h, eventdata)
 
-opt = getappdata(0, 'opt');
-opt.epoch = str2double(get(h0, 'str'));
-setappdata(0, 'opt', opt)
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
+opt.epoch = str2double(get(h, 'str'));
+setappdata(h0, 'opt', opt)
 
-cb_readplotdata()
+cb_readplotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: smaller scale
-function cb_yu(h0, eventdata)
+function cb_yu(h, eventdata)
 
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 opt.ylim = opt.ylim / 1.1;
-setappdata(0, 'opt', opt);
+setappdata(h0, 'opt', opt);
 
 cb_ylim()
 cb_plotdata(h0)
@@ -361,11 +368,12 @@ cb_plotdata(h0)
 
 %-------------------------------------%
 %-callback: larger scale
-function cb_yd(h0, eventdata)
+function cb_yd(h, eventdata)
 
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 opt.ylim = opt.ylim * 1.1;
-setappdata(0, 'opt', opt);
+setappdata(h0, 'opt', opt);
 
 cb_ylim()
 cb_plotdata(h0)
@@ -373,14 +381,15 @@ cb_plotdata(h0)
 
 %-------------------------------------%
 %-callback: adjust scale
-function cb_ylim(h0, eventdata)
+function cb_ylim(h, eventdata)
 
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 
 if nargin > 0
   
-  opt.ylim = [-1 1] * str2double(get(h0, 'str'));
-  setappdata(0, 'opt', opt);
+  opt.ylim = [-1 1] * str2double(get(h, 'str'));
+  setappdata(h0, 'opt', opt);
   cb_plotdata(h0)
   
 else
@@ -391,25 +400,27 @@ end
 
 %-------------------------------------%
 %-callback: larger scale
-function cb_grid75(h0, eventdata)
+function cb_grid75(h, eventdata)
 
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 opt.grid75 = ~opt.grid75;
 setappdata(0, 'opt', opt);
 
-set(findobj('str', '75uV'), 'val', opt.grid75)
+set(findobj(h0, 'str', '75uV'), 'val', opt.grid75)
 cb_plotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: larger scale
-function cb_grid1s(h0, eventdata)
+function cb_grid1s(h, eventdata)
 
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 opt.grid1s = ~opt.grid1s;
-setappdata(0, 'opt', opt);
+setappdata(h0, 'opt', opt);
 
-set(findobj('str', '1s'), 'val', opt.grid1s)
+set(findobj(h0, 'str', '1s'), 'val', opt.grid1s)
 cb_plotdata(h0)
 %-------------------------------------%
 

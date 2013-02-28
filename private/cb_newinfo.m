@@ -131,7 +131,7 @@ if ~isempty(info.dataset) && ...
   %-init
   info = prepare_info(info);
   save_info(info)
-  setappdata(0, 'info', info)
+  setappdata(h0, 'info', info)
     
   opt_old = getappdata(h0, 'opt'); % necessary for figure handles
   opt = prepare_opt(optfile, opt_old);

@@ -1,11 +1,8 @@
-function plot_marker
+function plot_marker(info, opt)
 %PLOT_MARKER function to plot markers
 %
 % Called by
 %  - cb_plotdata
-
-info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
 
 %-----------------%
 %-time window

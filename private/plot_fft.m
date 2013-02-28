@@ -1,13 +1,20 @@
-function plot_fft(h0, eventdata)
+function plot_fft(h, eventdata)
 %PLOT_FFT plot FFT of one channel, 
+%
+% Called by
+%  - cb_readplotdata
+%  - cb_currentpoint>cb_wbup
+%  - plot_fft
 
 %-------------------------------------%
 %-general info
 %-----------------%
 %-read info
-info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
-dat = getappdata(0, 'dat');
+h0 = get_parent_fig(h);
+
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
+dat = getappdata(h0, 'dat');
 
 chan = [opt.changrp.chan];
 %-----------------%
@@ -17,11 +24,11 @@ chan = [opt.changrp.chan];
 cp = false; % current point plot
 if nargin > 0 
   
-  if ~isempty(eventdata) && numel(eventdata) == 2
+  if nargin == 2 && numel(eventdata) == 2
     
     %-called by cb_currentpoint
     cp = true;
-    i_chan = h0;
+    i_chan = h;
     if i_chan < 1; i_chan = 1; end
     if i_chan > numel(chan); i_chan = numel(chan); end
     
@@ -34,8 +41,8 @@ if nargin > 0
   else
     
     %-called by popup
-    opt.fft.i_chan = get(h0, 'val');
-    setappdata(0, 'opt', opt)
+    opt.fft.i_chan = get(h, 'val');
+    setappdata(h0, 'opt', opt)
     
   end
   

@@ -1,4 +1,4 @@
-function info = prepare_info(info)
+function [info hdr] = prepare_info(info)
 %PREPARE_INFO create info based on dataset
 %
 % Input is info.dataset and info.infofile
@@ -18,7 +18,9 @@ function info = prepare_info(info)
 % input from info and opt, and uses them together
 %
 % Called by
+%  - cb_newinfo
 %  - sleepscoring
+%  - sleepscoring>cb_openinfo
 
 %-----------------%
 %-read INFO first, if no dataset
@@ -68,7 +70,6 @@ info = find_dataset(info);
 %-HDR (read it every time)
 hdr = ft_read_header(info.dataset);
 info.hdr = rmfield(hdr, 'orig'); % this is really large,  but it's needed by ft_read_data
-setappdata(0, 'hdr', hdr)
 %-----------------%
 
 %-----------------%

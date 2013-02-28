@@ -68,8 +68,8 @@ elseif strcmp(tag, 'a_hypno')
     
     info = getappdata(h0, 'info');
     opt = getappdata(h0, 'opt');
-    wndw = info.score{3,info.rater};
-    beginsleep = info.score{4,info.rater}(1);
+    wndw = info.score(info.rater).wndw;
+    beginsleep = info.score(info.rater).score_beg;
     
     pnt = pos(2,1) - beginsleep;
     opt.epoch = round(pnt / wndw);
@@ -118,15 +118,16 @@ drawnow
 
 %-------------------------------------%
 %-when click is released
-function cb_wbup(h0, eventdata)
+function cb_wbup(h, eventdata)
 
-if strcmp(get(h0, 'SelectionType'), 'normal')
+if strcmp(get(h, 'SelectionType'), 'normal')
+
+  h0 = get_parent_fig(h);
+  delete(findobj(h0, 'tag', 'Selecting'))
+  set(h,'WindowButtonMotionFcn', '')
+  set(h,'WindowButtonUpFcn', '')
   
-  delete(findobj('tag', 'Selecting'))
-  set(h0,'WindowButtonMotionFcn', '')
-  set(h0,'WindowButtonUpFcn', '')
-  
-  plot_fft()
+  plot_fft(h0)
 end
 %-------------------------------------%
 
@@ -191,24 +192,24 @@ if newmrk(2) > xlim(2); newmrk(2) = xlim(2); end
 %-----------------%
 %-make windows longer if new marker includes part of older marker
 % TODO: With this implementation, it's impossible to "connect" two existing marks and to make one bigger on both sides
-if isempty(info.score{mrktype,info.rater})
+if isempty(info.score(info.rater).marker(mrktype).time)
   addbeg = false;
   addend = false;
   
 else
-  addbeg = newmrk(1) <= info.score{mrktype,info.rater}(:,1) & newmrk(2) >= info.score{mrktype,info.rater}(:,1);
-  addend = newmrk(1) <= info.score{mrktype,info.rater}(:,2) & newmrk(2) >= info.score{mrktype,info.rater}(:,2);
+  addbeg = newmrk(1) <= info.score(info.rater).marker(mrktype).time(:,1) & newmrk(2) >= info.score(info.rater).marker(mrktype).time(:,1);
+  addend = newmrk(1) <= info.score(info.rater).marker(mrktype).time(:,2) & newmrk(2) >= info.score(info.rater).marker(mrktype).time(:,2);
   
 end
 
 if any(addbeg)
-  info.score{mrktype,info.rater}(addbeg,1) = newmrk(1);
+  info.score(info.rater).marker(mrktype).time(addbeg,1) = newmrk(1);
   
 elseif any(addend)
-  info.score{mrktype,info.rater}(addend,2) = newmrk(2);
+  info.score(info.rater).marker(mrktype).time(addend,2) = newmrk(2);
   
 else
-  info.score{mrktype,info.rater} = [info.score{mrktype,info.rater}; newmrk];
+  info.score(info.rater).marker(mrktype).time = [info.score(info.rater).marker(mrktype).time; newmrk];
   
 end
 %-----------------%
