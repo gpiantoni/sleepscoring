@@ -1,11 +1,15 @@
-function [varargout] = prepare_log(action, info)
-
+function info = prepare_log(info, action)
+%PREPARE_LOG write log with changes
+% 
+% Called by:
+%  - cb_rater
+%  - prepare_info
+%  - score_retime
+%  - sleepscoring>cb_closemain
+%  - sleepscoring>cb_openinfo
 
 %-------------------------------------%
 %-read info
-if nargin == 1
-  info = getappdata(0, 'info');
-end
 if isfield(info, 'log')
   log = info.log;
 else
@@ -34,7 +38,7 @@ gitrepo = fullfile(fileparts(which('sleepscoring')), '.git');
 log = [log sprintf('---------------------------------------\n')]; % begin
 log = [log datestr(now, 'yyyy-mm-dd HH:MM:SS') ' ' user];
 log = [log sprintf('\n')];
-log = [log ' fieldtrip: ' ft_ver ', sleep scoring: ' sleep_ver];
+log = [log ' fieldtrip: ' ft_ver ' sleep scoring: ' sleep_ver];
 %-----------------%
 %-------------------------------------%
 
@@ -51,16 +55,16 @@ switch action
     %-----------------%
     %-sleep scoring
   case 'New Rater'
-    log = [log 'NEW RATER: ' info.score{2,info.rater}];
+    log = [log 'NEW RATER: ' info.score(info.rater).rater];
     
   case 'Rename Rater'
-    log = [log 'RENAME RATER: ' info.score{2,info.rater}]; % original name is not available
+    log = [log 'RENAME RATER: ' info.score(info.rater).rater]; % original name is not available
     
   case 'Copy Current Score'
-    log = [log 'COPY RATER: ' info.score{2,info.rater}];
+    log = [log 'COPY RATER: ' info.score(info.rater).rater];
 
   case 'Merge Scores'
-    log = [log 'MERGE RATERS INTO: ' info.score{2,info.rater}];
+    log = [log 'MERGE RATERS INTO: ' info.score(info.rater).rater];
     
   case 'Delete Current Score'
     log = [log 'DELETE SCORE: N.A.']; % original name is not available
@@ -72,13 +76,13 @@ switch action
     %-----------------%
     %-changes in the score
   case 'score_backup'
-    log = [log 'BACK UP SCORE' backup_score(info.score(:,info.rater))];
+    log = [log 'BACK UP SCORE' backup_score(info.score(info.rater))];
     
   case 'score_begin'
-    log = [log 'NEW SCORE BEGINS AT ' sprintf('% 12.3f', info.score{4,info.rater}(1))];
+    log = [log 'NEW SCORE BEGINS AT ' sprintf('% 12.3f', info.score(info.rater).score_beg)];
     
   case 'score_end'
-    log = [log 'NEW SCORE ENDS   AT ' sprintf('% 12.3f', info.score{4,info.rater}(2))];
+    log = [log 'NEW SCORE ENDS   AT ' sprintf('% 12.3f', info.score(info.rater).score_end)];
     %-----------------%
     
   case 'closeinfo'
@@ -87,7 +91,7 @@ switch action
     %-----------------%
     %-rater name
   otherwise
-    log = [log 'VIEW RATER: ' info.score{2,info.rater}];
+    log = [log 'VIEW RATER: ' info.score(info.rater).rater];
     %-----------------%
     
 end
@@ -95,14 +99,9 @@ end
 
 %-------------------------------------%
 %-final
-log = [log sprintf('\n---------------------------------------\n')]; % end
+log = [log sprintf('\n')]; % end
 
 info.log = log;
-if nargout == 0
-  setappdata(0, 'info', info);
-else
-  varargout{1} = info;
-end
 %-------------------------------------%
 
 %-------------------------------------%
@@ -111,40 +110,26 @@ function log = backup_score(score)
 %-----------------%
 %-general info
 log = sprintf(' (%s on % 4d % 3ds epochs) % 12.3f - % 12.3f\n', ...
-  score{2,1}, numel(score{1,1}), score{3,1}, score{4,1}(1), score{4,1}(2));
+  score.rater, score.nepoch, score.wndw, score.score_beg, score.score_end);
 %-----------------%
 
 %-----------------%
 %-actual scoring
-str_score = sprintf(' % 3d', score{1,1});
+str_score = sprintf(' % 3d', score.stage{:});
 log = [log '        ' str_score];
 %-----------------%
 
 %-----------------%
-%-artifacts
-str_art = '     art ';
-for i = 1:size(score{5,1},1)
-  str_art = [str_art sprintf('[%.3f-%.3f] ', score{5,1}(i,1), score{5,1}(i,2))];
-end
-log = [log sprintf('\n') str_art];
-%-----------------%
-
-%-----------------%
-%-movements
-str_move = '     move ';
-for i = 1:size(score{6,1},1)
-  str_move = [str_move sprintf('[%.3f-%.3f] ', score{6,1}(i,1), score{6,1}(i,2))];
-end
-log = [log sprintf('\n') str_move];
-%-----------------%
-
-%-----------------%
-%-arousals
-if size(score,1) > 6
-  str_arou = '     arou ';
-  for i = 1:size(score{7,1},1)
-    str_arou = [str_arou sprintf('[%.3f-%.3f] ', score{7,1}(i,1), score{7,1}(i,2))];
+%-markers
+for m = 1:numel(score.marker)
+  if ~isempty(score.marker.time)
+    
+    str_mrk = ['     ' score.marker(m).name];
+    for i = 1:size(score.marker(m).time,1)
+      str_mrk = [str_mrk sprintf('[%.3f-%.3f] ', score.marker(m).time(i,1), score.marker(m).time(i,2))];
+    end
+    log = [log sprintf('\n') str_mrk];
+    
   end
-  log = [log sprintf('\n') str_arou];
 end
 %-----------------%

@@ -34,7 +34,6 @@ function sleepscoring(info, opt)
 % two sessions at the same time, open a new Matlab.
 
 %TODO:
-% - multiple windows
 % - automatic detection of SW and spindles
 % - automatic scoring
 
@@ -180,7 +179,7 @@ uimenu(opt.h.main, 'label', 'Reference', 'enable', 'off');
 
 %-------------------------------------%
 %-read the data if present in info
-setappdata(0, 'opt', opt)
+setappdata(opt.h.main, 'opt', opt)
 
 if nargin > 0 && ischar(info)
   infofile = info;
@@ -192,11 +191,11 @@ if nargin > 0 && (isfield(info, 'dataset') || isfield(info, 'infofile'))
   
   info = prepare_info(info);
   
-  save_info()
-  setappdata(0, 'info', info)
-  
-  prepare_info_opt()
-  cb_readplotdata()
+  setappdata(opt.h.main, 'info', info)
+  save_info(opt.h.main)
+    
+  prepare_info_opt(opt.h.main)
+  cb_readplotdata(opt.h.main)
   
 end
 %-------------------------------------%
@@ -207,15 +206,16 @@ end
 %---------------------------------------------------------%
 %-------------------------------------%
 %-callback: save opt
-function cb_openinfo(h0, eventdata)
+function cb_openinfo(h, eventdata)
 
+h0 = get_parent_fig(h);
 save_info() % save previous info
 
 %-----------------%
 %-read OPT file
 %--------%
 %-move to directory with opt
-info = getappdata(0, 'info');
+info = getappdata(h0, 'info');
 wd = pwd;
 if isfield(info, 'infofile')
   cd(fileparts(info.infofile))
@@ -231,8 +231,8 @@ if ~filename; return; end
 %--------%
 
 %--------%
-%-log that the file was closed
-prepare_log('closeinfo')
+%-log that the previous file was closed
+info = prepare_log(info, 'closeinfo'); % TODO: save info
 save_info()
 %--------%
 %-----------------%
@@ -241,18 +241,19 @@ save_info()
 %-read and plot new info
 info.infofile = [pathname filename];
 info = prepare_info(info);
-setappdata(0, 'info', info)
+setappdata(h0, 'info', info)
 save_info()
-prepare_info_opt()
-cb_readplotdata()
+prepare_info_opt(h0)
+cb_readplotdata(h0)
 %-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: load opt
-function cb_openopt(h0, eventdata)
+function cb_openopt(h, eventdata)
 
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 
 %-----------------%
 %-read OPT file
@@ -266,11 +267,11 @@ opt = prepare_opt([pathname filename], opt);
 
 %-----------------%
 %-read and plot data
-setappdata(0, 'opt', opt)
+setappdata(h0, 'opt', opt)
 
 if ~isempty(getappdata(0, 'info'))
-  prepare_info_opt()
-  cb_readplotdata()
+  prepare_info_opt(h0, 1)
+  cb_readplotdata(h0)
 end
 %-----------------%
 %-------------------------------------%
@@ -416,7 +417,7 @@ cb_plotdata(h0)
 %-callback: close figure
 function cb_closemain(h0, eventdata)
 
-prepare_log('closeinfo')
+info = prepare_log(info, 'closeinfo'); % TODO: save info
 save_info()
 setappdata(0, 'info', []) % clean up info
 setappdata(0, 'opt', []) % clean up opt

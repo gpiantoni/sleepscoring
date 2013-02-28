@@ -33,10 +33,10 @@ if ~isfield(info, 'dataset')
   info.infofile = infofile;
   %-------%
   
-  info = prepare_log('openinfo', info);
+  info = prepare_log(info, 'openinfo');
 
 else
-  info = prepare_log('newinfo', info);
+  info = prepare_log(info, 'newinfo');
   
 end
 %-----------------%

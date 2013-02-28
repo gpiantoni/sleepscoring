@@ -1,13 +1,18 @@
-function prepare_info_opt
+function prepare_info_opt(h0, dummy)
 %PREPARE_INFO_OPT combine information from info, opt and score
 %
+% dummy is necessary: if you open optfile in sleepscoring>cb_openopt, it
+% does not make sense to ask if you want to open it
+% 
 % Called by
-%  - sleepscoring
 %  - cb_newinfo>cb_ok
+%  - sleepscoring
+%  - sleepscoring>cb_openinfo
+%  - sleepscoring>cb_openopt
 
 %-----------------%
-info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
 %-----------------%
 
 %-----------------%
@@ -19,7 +24,7 @@ end
 
 %-----------------%
 %-if the opt files are different in the info and opt, let the user choose
-if ~strcmp(info.optfile, opt.optfile)
+if nargin == 1 && ~strcmp(info.optfile, opt.optfile)
   opt_info = ['in the dataset: ' info.optfile];
   opt_opt = ['in the option: ' opt.optfile];
   
@@ -76,8 +81,8 @@ end
 %-------------------------------------%
 %-GUI
 %-----------------%
-setappdata(0, 'info', info)
-setappdata(0, 'opt', opt)
+setappdata(h0, 'info', info)
+setappdata(h0, 'opt', opt)
 %-----------------%
 
 %-----------------%
@@ -87,14 +92,14 @@ update_rater(info)
 
 %-----------------%
 %-working GUI
-set(findobj('label', 'Sleep Score'), 'enable', 'on')
-delete(findobj('label', 'Channel Selection'))
-delete(findobj('label', 'Filter'))
-delete(findobj('label', 'Reference'))
+set(findobj(h0, 'label', 'Sleep Score'), 'enable', 'on')
+delete(findobj(h0, 'label', 'Channel Selection'))
+delete(findobj(h0, 'label', 'Filter'))
+delete(findobj(h0, 'label', 'Reference'))
 
 %-----------------%
 %-CHAN SELECTION
-m_chan = uimenu(opt.h.main, 'label', 'Channel Selection');
+m_chan = uimenu(h0, 'label', 'Channel Selection');
 for i = 1:numel(opt.changrp)
   uimenu(m_chan, 'label', opt.changrp(i).chantype, 'call', @cb_select_channel);
 end
@@ -102,7 +107,7 @@ end
 
 %-----------------%
 %-FILTER
-m_filt = uimenu(opt.h.main, 'label', 'Filter');
+m_filt = uimenu(h0, 'label', 'Filter');
 for i = 1:numel(opt.changrp)
   uimenu(m_filt, 'label', opt.changrp(i).chantype, 'call', @cb_select_filter);
 end
@@ -110,12 +115,12 @@ end
 
 %-----------------%
 %-REFERENCE
-m_ref = uimenu(opt.h.main, 'label', 'Reference');
+m_ref = uimenu(h0, 'label', 'Reference');
 for i = 1:numel(opt.changrp)
   uimenu(m_ref, 'label', opt.changrp(i).chantype, 'call', @cb_select_reference);
 end
 %-----------------%
 
-set(opt.h.main, 'windowbuttonDownFcn', @cb_currentpoint)
+set(h0, 'windowbuttonDownFcn', @cb_currentpoint)
 %-----------------%
 %-------------------------------------%

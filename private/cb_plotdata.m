@@ -2,13 +2,13 @@ function cb_plotdata(h0)
 %CB_PLOTDATA callback that only plots data
 %
 % Called by
+%  - cb_currentpoint
 %  - cb_readplotdata
 %  - sleepscoring>cb_grid75
 %  - sleepscoring>cb_grid1s
 %  - sleepscoring>cb_yu
 %  - sleepscoring>cb_yd
 %  - sleepscoring>cb_ylim
-%  - cb_currentpoint
 
 %-----------------%
 %-read info

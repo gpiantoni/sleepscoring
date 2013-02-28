@@ -4,6 +4,7 @@ function cb_currentpoint(h, eventdata)
 % Called by
 %  - 
 
+h0 = get_parent_fig(h);
 tag = get(gca, 'tag');
 pos = get(gca, 'currentpoint');
 
@@ -11,7 +12,7 @@ if strcmp(tag, 'a_dat')
   
   %-------------------------------------%
   %-main data
-  if strcmp(get(h,'SelectionType'),'normal')
+  if strcmp(get(h, 'SelectionType'),'normal')
     
     set(h, 'WindowButtonMotionFcn', {@cb_box, pos})
     set(h, 'WindowButtonUpFcn', @cb_wbup)
@@ -33,7 +34,7 @@ if strcmp(tag, 'a_dat')
       
       %-----------------%
       %-check if mark already exists
-      info = getappdata(0, 'info');
+      info = getappdata(h0, 'info');
       mrktype = get_markertype;
       if isempty(info.score(info.rater).marker(mrktype))
         posmrk = false;
@@ -47,9 +48,9 @@ if strcmp(tag, 'a_dat')
         %-----------------%
         %-delete old mark if inside
         info.score{mrktype,info.rater}(posmrk,:) = [];
-        setappdata(0, 'info', info);
+        setappdata(h0, 'info', info);
         save_info()
-        cb_plotdata()
+        cb_plotdata(h0)
         %-----------------%
         
       else
@@ -76,14 +77,14 @@ elseif strcmp(tag, 'a_hypno')
   if pos(2,1) >= xlim(1) && pos(2,1) <= xlim(2) && ...
       pos(2,2) >= ylim(1) && pos(2,2) <= ylim(2)
     
-    info = getappdata(0, 'info');
-    opt = getappdata(0, 'opt');
+    info = getappdata(h0, 'info');
+    opt = getappdata(h0, 'opt');
     wndw = info.score{3,info.rater};
     beginsleep = info.score{4,info.rater}(1); 
     
     pnt = pos(2,1) - beginsleep;
     opt.epoch = round(pnt / wndw);
-    setappdata(0, 'opt', opt)
+    setappdata(h0, 'opt', opt)
     
     cb_readplotdata()
     
@@ -102,7 +103,7 @@ end
 function cb_box(h0, eventdata, pos1)
 % TODO: this does not take into account the scaling
 
-opt = getappdata(0, 'opt');
+opt = getappdata(h0, 'opt');
 pos2 = get(gca, 'CurrentPoint');
 
 delete(findobj('tag', 'Selecting'))
@@ -145,7 +146,7 @@ end
 %-callback: when mouse is moving
 function cb_range(h0, eventdata, pos1)
 
-opt = getappdata(0, 'opt');
+opt = getappdata(h0, 'opt');
 pos2 = get(gca, 'CurrentPoint');
 
 delete(findobj('tag', 'sel_marker'))
@@ -188,7 +189,7 @@ end
 %-make marker as artifact or other
 function make_marker(pos1, pos2)
 
-info = getappdata(0, 'info');
+info = getappdata(h0, 'info');
 mrktype = get_markertype;
 newmrk = sort([pos1(1,1) pos2(1,1)]);
 
@@ -226,9 +227,9 @@ end
 
 %-----------------%
 %-save info and replot
-setappdata(0, 'info', info);
+setappdata(h0, 'info', info);
 save_info()
-cb_plotdata()
+cb_plotdata(h0)
 %-----------------%
 %-------------------------------------%
 
@@ -240,7 +241,7 @@ mrk_h = findobj('tag', 'popupmarker');
 mrk_str = get(mrk_h, 'str');
 mrk_val = get(mrk_h, 'val');
 
-opt = getappdata(0, 'opt');
+opt = getappdata(h0, 'opt');
 
 mrktype = find(strcmp(opt.marker.name, mrk_str{mrk_val}));
 %-------------------------------------%

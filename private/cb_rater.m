@@ -142,7 +142,7 @@ end
 %-update info
 info.rater = rater;
 info.score = score;
-info = prepare_log( get(h0, 'label'), info);
+info = prepare_log(info, get(h0, 'label'));
 
 setappdata(0, 'info', info)
 save_info()

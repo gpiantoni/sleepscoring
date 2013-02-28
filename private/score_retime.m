@@ -16,16 +16,16 @@ if strcmp(ConfirmDel, 'No'); return; end
 %-----------------%
 
 %-----------------%
-info = prepare_log('score_backup', info);
+info = prepare_log(info, 'score_backup');
 pos = round(pos(1,1) * info.fsample) / info.fsample;
 
 if strcmp(popup, 'sleep scoring begins (!)')
   info.score(info.rater).score_beg = pos * info.fsample;
-  info = prepare_log('score_begin', info);
+  info = prepare_log(info, 'score_begin');
   
 else
   info.score(info.rater).score_end = pos * info.fsample;
-  info = prepare_log('score_end', info);
+  info = prepare_log(info, 'score_end');
   
 end
 %-----------------%
