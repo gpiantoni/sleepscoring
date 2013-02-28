@@ -3,6 +3,7 @@ function cb_readplotdata(h0, eventdata)
 %
 % Called by
 %  - cb_newinfo>cb_ok
+%  - sleepscoring>cb_ff
 
 info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');

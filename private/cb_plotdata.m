@@ -1,5 +1,8 @@
 function cb_plotdata(h0, eventdata)
 %CB_PLOTDATA callback that only plots data
+%
+% Called by
+%  - cb_readplotdata
 
 %-----------------%
 %-read info
