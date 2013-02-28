@@ -115,7 +115,7 @@ log = sprintf(' (%s on % 4d % 3ds epochs) % 12.3f - % 12.3f\n', ...
 
 %-----------------%
 %-actual scoring
-str_score = sprintf(' % 3d', score.stage{:});
+str_score = sprintf(' %s', score.stage{:});
 log = [log '        ' str_score];
 %-----------------%
 
