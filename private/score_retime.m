@@ -33,8 +33,8 @@ end
 %-----------------%
 %-modify score timing
 dur = info.score(info.rater).score_end - info.score(info.rater).score_beg;
-nscore = floor(dur / info.score(info.rater).wndw);
-info.score(info.rater).stage = cell(1, nscore);
+info.score(info.rater).nepoch = floor(dur / info.score(info.rater).wndw);
+info.score(info.rater).stage = cell(1, info.score(info.rater).nepoch);
 
 setappdata(0, 'info', info);
 %-----------------%
