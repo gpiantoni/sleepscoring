@@ -2,6 +2,7 @@ function cb_readplotdata(h, eventdata)
 %CB_READPLOTDATA: callback which reads data and plots them
 %
 % Called by
+%  - cb_currentpoint
 %  - cb_newinfo>cb_ok
 %  - sleepscoring
 %  - sleepscoring>cb_bb

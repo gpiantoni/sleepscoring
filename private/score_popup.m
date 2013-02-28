@@ -5,6 +5,7 @@ function score_popup (info, opt)
 %
 % Called by
 %  - prepare_info_opt
+%  - sleepscoring
 
 %-------------------------------------%
 %-only with real scores
@@ -46,24 +47,27 @@ end
 %-------------------------------------%
 function cb_score(h, eventdata)
 
-info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
 
-i_score = get(h0, 'val');
+i_score = get(h, 'val');
 info.score(info.rater).stage{opt.epoch} = opt.stage(i_score).label;
+save_info(info)
+setappdata(h0, 'info', info)
 
 opt.epoch = opt.epoch + 1;
-setappdata(0, 'info', info)
-save_info(info)
-setappdata(0, 'opt', opt)
-cb_readplotdata()
+setappdata(h0, 'opt', opt)
+
+cb_readplotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
-function cb_marker(h0, eventdata)
+function cb_marker(h, eventdata)
 
-opt = getappdata(0, 'opt');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
 opt.marker.i = get(h0, 'val');
-setappdata(0, 'opt', opt)
+setappdata(h0, 'opt', opt)
 %-------------------------------------%
 %---------------------------------------------------------%

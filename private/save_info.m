@@ -1,7 +1,7 @@
 function save_info(info)
 %SAVE_INFO save dataset information, to be called after each modification
 %
-% Called by
+% Called by:
 %  - cb_newinfo
 %  - cb_rater
 %  - cb_shortcuts

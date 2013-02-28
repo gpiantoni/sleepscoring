@@ -135,9 +135,3 @@ if nargin == 2
 end
 %-----------------%
 %-------------------------------------%
-
-%-----------------%
-%rename OPT
-[~, optname] = fileparts(opt.optfile);
-set(findobj('tag', 'name_opt'), 'str', ['OPT: ' optname]);
-%-----------------%

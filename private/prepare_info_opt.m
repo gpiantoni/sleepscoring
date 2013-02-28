@@ -83,6 +83,10 @@ end
 %-----------------%
 setappdata(h0, 'info', info)
 setappdata(h0, 'opt', opt)
+
+%rename OPT
+[~, optname] = fileparts(opt.optfile);
+set(findobj(h0, 'tag', 'name_opt'), 'str', ['OPT: ' optname]);
 %-----------------%
 
 %-----------------%

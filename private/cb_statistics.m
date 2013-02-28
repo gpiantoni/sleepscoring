@@ -1,8 +1,9 @@
-function cb_statistics(h0, eventdata)
+function cb_statistics(h, eventdata)
 %CB_STATISTICS call scorestatistics to print overview on screen
 %
 % Called by
 %  - sleepscoring
 
-info = getappdata(0, 'info');
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
 scorestatistics(info)

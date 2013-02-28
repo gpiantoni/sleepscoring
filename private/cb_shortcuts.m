@@ -36,7 +36,7 @@ switch eventdata.Key
     
   case {'1' '2' '3' '4' '5' '6' '7' '8' '9' '0'}
     
-    if ~isempty(info.score{2,1}) % no scoring without score sheet
+    if ~isempty(info.score(info.rater).rater) % no scoring without score sheet
       %-----------------%
       %-sleep scoring
       scored = str2double(eventdata.Key);

@@ -25,7 +25,7 @@ if strcmp(tag, 'a_dat')
     %-----------------%
     %-check if mark already exists
     info = getappdata(h0, 'info');
-    mrktype = get_markertype;
+    mrktype = get_markertype(h0);
     if isempty(info.score(info.rater).marker(mrktype))
       posmrk = false;
     else
@@ -75,7 +75,7 @@ elseif strcmp(tag, 'a_hypno')
     opt.epoch = round(pnt / wndw);
     setappdata(h0, 'opt', opt)
     
-    cb_readplotdata()
+    cb_readplotdata(h0)
     
   end
   %-----------------%
@@ -133,8 +133,9 @@ end
 
 %-------------------------------------%
 %-callback: when mouse is moving
-function cb_range(h0, eventdata, pos1)
+function cb_range(h, eventdata, pos1)
 
+h0 = get_parent_fig(h);
 opt = getappdata(h0, 'opt');
 pos2 = get(gca, 'CurrentPoint');
 
@@ -158,16 +159,17 @@ drawnow
 
 %-------------------------------------%
 %-callback: when click is released
-function cb_marker(h0, eventdata, pos1)
+function cb_marker(h, eventdata, pos1)
 
+h0 = get_parent_fig(h);
 pos2 = get(gca, 'CurrentPoint');
 
-delete(findobj('tag', 'sel_marker'))
-set(h0,'WindowButtonMotionFcn', '')
-set(h0,'WindowButtonUpFcn', '')
+delete(findobj(h0, 'tag', 'sel_marker'))
+set(h, 'WindowButtonMotionFcn', '')
+set(h, 'WindowButtonUpFcn', '')
 
 if abs(diff([pos1(1,1), pos2(1,1)])) > .05 % has to be at least 50ms long
-  make_marker(pos1, pos2)
+  make_marker(h0, pos1, pos2)
 end
 %-------------------------------------%
 %---------------------------------------------------------%
@@ -176,10 +178,10 @@ end
 %-SUBFUNCTIONS
 %-------------------------------------%
 %-make marker as artifact or other
-function make_marker(pos1, pos2)
+function make_marker(h0, pos1, pos2)
 
 info = getappdata(h0, 'info');
-mrktype = get_markertype;
+mrktype = get_markertype(h0);
 newmrk = sort([pos1(1,1) pos2(1,1)]);
 
 %-----------------%
@@ -225,9 +227,9 @@ cb_plotdata(h0)
 
 %-------------------------------------%
 %-Get Marker type
-function mrktype = get_markertype
+function mrktype = get_markertype(h0)
 
-mrk_h = findobj('tag', 'popupmarker');
+mrk_h = findobj(h0, 'tag', 'popupmarker');
 mrk_str = get(mrk_h, 'str');
 mrk_val = get(mrk_h, 'val');
 

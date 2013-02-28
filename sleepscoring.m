@@ -271,7 +271,7 @@ opt = prepare_opt([pathname filename], opt);
 %-read and plot data
 setappdata(h0, 'opt', opt)
 
-if ~isempty(getappdata(0, 'info'))
+if ~isempty(getappdata(h0, 'info'))
   prepare_info_opt(h0, 1)
   cb_readplotdata(h0)
 end
@@ -312,7 +312,7 @@ save([pathname filename], 'opt')
 
 opt.h = h;
 opt.axis = axis;
-setappdata(0, 'opt', opt)
+setappdata(h0, 'opt', opt)
 set(findobj('tag', 'name_opt'), 'str', ['OPT: ' filename]) 
 %-----------------%
 %-------------------------------------%
@@ -362,7 +362,7 @@ opt = getappdata(h0, 'opt');
 opt.ylim = opt.ylim / 1.1;
 setappdata(h0, 'opt', opt);
 
-cb_ylim()
+set(findobj(h0, 'tag', 'ylimval'), 'str', num2str(opt.ylim(2)));
 cb_plotdata(h0)
 %-------------------------------------%
 
@@ -375,7 +375,7 @@ opt = getappdata(h0, 'opt');
 opt.ylim = opt.ylim * 1.1;
 setappdata(h0, 'opt', opt);
 
-cb_ylim()
+set(findobj(h0, 'tag', 'ylimval'), 'str', num2str(opt.ylim(2)));
 cb_plotdata(h0)
 %-------------------------------------%
 
@@ -385,17 +385,10 @@ function cb_ylim(h, eventdata)
 
 h0 = get_parent_fig(h);
 opt = getappdata(h0, 'opt');
-
-if nargin > 0
-  
-  opt.ylim = [-1 1] * str2double(get(h, 'str'));
-  setappdata(h0, 'opt', opt);
-  cb_plotdata(h0)
-  
-else
-  set(findobj('tag', 'ylimval'), 'str', num2str(opt.ylim(2)));
-  
-end
+ 
+opt.ylim = [-1 1] * str2double(get(h, 'str'));
+setappdata(h0, 'opt', opt);
+cb_plotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
@@ -405,7 +398,7 @@ function cb_grid75(h, eventdata)
 h0 = get_parent_fig(h);
 opt = getappdata(h0, 'opt');
 opt.grid75 = ~opt.grid75;
-setappdata(0, 'opt', opt);
+setappdata(h0, 'opt', opt);
 
 set(findobj(h0, 'str', '75uV'), 'val', opt.grid75)
 cb_plotdata(h0)

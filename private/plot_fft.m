@@ -40,9 +40,10 @@ if nargin > 0
     
   else
     
-    %-called by popup
-    opt.fft.i_chan = get(h, 'val');
-    setappdata(h0, 'opt', opt)
+    %TODO: What does this do?
+%     %-called by popup
+%     opt.fft.i_chan = get(h, 'val');
+%     setappdata(h0, 'opt', opt)
     
   end
   

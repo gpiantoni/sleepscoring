@@ -1,9 +1,13 @@
-function cb_select_filter(h0, eventdata)
+function cb_select_filter(h, eventdata)
 %CB_SELECT_FILTER specify filter settings
+%
+% Called by
+%  - sleepscoring
 
-chantype = get(h0, 'label');
+h0 = get_parent_fig(h);
+chantype = get(h, 'label');
 
-opt = getappdata(0, 'opt');
+opt = getappdata(h0, 'opt');
 
 changrp = strcmp(chantype, {opt.changrp.chantype});
 Fhp = opt.changrp(changrp).Fhp;
@@ -39,8 +43,8 @@ if ~isempty(answer) % cancel button
   end
   %-------%
   
-  setappdata(0, 'opt', opt);
-  cb_readplotdata()
+  setappdata(h0, 'opt', opt);
+  cb_readplotdata(h0)
   
 end
 %-----------------%
