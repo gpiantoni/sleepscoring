@@ -1,6 +1,9 @@
 function prepare_info_opt
 %PREPARE_INFO_OPT combine information from info, opt and score
-disp('prepare_info_opt')
+%
+% Called by
+%  - cb_newinfo>cb_ok
+
 %-----------------%
 info = getappdata(0, 'info');
 opt = getappdata(0, 'opt');
@@ -77,7 +80,7 @@ setappdata(0, 'opt', opt)
 %-----------------%
 
 %-----------------%
-popup_score(info, opt)
+score_popup(info, opt)
 update_rater(info)
 %-----------------%
 

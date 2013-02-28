@@ -1,7 +1,8 @@
 function cb_currentpoint(h, eventdata)
-%---------------------------------------------------------%
-%-CB_CURRENTPOINT
-%---------------------------------------------------------%
+%CB_CURRENTPOINT detect position of current point and act
+% 
+% Called by
+%  - 
 
 tag = get(gca, 'tag');
 pos = get(gca, 'currentpoint');
@@ -16,7 +17,6 @@ if strcmp(tag, 'a_dat')
     set(h, 'WindowButtonUpFcn', @cb_wbup)
     
   else
-    
     
     popup_str = get(findobj('tag', 'popupmarker'), 'str');
     popup_val = get(findobj('tag', 'popupmarker'), 'val');
@@ -35,7 +35,7 @@ if strcmp(tag, 'a_dat')
       %-check if mark already exists
       info = getappdata(0, 'info');
       mrktype = get_markertype;
-      if isempty(info.score{mrktype,info.rater})
+      if isempty(info.score(info.rater).marker(mrktype))
         posmrk = false;
       else
         posmrk = pos(1,1) >= info.score{mrktype,info.rater}(:,1) & pos(1,1) <= info.score{mrktype,info.rater}(:,2);
@@ -243,6 +243,5 @@ mrk_val = get(mrk_h, 'val');
 opt = getappdata(0, 'opt');
 
 mrktype = find(strcmp(opt.marker.name, mrk_str{mrk_val}));
-mrktype = mrktype + 4; % row in FASST score
 %-------------------------------------%
 %---------------------------------------------------------%
