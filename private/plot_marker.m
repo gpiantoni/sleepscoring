@@ -43,7 +43,7 @@ for mrktype = 1:numel(info.score(info.rater).marker)
       hold on
       i_col = mod(numel(opt.marker.color), mrktype);
       h_f = fill(mrk(j,[1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{i_col});
-      set(h_f, 'tag', 'artifact')
+      set(h_f, 'tag', 'marker')
       %-----------------%
       
     end

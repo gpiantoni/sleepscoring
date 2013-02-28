@@ -15,8 +15,8 @@ dat = getappdata(0, 'dat');
 delete(findobj('tag', 'a_dat'))
 axes('parent', opt.h.data, 'tag', 'a_dat');
 
-delete(findobj('tag', 'artifact'))
-plot_artifact()
+delete(findobj('tag', 'marker'))
+plot_marker()
 
 plot_data(info, opt, dat);
 %-----------------%

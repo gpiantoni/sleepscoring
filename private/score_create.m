@@ -8,7 +8,7 @@ function score = score_create(info, rater, wndw)
 %  .score_end: end of the scoring period (s)
 %  .marker:
 %    .name: name of marker (movement, arousal, artifact, etc)
-%    .time: 2xN matrix with artifacts (s)
+%    .time: 2xN matrix with marker (s)
 %
 % Called by
 %  - prepare_info
