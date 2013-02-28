@@ -13,9 +13,8 @@ if opt.epoch < 1
   opt.epoch = 1;
 end
 
-nepoch = numel(info.score{1,info.rater});
-if opt.epoch > nepoch
-  opt.epoch = nepoch;
+if opt.epoch > info.score(info.rater).nepoch
+  opt.epoch = info.score(info.rater).nepoch;
 end
 %-------%
 
