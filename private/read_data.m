@@ -18,11 +18,14 @@ function dat = read_data(info, opt, hdr)
 %    .Flp: low-pass filter
 %
 % HDR
+%
+% Called by
+%  - cb_readplotdata
 
 %-----------------%
 %-samples to read
-wndw = info.score{3,info.rater};
-beginsleep = info.score{4,info.rater}(1);
+wndw = info.score(info.rater).wndw;
+beginsleep = info.score(info.rater).score_beg;
 
 begsample = (opt.epoch - 1) * wndw * info.fsample + beginsleep * info.fsample;
 endsample = begsample + wndw * info.fsample - 1;
