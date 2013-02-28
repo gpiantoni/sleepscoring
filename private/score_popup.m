@@ -1,20 +1,23 @@
-function popup_score(info, opt)
+function score_popup (info, opt)
 %POPUP_SCORE create popup in information panel with current score
 % and can be used to modify it too
 % It's not run if the rater name is empty (you need to create a new scorer)
+%
+% Called by
+%  - prepare_info_opt
 
 %-------------------------------------%
 %-only with real scores
-if ~isempty(info.score{2,info.rater})
+if ~isempty(info.score(info.rater))
   
   %-----------------%
   %-find i_score, index of the current scoring
   stages = {opt.stage.label};
-  score = info.score{1, info.rater}(opt.epoch);
-  i_score = find([opt.stage.code] == score);
-  if isempty(i_score)
-    i_score = find(isnan([opt.stage.code]));
+  score = info.score(1, info.rater).stage{opt.epoch};
+  if isempty(score)
+    score = stages(1); % default
   end
+  i_score = find(strcmp(stages, score));
   %-----------------%
   
   %-----------------%
