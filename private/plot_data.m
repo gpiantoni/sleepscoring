@@ -20,6 +20,7 @@ chan = [chan{:}];
 
 cnt = 0;
 label = [];
+
 for i = 1:numel(opt.changrp)
   
   linecolor = opt.changrp(i).linecolor;

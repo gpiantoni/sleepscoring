@@ -42,7 +42,7 @@ timetick_s = timetick * opt.hypnogrid * 60; % in seconds
 
 %-grid
 for i = 1:numel(timetick_s)
-  plot(timetick_s(i) * [1 1], [st_h(1) st_h(end)], '--k')
+  plot(opt.axis.hypno, timetick_s(i) * [1 1], [st_h(1) st_h(end)], '--k', 'tag', 'a_hypno')
 end
 
 %-xlabel
