@@ -44,7 +44,7 @@ uicontrol(h_input, 'sty', 'push', 'uni', 'norm', 'tag', 'optfile', ...
 
 uicontrol(h_input, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.75 .05 .1 .1], 'str', 'OK', ...
-  'call', @cb_ok);
+  'call', {@cb_ok h0}); % pass the index of the main figure
 
 uicontrol(h_input, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.85 .05 .1 .1], 'str', 'cancel', ...
@@ -112,26 +112,26 @@ end
 
 %-----------------%
 %-cb_ok
-function cb_ok(h, eventdata)
+function cb_ok(h, eventdata, h0)
 
-h0 = get_parent_fig(h);
-
+h = get_parent_fig(h);
 info = [];
-info.dataset = get(findobj(h0, 'tag', 'dataset2read'), 'str');
-info.infofile = get(findobj(h0, 'tag', 'infofile'), 'str');
-optfile = get(findobj(h0, 'tag', 'optfile'), 'str');
+info.dataset = get(findobj(h, 'tag', 'dataset2read'), 'str');
+info.infofile = get(findobj(h, 'tag', 'infofile'), 'str');
+optfile = get(findobj(h, 'tag', 'optfile'), 'str');
 
 if ~isempty(info.dataset) && ...
     ~strcmp(info.infofile, '(click to select)')
   
-  delete(findobj(h0, 'tag', 'newinfo'))
+  delete(findobj(h, 'tag', 'newinfo'))
   drawnow
   
   %-------%
   %-init
-  info = prepare_info(info);
+  [info hdr] = prepare_info(info);
   save_info(info)
   setappdata(h0, 'info', info)
+  setappdata(h0, 'hdr', hdr)
     
   opt_old = getappdata(h0, 'opt'); % necessary for figure handles
   opt = prepare_opt(optfile, opt_old);

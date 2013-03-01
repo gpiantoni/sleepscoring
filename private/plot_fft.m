@@ -1,8 +1,8 @@
-function plot_fft(h, eventdata)
-%PLOT_FFT plot FFT of one channel, 
+function plot_fft(h, eventdata, chan_h)
+%PLOT_FFT plot FFT of one channel,
 %
 % Called by
-%  - cb_readplotdata
+%  - cb_readplotdata (nargin == 1)
 %  - cb_currentpoint>cb_wbup
 %  - plot_fft
 
@@ -22,30 +22,26 @@ chan = [opt.changrp.chan];
 %-----------------%
 %-read label
 cp = false; % current point plot
-if nargin > 0 
+if nargin == 3
   
-  if nargin == 2 && numel(eventdata) == 2
-    
-    %-called by cb_currentpoint
-    cp = true;
-    i_chan = h;
-    if i_chan < 1; i_chan = 1; end
-    if i_chan > numel(chan); i_chan = numel(chan); end
-    
-    fftbeg = eventdata(1);
-    fftend = eventdata(2);
-    if fftbeg < 1; fftbeg = 1; end
-    if fftend < size(dat,2); fftend = size(dat,2); end
-    dat = dat(:, fftbeg:fftend);
-    
-  else
-    
-    %TODO: What does this do?
-%     %-called by popup
-%     opt.fft.i_chan = get(h, 'val');
-%     setappdata(h0, 'opt', opt)
-    
-  end
+  %-called by cb_currentpoint
+  cp = true;
+  i_chan = h;
+  if i_chan < 1; i_chan = 1; end
+  if i_chan > numel(chan); i_chan = numel(chan); end
+  
+  begepoch = (opt.epoch-1) * info.score(info.rater).wndw * info.fsample;
+  fftbeg = round(eventdata(1) * info.fsample - begepoch);
+  fftend = round(eventdata(2) * info.fsample - begepoch);
+  if fftbeg < 1; fftbeg = 1; end
+  if fftend < size(dat,2); fftend = size(dat,2); end
+  dat = dat(:, fftbeg:fftend);
+  
+elseif nargin == 2
+  
+  %-called by plot_fft
+  opt.fft.i_chan = get(h, 'val');
+  setappdata(h0, 'opt', opt)
   
 end
 %-----------------%

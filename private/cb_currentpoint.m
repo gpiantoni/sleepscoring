@@ -2,7 +2,7 @@ function cb_currentpoint(h, eventdata)
 %CB_CURRENTPOINT detect position of current point and act
 %
 % Called by
-%  -
+%  - sleepscoring
 
 h0 = get_parent_fig(h);
 tag = get(gca, 'tag');
@@ -114,6 +114,8 @@ set(p_txt, 'tag', 'Selecting', 'BackgroundColor', [0 0 0], 'Color', [1 1 1])
 
 drawnow
 %-----------------%
+
+plot_fft(h0, [pos2(1,1) pos1(1,1)], pos1(1,2) * opt.ylim(2)) 
 %-------------------------------------%
 
 %-------------------------------------%
@@ -127,7 +129,6 @@ if strcmp(get(h, 'SelectionType'), 'normal')
   set(h,'WindowButtonMotionFcn', '')
   set(h,'WindowButtonUpFcn', '')
   
-  plot_fft(h0)
 end
 %-------------------------------------%
 

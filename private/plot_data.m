@@ -74,7 +74,7 @@ set(opt.axis.data, 'ytick', axes_ylim(1)+1:axes_ylim(2)-1, 'yticklabel', label(e
 %-----------------%
 
 %-----------------%
-%- 1s grid
+%-1s grid
 if opt.grid1s
   for s = timescale(1):timescale(end)
     line([1 1] * s, axes_ylim, 'linestyle', ':', 'color', 'k')

@@ -97,7 +97,7 @@ switch get(h, 'label')
     
     %-----------------%
     %-update score
-    info = prepare_log(info, 'score_backup'); % to test
+    info = prepare_log(info, 'score_backup'); % to tests
     
     if numel(score) == 1 % only one, delete all scoring
       score = score_create(info, [], []);

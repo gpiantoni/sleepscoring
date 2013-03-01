@@ -34,16 +34,16 @@ switch eventdata.Key
     cb_readplotdata(h0)
     %-----------------%
     
-  case {'1' '2' '3' '4' '5' '6' '7' '8' '9' '0'}
+  case {opt.stage.shortcut}
     
     if ~isempty(info.score(info.rater).rater) % no scoring without score sheet
+
       %-----------------%
       %-sleep scoring
-      scored = str2double(eventdata.Key);
-      i_score = find([opt.stage.shortcut] == scored);
+      i_score = find(strcmp({opt.stage.shortcut}, eventdata.Key));
       
       if ~isempty(i_score)
-        info.score{1, info.rater}(opt.epoch) = opt.stage(i_score).code;
+        info.score(info.rater).stage{opt.epoch} = opt.stage(i_score).label;
         save_info(info)
         
         opt.epoch = opt.epoch + 1;
@@ -54,7 +54,7 @@ switch eventdata.Key
         cb_readplotdata(h0)
         
       else
-        fprintf('Button %s does not match any sleep stage (%s)\n', eventdata.Key, sprintf(' %d', [opt.stage.code]))
+        fprintf('Button %s does not match any sleep stage (%s)\n', eventdata.Key, sprintf(' ''%s''', opt.stage.shortcut))
         
       end
       %-----------------%
