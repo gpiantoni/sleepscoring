@@ -50,11 +50,11 @@ else
   %-create children in menu
   for i = 1:size(info.score,2)
     
-    h_m = uimenu(m_rater, 'label', info.score{2,i}, 'call', @cb_rater);
+    h_m = uimenu(m_rater, 'label', info.score(i).rater, 'call', @cb_rater);
     
     if i == info.rater
       set(h_m, 'check', 'on')
-      set(findobj(h0, 'tag', 'p_hypno'), 'Title', ['Hypnogram: ' info.score{2,i}])
+      set(findobj(h0, 'tag', 'p_hypno'), 'Title', ['Hypnogram: ' info.score(i).rater])
     end
     %-------%
   end

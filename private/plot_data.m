@@ -63,14 +63,14 @@ xspan = info.fsample * opt.timegrid;
 xgrid = timescale([1:xspan:end]);
 s2hhmm = @(x) datestr(x / 24 / 60 / 60 + info.beginrec, 'HH:MM:SS'); % convert from seconds to HH:MM format
 timelabel = cellfun(s2hhmm, num2cell(xgrid), 'uni', 0);
-set(gca, 'xtick', xgrid, 'xticklabel', timelabel)
+set(opt.axis.data, 'xtick', xgrid, 'xticklabel', timelabel)
 %-----------------%
 
 %-----------------%
 %-y axes
 axes_ylim = [-1 * (cnt+1) 0];
 ylim(axes_ylim)
-set(gca, 'ytick', axes_ylim(1)+1:axes_ylim(2)-1, 'yticklabel', label(end:-1:1))
+set(opt.axis.data, 'ytick', axes_ylim(1)+1:axes_ylim(2)-1, 'yticklabel', label(end:-1:1))
 %-----------------%
 
 %-----------------%
@@ -101,5 +101,5 @@ end
 
 %-----------------%
 %-expand to full figure
-set(gca,'Unit','normalized','Position',[0.09 0.1 .9 .9])
+set(opt.axis.data,'Unit','normalized','Position',[0.09 0.1 .9 .9])
 %-----------------%

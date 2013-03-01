@@ -29,7 +29,7 @@ hold on
 %-y axes
 st_h = [opt.stage.height];
 [st_h, sst_h] = sort(st_h);
-set(gca, 'ytick', st_h, 'yticklabel', {opt.stage(sst_h).label})
+set(opt.axis.hypno, 'ytick', st_h, 'yticklabel', {opt.stage(sst_h).label})
 ylim([st_h(1) st_h(end) + 1]) % 1 is roughly for the arrow
 %-----------------%
 
@@ -48,7 +48,7 @@ end
 %-xlabel
 s2hhmm = @(x) datestr(x / 24 / 60 / 60  + opt.beginrec, 'HH:MM'); % convert from seconds to HH:MM format
 timelabel = cellfun(s2hhmm, num2cell(timetick_s), 'uni', 0);
-set(gca, 'xtick', timetick_s, 'xticklabel', timelabel)
+set(opt.axis.hypno, 'xtick', timetick_s, 'xticklabel', timelabel)
 %-----------------%
 
 %-----------------%
@@ -83,5 +83,5 @@ end
 
 %-----------------%
 %-expand to full figure
-set(gca, 'Unit','normalized','Position',[0.05 0.1 .9 .9])
+set(opt.axis.hypno, 'Unit','normalized','Position',[0.05 0.1 .9 .9])
 %-----------------%

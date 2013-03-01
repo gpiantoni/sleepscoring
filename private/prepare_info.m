@@ -127,11 +127,3 @@ if ~isfield(info, 'rater')
   info.rater = 1;
 end
 %-----------------%
-
-%-----------------%
-%-INFO TEXT
-set(findobj('tag', 'name_info'), 'str', info.infofile)
-
-[~, filename] = fileparts(info.dataset);
-set(findobj('tag', 'p_data'), 'title', filename)
-%-----------------%

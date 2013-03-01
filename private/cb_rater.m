@@ -13,7 +13,7 @@ rater = info.rater;
 
 %-----------------%
 %-if it's empty, it's the dummy rater. You can't do scoring with this
-if isempty(score{2,1})
+if isempty(score(rater).rater)
   nrater = 0;
 else
   nrater = size(score,2);
@@ -53,11 +53,11 @@ switch get(h, 'label')
     %-prompt
     prompt = {'Rater Name'};
     name = 'Rename Rater Name';
-    defaultanswer = score(rater).rater; % default is the current name
+    defaultanswer = {score(rater).rater}; % default is the current name
     answer = inputdlg(prompt, name, 1, defaultanswer);
     if isempty(answer); return; end
     
-    score(2, rater) = answer(1);
+    score(rater).rater = answer{1};
     %-----------------%
     
   case 'Copy Current Score'
@@ -97,11 +97,13 @@ switch get(h, 'label')
     
     %-----------------%
     %-update score
+    info = prepare_log(info, 'score_backup'); % to test
+    
     if numel(score) == 1 % only one, delete all scoring
       score = score_create(info, [], []);
       rater = 1;
     else
-      score(:, rater) = [];
+      score(rater) = [];
       rater = nrater - 1;
     end
     %-----------------%
@@ -148,7 +150,7 @@ info = prepare_log(info, get(h, 'label'));
 save_info(info)
 setappdata(h0, 'info', info)
 
-update_rater(info)
+update_rater(h0, info)
 cb_readplotdata(h0)
 %-------------------------------------%
 

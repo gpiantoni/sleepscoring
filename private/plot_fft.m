@@ -53,7 +53,7 @@ end
 
 %-------------------------------------%
 %-plotting
-delete(findobj('parent', opt.h.fft))
+delete(findobj(h0, 'parent', opt.h.fft))
 ax = axes('parent', opt.h.fft, 'tag', 'a_fft');
 set(ax, 'pos', [.05 .1 .9 .8], 'uni', 'norm');
 

@@ -40,7 +40,7 @@ switch eventdata.Key
       %-----------------%
       %-sleep scoring
       scored = str2double(eventdata.Key);
-      i_score = find([opt.stage.code] == scored);
+      i_score = find([opt.stage.shortcut] == scored);
       
       if ~isempty(i_score)
         info.score{1, info.rater}(opt.epoch) = opt.stage(i_score).code;

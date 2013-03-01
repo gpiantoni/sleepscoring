@@ -29,7 +29,7 @@ end
 
 %-------%
 %-update epoch info
-set(findobj('tag', 'epochnumber'), 'str', num2str(opt.epoch))
+set(findobj(h0, 'tag', 'epochnumber'), 'str', num2str(opt.epoch))
 setappdata(h0, 'opt', opt);
 %-------%
 %-----------------%

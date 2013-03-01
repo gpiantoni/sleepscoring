@@ -84,7 +84,13 @@ end
 setappdata(h0, 'info', info)
 setappdata(h0, 'opt', opt)
 
-%rename OPT
+
+%-----------------%
+%-INFO TEXT
+set(findobj(h0, 'tag', 'name_info'), 'str', info.infofile)
+[~, filename] = fileparts(info.dataset);
+set(findobj(h0, 'tag', 'p_data'), 'title', filename)
+
 [~, optname] = fileparts(opt.optfile);
 set(findobj(h0, 'tag', 'name_opt'), 'str', ['OPT: ' optname]);
 %-----------------%

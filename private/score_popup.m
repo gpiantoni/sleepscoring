@@ -1,15 +1,14 @@
-function score_popup (info, opt)
+function score_popup(info, opt)
 %POPUP_SCORE create popup in information panel with current score
 % and can be used to modify it too
 % It's not run if the rater name is empty (you need to create a new scorer)
 %
 % Called by
 %  - prepare_info_opt
-%  - sleepscoring
 
 %-------------------------------------%
 %-only with real scores
-if ~isempty(info.score(info.rater))
+if ~isempty(info.score(info.rater).rater)
   
   %-----------------%
   %-find i_score, index of the current scoring
@@ -23,15 +22,15 @@ if ~isempty(info.score(info.rater))
   
   %-----------------%
   %-score
-  delete(findobj('tag', 'popupscore')) % delete in case it already exists
-  uicontrol(findobj('tag', 'p_info'), 'sty', 'popup', 'uni', 'norm', ...
+  delete(findobj(opt.h.main, 'tag', 'popupscore')) % delete in case it already exists
+  uicontrol(findobj(opt.h.main, 'tag', 'p_info'), 'sty', 'popup', 'uni', 'norm', ...
     'pos', [.05 .1 .9 .1], 'str', stages, 'val', i_score, 'tag', 'popupscore', ...
     'call', @cb_score);
   %-----------------%
   
   %-----------------%
   %-markers
-  delete(findobj('tag', 'popupmarker')) % delete in case it already exists
+  delete(findobj(opt.h.main, 'tag', 'popupmarker')) % delete in case it already exists
   uicontrol(opt.h.info, 'sty', 'popup', 'uni', 'norm', ...
     'pos', [.05 .25 .9 .1], 'str', {info.score(info.rater).marker.name}, 'val', opt.marker.i, 'tag', 'popupmarker', ...
     'call', @cb_marker);

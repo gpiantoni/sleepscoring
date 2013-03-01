@@ -19,7 +19,7 @@ if strcmp(tag, 'a_dat')
     
   else
     
-    popup_str = get(findobj('tag', 'popupmarker'), 'str');
+    popup_str = get(findobj(h0, 'tag', 'popupmarker'), 'str');
     if isempty(popup_str); return; end % no score
     
     %-----------------%

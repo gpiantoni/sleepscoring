@@ -60,9 +60,6 @@ opt = prepare_opt(opt);
 
 %-------------------------------------%
 %-create new figure
-h = findobj('tag', 'sleepscoring'); % TODO: remove these lines with multiple windows
-if h; delete(h); end
-
 opt.h.main = figure;
 set(opt.h.main, 'tag', 'sleepscoring', 'name', 'Sleep Scoring', 'numbertitle', 'off', ...
   'closerequestfcn', @cb_closemain)

@@ -21,7 +21,7 @@ dat = getappdata(h0, 'dat');
 %-main window
 %-----------------%
 %-plot data
-delete(findobj('tag', 'a_dat'))
+delete(findobj(h0, 'tag', 'a_dat'))
 axes('parent', opt.h.data, 'tag', 'a_dat');
 
 delete(findobj(h0, 'tag', 'marker'))
@@ -33,8 +33,8 @@ plot_data(info, opt, dat);
 
 %-------------------------------------%
 %-hypnogram
-delete(findobj('tag', 'a_hypno'))
-axes('parent', findobj('tag', 'p_hypno'), 'tag', 'a_hypno');
+delete(findobj(h0, 'tag', 'a_hypno'))
+axes('parent', findobj(h0, 'tag', 'p_hypno'), 'tag', 'a_hypno');
 
 %-------%
 %-info to hypnogram
