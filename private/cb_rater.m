@@ -150,7 +150,9 @@ info = prepare_log(info, get(h, 'label'));
 save_info(info)
 setappdata(h0, 'info', info)
 
-update_rater(h0, info)
+opt = getappdata(h0, 'opt');
+
+update_rater(info, opt.h)
 cb_readplotdata(h0)
 %-------------------------------------%
 

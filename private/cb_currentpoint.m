@@ -5,10 +5,11 @@ function cb_currentpoint(h, eventdata)
 %  - sleepscoring
 
 h0 = get_parent_fig(h);
-tag = get(gca, 'tag');
-pos = get(gca, 'currentpoint');
+opt = getappdata(h0, 'opt');
+ca = gca;
+pos = get(ca, 'currentpoint');
 
-if strcmp(tag, 'a_dat')
+if ca == opt.h.axis.data
   
   %-------------------------------------%
   %-main data
@@ -19,13 +20,13 @@ if strcmp(tag, 'a_dat')
     
   else
     
-    popup_str = get(findobj(h0, 'tag', 'popupmarker'), 'str');
+    popup_str = get(opt.h.panel.info.popupmarker, 'str');
     if isempty(popup_str); return; end % no score
     
     %-----------------%
     %-check if mark already exists
     info = getappdata(h0, 'info');
-    mrktype = get_markertype(h0);
+    mrktype = get_markertype(opt.h.panel.info.popupmarker);
     if isempty(info.score(info.rater).marker(mrktype))
       posmrk = false;
     else
@@ -55,7 +56,7 @@ if strcmp(tag, 'a_dat')
   end
   %-------------------------------------%
   
-elseif strcmp(tag, 'a_hypno')
+elseif ca == opt.h.axis.hypno
   
   %-------------------------------------%
   %-hypnogram
@@ -92,9 +93,9 @@ end
 function cb_box(h0, eventdata, pos1)
 
 opt = getappdata(h0, 'opt');
-pos2 = get(gca, 'CurrentPoint');
+pos2 = get(opt.h.axis.data, 'CurrentPoint');
 
-delete(findobj(h0, 'tag', 'Selecting'))
+delete(findobj(opt.h.axis.data, 'tag', 'Selecting'))
 
 %-----------------%
 %-black line
@@ -123,7 +124,7 @@ function cb_wbup(h, eventdata)
 if strcmp(get(h, 'SelectionType'), 'normal')
 
   h0 = get_parent_fig(h);
-  delete(findobj(h0, 'tag', 'Selecting'))
+  delete(findobj(h0, 'tag', 'Selecting')) % I guess it takes more time to get opt than to search the whole figure
   set(h,'WindowButtonMotionFcn', '')
   set(h,'WindowButtonUpFcn', '')
   
@@ -136,9 +137,9 @@ function cb_range(h, eventdata, pos1)
 
 h0 = get_parent_fig(h);
 opt = getappdata(h0, 'opt');
-pos2 = get(gca, 'CurrentPoint');
+pos2 = get(opt.h.axis.data, 'CurrentPoint');
 
-delete(findobj(h0, 'tag', 'sel_marker'))
+delete(findobj(opt.h.axis.data, 'tag', 'sel_marker'))
 
 %-----------------%
 %-range on yaxis
@@ -180,7 +181,7 @@ end
 function make_marker(h0, pos1, pos2)
 
 info = getappdata(h0, 'info');
-mrktype = get_markertype(h0);
+mrktype = get_markertype(opt.h.panel.info.popupmarker);
 newmrk = sort([pos1(1,1) pos2(1,1)]);
 
 %-----------------%
@@ -226,13 +227,10 @@ cb_plotdata(h0)
 
 %-------------------------------------%
 %-Get Marker type
-function mrktype = get_markertype(h0)
+function mrktype = get_markertype(mrk_h)
 
-mrk_h = findobj(h0, 'tag', 'popupmarker');
 mrk_str = get(mrk_h, 'str');
 mrk_val = get(mrk_h, 'val');
-
-opt = getappdata(h0, 'opt');
 
 mrktype = find(strcmp(opt.marker.name, mrk_str{mrk_val}));
 %-------------------------------------%

@@ -35,7 +35,7 @@ set(h.main, 'KeyPressFcn', @cb_shortcuts)
 %-PANELS
 %-----------------%
 %-create main panels
-h.panel.data.h = uipanel('Title', 'Sleep Data', 'FontSize', 12, 'tag', 'p_data', ...
+h.panel.data.h = uipanel('Title', 'Sleep Data', 'FontSize', 12, ...
   'BackgroundColor','white', ...
   'Position', [opt.marg.l opt.marg.u opt.width.l opt.height.u]);
 
@@ -43,7 +43,7 @@ h.panel.hypno.h = uipanel('Title', 'Recording', 'FontSize', 12, 'tag', 'p_hypno'
   'BackgroundColor','white', ...
   'Position', [opt.marg.l opt.marg.d opt.width.l opt.height.d]);
 
-h.panel.info.h = uipanel('Title', 'Information', 'FontSize', 12, 'tag', 'p_info',...
+h.panel.info.h = uipanel('Title', 'Information', 'FontSize', 12, ...
   'Position', [opt.marg.r opt.marg.u opt.width.r opt.height.u]);
 
 h.panel.fft.h = uipanel('Title', 'PowerSpectrum', 'FontSize', 12, 'tag', 'p_fft', ...
@@ -62,10 +62,10 @@ h.axis.fft = axes('parent', h.panel.fft.h, 'vis', 'off');
 %-create button and various items in the information panel
 %-------%
 %-info
-uicontrol(h.panel.info.h, 'sty', 'text', 'uni', 'norm', ...
-  'pos', [.05 .95 .9 .05], 'str', 'Dataset:', 'tag', 'name_info');
+h.panel.info.infoname = uicontrol(h.panel.info.h, 'sty', 'text', 'uni', 'norm', ...
+  'pos', [.05 .95 .9 .05], 'str', 'Dataset:');
 [~, optname] = fileparts(opt.optfile);
-h.panel.info.optname = h.uicontrol(h.panel.info.h, 'sty', 'text', 'uni', 'norm', ...
+h.panel.info.optname = uicontrol(h.panel.info.h, 'sty', 'text', 'uni', 'norm', ...
   'pos', [.05 .9 .9 .05], 'str', ['OPT: ' optname]);
 %-------%
 
@@ -74,8 +74,8 @@ h.panel.info.optname = h.uicontrol(h.panel.info.h, 'sty', 'text', 'uni', 'norm',
 uicontrol(h.panel.info.h, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.05 .75 .25 .1], 'str', '<<', 'KeyPressFcn', @cb_shortcuts, ...
   'call', @cb_bb);
-uicontrol(h.panel.info.h, 'sty', 'edit', 'uni', 'norm', ...
-  'pos', [.35 .75 .30 .1], 'str', '', 'tag', 'epochnumber','KeyPressFcn', @cb_shortcuts, ...
+h.panel.info.epoch = uicontrol(h.panel.info.h, 'sty', 'edit', 'uni', 'norm', ...
+  'pos', [.35 .75 .30 .1], 'str', '', 'KeyPressFcn', @cb_shortcuts, ...
   'call', @cb_epoch); 
 uicontrol(h.panel.info.h, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.70 .75 .25 .1], 'str', '>>', 'KeyPressFcn', @cb_shortcuts, ...
@@ -104,6 +104,13 @@ h.panel.info.uV75 = uicontrol(h.panel.info.h, 'sty', 'toggle', 'uni', 'norm', ..
 h.panel.info.s1 = uicontrol(h.panel.info.h, 'sty', 'toggle', 'uni', 'norm', ...
   'pos', [.55 .45 .4 .1], 'str', '1s', 'KeyPressFcn', @cb_shortcuts, ...
   'val', opt.grid1s, 'call', @cb_grid1s);
+%-------%
+
+%-------%
+%-empty handles, they'll create by score_popup
+h.panel.info.popupscore = [];
+h.panel.info.popupmarker = []; % XXX: marker
+%-------%
 %-----------------%  
 %-------------------------------------%
 
@@ -122,20 +129,20 @@ uimenu(h.menu.file.h, 'label', 'Save OPT', 'call', @cb_saveopt);
 
 %-----------------%
 %-SCORE
-h.menu.score.h = uimenu(h.main, 'label', 'Sleep Score');
-uimenu(h.menu.score.h, 'label', 'Rater', 'enable', 'off')
-uimenu(h.menu.score.h, 'label', 'New Rater', 'sep', 'on', 'call', @cb_rater)
-uimenu(h.menu.score.h, 'label', 'Rename Rater', 'call', @cb_rater, 'enable', 'off')
-uimenu(h.menu.score.h, 'label', 'Copy Current Score', 'call', @cb_rater, 'enable', 'off')
-uimenu(h.menu.score.h, 'label', 'Merge Scores', 'call', @cb_rater, 'enable', 'off')
-uimenu(h.menu.score.h, 'label', 'Delete Current Score', 'call', @cb_rater, 'enable', 'off')
-uimenu(h.menu.score.h, 'label', 'Import Score from FASST', 'call', @cb_rater)
-uimenu(h.menu.score.h, 'label', 'Score Statistics', 'sep', 'on', 'call', @cb_statistics)
+h.menu.score.h = uimenu(h.main, 'label', 'Sleep Score', 'enable', 'off');
+h.menu.score.rater = uimenu(h.menu.score.h, 'label', 'Rater', 'enable', 'off');
+h.menu.score.new = uimenu(h.menu.score.h, 'label', 'New Rater', 'sep', 'on', 'call', @cb_rater);
+h.menu.score.rename = uimenu(h.menu.score.h, 'label', 'Rename Rater', 'call', @cb_rater, 'enable', 'off');
+h.menu.score.copy = uimenu(h.menu.score.h, 'label', 'Copy Current Score', 'call', @cb_rater, 'enable', 'off');
+h.menu.score.merge = uimenu(h.menu.score.h, 'label', 'Merge Scores', 'call', @cb_rater, 'enable', 'off');
+h.menu.score.delete = uimenu(h.menu.score.h, 'label', 'Delete Current Score', 'call', @cb_rater, 'enable', 'off');
+h.menu.score.fasst = uimenu(h.menu.score.h, 'label', 'Import Score from FASST', 'call', @cb_rater);
+h.menu.score.statistics = uimenu(h.menu.score.h, 'label', 'Score Statistics', 'sep', 'on', 'call', @cb_statistics);
 %-----------------%
 
-h.menu.chan = uimenu(h.main, 'label', 'Channel Selection', 'enable', 'off');
-h.menu.filt = uimenu(h.main, 'label', 'Filter', 'enable', 'off');
-h.menu.ref = uimenu(h.main, 'label', 'Reference', 'enable', 'off');
+h.menu.chan.h = uimenu(h.main, 'label', 'Channel Selection', 'enable', 'off');
+h.menu.filt.h = uimenu(h.main, 'label', 'Filter', 'enable', 'off');
+h.menu.ref.h = uimenu(h.main, 'label', 'Reference', 'enable', 'off');
 %-------------------------------------%
 
 %---------------------------------------------------------%

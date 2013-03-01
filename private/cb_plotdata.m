@@ -18,33 +18,17 @@ dat = getappdata(h0, 'dat');
 %-----------------%
 
 %-------------------------------------%
-%-main window
+%-refresh only data window
+
+%-----------------%
+%-plot markers
+plot_marker(info, opt)
+%-----------------%
+
 %-----------------%
 %-plot data
-delete(findobj(h0, 'tag', 'a_dat'))
-axes(opt.axis.data);
-
-delete(findobj(h0, 'tag', 'marker'))
-plot_marker(info, opt)
-
 plot_data(info, opt, dat);
 %-----------------%
-%-------------------------------------%
-
-%-------------------------------------%
-%-hypnogram
-delete(findobj(opt.axis.hypno, 'tag', 'a_hypno'))
-axes(opt.axis.hypno);
-
-%-------%
-%-info to hypnogram
-opt.beginrec = info.beginrec;
-opt.wndw = info.score(info.rater).wndw;
-%-------%
-
-plot_hypno(opt, info.score(info.rater))
-
-score_popup(info, opt)
 %-------------------------------------%
 
 drawnow

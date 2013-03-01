@@ -21,6 +21,9 @@ chan = [chan{:}];
 cnt = 0;
 label = [];
 
+axes(opt.h.axis.data) % needs to be called inside, otherwise it does not work
+delete(get(opt.h.axis.data, 'child'))
+
 for i = 1:numel(opt.changrp)
   
   linecolor = opt.changrp(i).linecolor;
@@ -64,14 +67,14 @@ xspan = info.fsample * opt.timegrid;
 xgrid = timescale([1:xspan:end]);
 s2hhmm = @(x) datestr(x / 24 / 60 / 60 + info.beginrec, 'HH:MM:SS'); % convert from seconds to HH:MM format
 timelabel = cellfun(s2hhmm, num2cell(xgrid), 'uni', 0);
-set(opt.axis.data, 'xtick', xgrid, 'xticklabel', timelabel)
+set(opt.h.axis.data, 'xtick', xgrid, 'xticklabel', timelabel)
 %-----------------%
 
 %-----------------%
 %-y axes
 axes_ylim = [-1 * (cnt+1) 0];
 ylim(axes_ylim)
-set(opt.axis.data, 'ytick', axes_ylim(1)+1:axes_ylim(2)-1, 'yticklabel', label(end:-1:1))
+set(opt.h.axis.data, 'ytick', axes_ylim(1)+1:axes_ylim(2)-1, 'yticklabel', label(end:-1:1))
 %-----------------%
 
 %-----------------%
@@ -102,5 +105,5 @@ end
 
 %-----------------%
 %-expand to full figure
-set(opt.axis.data,'Unit','normalized','Position',[0.09 0.1 .9 .9])
+set(opt.h.axis.data, 'Unit', 'normalized', 'Position', [0.09 0.1 .9 .9])
 %-----------------%

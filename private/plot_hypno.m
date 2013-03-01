@@ -23,33 +23,36 @@ function plot_hypno(opt, score)
 % Called by
 %  - cb_plotdata
 
-hold on
+delete(get(opt.h.axis.hypno, 'child'))
 
 %-----------------%
 %-y axes
 st_h = [opt.stage.height];
 [st_h, sst_h] = sort(st_h);
-set(opt.axis.hypno, 'ytick', st_h, 'yticklabel', {opt.stage(sst_h).label})
-ylim([st_h(1) st_h(end) + 1]) % 1 is roughly for the arrow
+set(opt.h.axis.hypno, 'ytick', st_h, 'yticklabel', {opt.stage(sst_h).label}, ...
+  'ylim', [st_h(1) st_h(end) + 1]) % 1 is roughly for the arrow
 %-----------------%
 
 %-----------------%
 %-x axes
-xlim([score.score_beg score.score_end])
+set(opt.h.axis.hypno, 'xlim', [score.score_beg score.score_end])
 timetick = (1:floor(score.score_end / 60 / opt.hypnogrid)); % number of ticks
 % timetick = (1:floor( (score.score_end - score.score_beg) / 60 / opt.hypnogrid)); % TODO: why not this?
 timetick_s = timetick * opt.hypnogrid * 60; % in seconds
 
 %-grid
 for i = 1:numel(timetick_s)
-  plot(opt.axis.hypno, timetick_s(i) * [1 1], [st_h(1) st_h(end)], '--k', 'tag', 'a_hypno')
+  plot(opt.h.axis.hypno, timetick_s(i) * [1 1], [st_h(1) st_h(end)], '--k', 'tag', 'a_hypno')
 end
 
 %-xlabel
 s2hhmm = @(x) datestr(x / 24 / 60 / 60  + opt.beginrec, 'HH:MM'); % convert from seconds to HH:MM format
 timelabel = cellfun(s2hhmm, num2cell(timetick_s), 'uni', 0);
-set(opt.axis.hypno, 'xtick', timetick_s, 'xticklabel', timelabel)
+set(opt.h.axis.hypno, 'xtick', timetick_s, 'xticklabel', timelabel)
 %-----------------%
+
+axes(opt.h.axis.hypno)
+hold on
 
 %-----------------%
 %-plot BAR for each stage
@@ -72,6 +75,8 @@ for i = 1:numel(opt.stage)
 end
 %-----------------%
 
+hold on
+
 %-----------------%
 if isfield(opt, 'epoch')
   epochpos = [(opt.epoch - 1) * score.wndw (opt.epoch) * score.wndw] + score.score_beg;
@@ -83,5 +88,5 @@ end
 
 %-----------------%
 %-expand to full figure
-set(opt.axis.hypno, 'Unit','normalized','Position',[0.05 0.1 .9 .9])
+set(opt.h.axis.hypno, 'Unit','normalized','Position',[0.05 0.1 .9 .9])
 %-----------------%

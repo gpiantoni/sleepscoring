@@ -1,4 +1,4 @@
-function update_rater(h0, info)
+function update_rater(info, h)
 %UPDATE_RATER update the rater dropdown menu
 % It's a subfunction of cb_rater, but it's called by prepare_info_opt as
 % well (in case, the info contains already a score)
@@ -9,8 +9,7 @@ function update_rater(h0, info)
 
 %-----------------%
 %-activate menu rater
-m_rater = findobj(h0, 'tag', 'uimenu_rater');
-delete(get(m_rater, 'child'))
+delete(get(h.menu.score.rater, 'child'))
 %-----------------%
 
 %-----------------%
@@ -19,42 +18,42 @@ if isempty(info.score(info.rater).rater)
   
   %-------%
   %-disable buttons
-  set(m_rater, 'enable', 'off')
-  set(findobj(h0, 'label', 'Rename Rater'), 'enable', 'off')
-  set(findobj(h0, 'label', 'Copy Current Score'), 'enable', 'off')
-  set(findobj(h0, 'label', 'Merge Scores'), 'enable', 'off')
-  set(findobj(h0, 'label', 'Delete Current Score'), 'enable', 'off')
-  set(findobj(h0, 'label', 'Score Statistics'), 'enable', 'off')
-  set(findobj(h0, 'tag', 'p_hypno'), 'Title', 'Recording')
+  set(h.menu.score.rater, 'enable', 'off')
+  set(h.menu.score.rename, 'enable', 'off')
+  set(h.menu.score.copy, 'enable', 'off')
+  set(h.menu.score.merge, 'enable', 'off')
+  set(h.menu.score.delete, 'enable', 'off')
+  set(h.menu.score.statistics, 'enable', 'off')
+  set(h.panel.hypno.h, 'Title', 'Recording')
   %-------%
   
   %-------%
   % delete popupmarker
-  delete(findobj(h0, 'tag', 'popupmarker'))
-  delete(findobj(h0, 'tag', 'popupscore'))
+  delete(h.panel.info.popupscore)
+  delete(h.panel.info.popupmarker)
   %-------%
   
 else
   
   %-------%
   %-enable buttons
-  set(m_rater, 'enable', 'on')
-  set(findobj(h0, 'label', 'Rename Rater'), 'enable', 'on')
-  set(findobj(h0, 'label', 'Copy Current Score'), 'enable', 'on')
-  set(findobj(h0, 'label', 'Merge Scores'), 'enable', 'on')
-  set(findobj(h0, 'label', 'Delete Current Score'), 'enable', 'on')
-  set(findobj(h0, 'label', 'Score Statistics'), 'enable', 'on')
+  set(h.menu.score.rater, 'enable', 'on')
+  set(h.menu.score.rename, 'enable', 'on')
+  set(h.menu.score.copy, 'enable', 'on')
+  set(h.menu.score.merge, 'enable', 'on')
+  set(h.menu.score.delete, 'enable', 'on')
+  set(h.menu.score.statistics, 'enable', 'on')
   %-------%
   
   %-------%
   %-create children in menu
   for i = 1:size(info.score,2)
     
-    h_m = uimenu(m_rater, 'label', info.score(i).rater, 'call', @cb_rater);
+    h_m = uimenu(h.menu.score.rater, 'label', info.score(i).rater, 'call', @cb_rater);
     
     if i == info.rater
       set(h_m, 'check', 'on')
-      set(findobj(h0, 'tag', 'p_hypno'), 'Title', ['Hypnogram: ' info.score(i).rater])
+      set(h.panel.hypno.h, 'Title', ['Hypnogram: ' info.score(i).rater])
     end
     %-------%
   end

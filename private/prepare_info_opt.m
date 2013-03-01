@@ -15,6 +15,8 @@ info = getappdata(h0, 'info');
 opt = getappdata(h0, 'opt');
 %-----------------%
 
+%-------------------------------------%
+%-update OPT if necessary
 %-----------------%
 %-assign optfile to info if it doesn't exist (for new datasets)
 if ~isfield(info, 'optfile')
@@ -43,63 +45,74 @@ end
 
 opt.epoch = 1;
 
-%-------------------------------------%
+%-----------------%
 %-channels
-[info opt] = prepare_chan(info, chan);
+[info opt] = prepare_chan(info, opt);
+%-----------------%
 %-------------------------------------%
 
+%---------------------------------------------------------%
+%-FIGURE
 %-------------------------------------%
-%-GUI
-%-----------------%
+%-information
 setappdata(h0, 'info', info)
 setappdata(h0, 'opt', opt)
+%-------------------------------------%
 
-%-----------------%
+%-------------------------------------%
 %-INFO TEXT
-set(findobj(h0, 'tag', 'name_info'), 'str', info.infofile)
+set(opt.h.panel.info.infoname, 'str', info.infofile)
 [~, filename] = fileparts(info.dataset);
-set(findobj(h0, 'tag', 'p_data'), 'title', filename)
+set(opt.h.panel.data.h, 'title', filename)
 
 [~, optname] = fileparts(opt.optfile);
-set(findobj(h0, 'tag', 'name_opt'), 'str', ['OPT: ' optname]);
-%-----------------%
+set(opt.h.panel.info.optname, 'str', ['OPT: ' optname]);
+%-------------------------------------%
 
-%-----------------%
+%-------------------------------------%
+%-enable PLOT
+set(opt.h.axis.data, 'vis', 'on')
+set(opt.h.axis.fft, 'vis', 'on')
+set(opt.h.axis.hypno, 'vis', 'on')
+
+set(h0, 'windowbuttonDownFcn', @cb_currentpoint)
+%-------------------------------------%
+
+%-------------------------------------%
+%-SCORING HELP
 score_popup(info, opt)
-update_rater(h0, info)
-%-----------------%
+update_rater(info, opt.h)
+%-------------------------------------%
 
-%-----------------%
-%-working GUI
-set(findobj(h0, 'label', 'Sleep Score'), 'enable', 'on')
-delete(findobj(h0, 'label', 'Channel Selection'))
-delete(findobj(h0, 'label', 'Filter'))
-delete(findobj(h0, 'label', 'Reference'))
+%-------------------------------------%
+%-enable MENU
+set(opt.h.menu.score.h, 'enable', 'on')
+set(opt.h.menu.chan.h, 'enable', 'on')
+set(opt.h.menu.filt.h, 'enable', 'on')
+set(opt.h.menu.ref.h, 'enable', 'on')
 
 %-----------------%
 %-CHAN SELECTION
-m_chan = uimenu(h0, 'label', 'Channel Selection');
+delete(get(opt.h.menu.chan.h, 'children'))
 for i = 1:numel(opt.changrp)
-  uimenu(m_chan, 'label', opt.changrp(i).chantype, 'call', @cb_select_channel);
+  uimenu(opt.h.menu.chan.h, 'label', opt.changrp(i).chantype, 'call', @cb_select_channel);
 end
 %-----------------%
 
 %-----------------%
 %-FILTER
-m_filt = uimenu(h0, 'label', 'Filter');
+delete(get(opt.h.menu.filt.h, 'children'))
 for i = 1:numel(opt.changrp)
-  uimenu(m_filt, 'label', opt.changrp(i).chantype, 'call', @cb_select_filter);
+  uimenu(opt.h.menu.filt.h, 'label', opt.changrp(i).chantype, 'call', @cb_select_filter);
 end
 %-----------------%
 
 %-----------------%
 %-REFERENCE
-m_ref = uimenu(h0, 'label', 'Reference');
+delete(get(opt.h.menu.ref.h, 'children'))
 for i = 1:numel(opt.changrp)
-  uimenu(m_ref, 'label', opt.changrp(i).chantype, 'call', @cb_select_reference);
+  uimenu(opt.h.menu.ref.h, 'label', opt.changrp(i).chantype, 'call', @cb_select_reference);
 end
 %-----------------%
-
-set(h0, 'windowbuttonDownFcn', @cb_currentpoint)
-%-----------------%
 %-------------------------------------%
+%---------------------------------------------------------%

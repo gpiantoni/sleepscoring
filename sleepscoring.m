@@ -57,7 +57,7 @@ opt = prepare_opt(opt);
 
 %-------------------------------------%
 %-create figure with handles
-opt.h = create_handles;
+opt.h = create_handles(opt);
 %-------------------------------------%
 
 %-------------------------------------%

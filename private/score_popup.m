@@ -15,25 +15,23 @@ if ~isempty(info.score(info.rater).rater)
   stages = {opt.stage.label};
   score = info.score(info.rater).stage{opt.epoch};
   if isempty(score)
-    score = stages(1); % default
+    score = stages(1); % default stage
   end
   i_score = find(strcmp(stages, score));
   %-----------------%
   
   %-----------------%
   %-score
-  delete(findobj(opt.h.main, 'tag', 'popupscore')) % delete in case it already exists
-  uicontrol(findobj(opt.h.main, 'tag', 'p_info'), 'sty', 'popup', 'uni', 'norm', ...
-    'pos', [.05 .1 .9 .1], 'str', stages, 'val', i_score, 'tag', 'popupscore', ...
-    'call', @cb_score);
+  delete(opt.h.panel.info.popupscore)
+  opt.h.panel.info.popupscore = uicontrol(opt.h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
+    'pos', [.05 .1 .9 .1], 'str', stages, 'val', i_score, 'call', @cb_score);
   %-----------------%
   
   %-----------------%
-  %-markers
-  delete(findobj(opt.h.main, 'tag', 'popupmarker')) % delete in case it already exists
-  uicontrol(opt.h.info, 'sty', 'popup', 'uni', 'norm', ...
-    'pos', [.05 .25 .9 .1], 'str', {info.score(info.rater).marker.name}, 'val', opt.marker.i, 'tag', 'popupmarker', ...
-    'call', @cb_marker);
+  %-markers (XXX: MARKER)
+  delete(opt.h.panel.info.popupmarker) % delete in case it already exists
+  opt.h.panel.info.popupmarker = uicontrol(opt.h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
+    'pos', [.05 .25 .9 .1], 'str', {info.score(info.rater).marker.name}, 'val', opt.marker.i, 'call', @cb_marker);
   %-----------------%
   
   drawnow
@@ -62,7 +60,7 @@ cb_readplotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
-function cb_marker(h, eventdata)
+function cb_marker(h, eventdata) % XXX: marker
 
 h0 = get_parent_fig(h);
 opt = getappdata(h0, 'opt');
