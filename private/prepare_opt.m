@@ -131,7 +131,6 @@ end
 %-if openopt from dropdown menu, keep previous handles information
 if nargin == 2
   opt.h = opt_old.h;
-  opt.axis = opt_old.axis;
 end
 %-----------------%
 %-------------------------------------%
