@@ -84,11 +84,12 @@ opt.short.previous = 'comma';
 %-------------------------------------%
 
 %-------------------------------------%
-%-MARKERS (cannot be modified in GUI)
+%-MARKERS
 %-------------------------------------%
-opt.marker.selcolor = [.7 .7 .7]; % color used for selection
+opt.marker.selcolor = [.7 .7 .7]; % color used for selection, cannot be modified in the GUI
 opt.marker.i = 1; % default index of opt.marker.name
-opt.marker.color = {[1 .5 1] [.5 1 1] [1 1 .5]}; % colors, if not enough, they are reused
+opt.marker.name = {'movement' 'arousal' 'artifact'}; % TODO: modify names in GUI
+opt.marker.color = {[1 .5 1] [.5 1 1] [1 1 .5] [.5 .5 1] [.5 1 .5] [1 .5 .5] [1 0 0] [0 1 0] [0 0 1]}; % colors, if not enough, they are reused (cannot be modified in GUI)
 %-------------------------------------%
 
 %-------------------------------------%

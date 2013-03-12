@@ -20,17 +20,17 @@ if ca == opt.h.axis.data
     
   else
     
-    popup_str = get(opt.h.panel.info.popupmarker, 'str');
-    if isempty(popup_str); return; end % no score
+    if isempty(opt.h.panel.info.popupmarker); return; end % no score
+    info = getappdata(h0, 'info');
+    i_mrk = get(opt.h.panel.info.popupmarker, 'val');
     
     %-----------------%
-    %-check if mark already exists
-    info = getappdata(h0, 'info');
-    mrktype = get_markertype(opt.h.panel.info.popupmarker);
-    if isempty(info.score(info.rater).marker(mrktype))
+    %-check if the area was already marked
+    if isempty(info.score(info.rater).marker(i_mrk).time)
       posmrk = false;
     else
-      posmrk = pos(1,1) >= info.score{mrktype,info.rater}(:,1) & pos(1,1) <= info.score{mrktype,info.rater}(:,2);
+      mkrtime = info.score(info.rater).marker(i_mrk).time;
+      posmrk = pos(1,1) >= mkrtime(:,1) & pos(1,1) <= mkrtime(:,2);
     end
     %-----------------%
     
@@ -38,7 +38,7 @@ if ca == opt.h.axis.data
       
       %-----------------%
       %-delete old mark if inside
-      info.score{mrktype,info.rater}(posmrk,:) = [];
+      info.score(info.rater).marker(i_mrk).time(posmrk,:) = [];
       save_info(info)
       setappdata(h0, 'info', info);
       
@@ -46,11 +46,13 @@ if ca == opt.h.axis.data
       %-----------------%
       
     else
+        
       %-----------------%
       %-make new mark
       set(h, 'WindowButtonMotionFcn', {@cb_range, pos})
       set(h, 'WindowButtonUpFcn', {@cb_marker, pos})
       %-----------------%
+      
     end
     
   end
@@ -181,7 +183,8 @@ end
 function make_marker(h0, pos1, pos2)
 
 info = getappdata(h0, 'info');
-mrktype = get_markertype(opt.h.panel.info.popupmarker);
+opt = getappdata(h0, 'opt');
+i_mrk = get(opt.h.panel.info.popupmarker, 'val');
 newmrk = sort([pos1(1,1) pos2(1,1)]);
 
 %-----------------%
@@ -194,24 +197,24 @@ if newmrk(2) > xlim(2); newmrk(2) = xlim(2); end
 %-----------------%
 %-make windows longer if new marker includes part of older marker
 % TODO: With this implementation, it's impossible to "connect" two existing marks and to make one bigger on both sides
-if isempty(info.score(info.rater).marker(mrktype).time)
+if isempty(info.score(info.rater).marker(i_mrk).time)
   addbeg = false;
   addend = false;
   
 else
-  addbeg = newmrk(1) <= info.score(info.rater).marker(mrktype).time(:,1) & newmrk(2) >= info.score(info.rater).marker(mrktype).time(:,1);
-  addend = newmrk(1) <= info.score(info.rater).marker(mrktype).time(:,2) & newmrk(2) >= info.score(info.rater).marker(mrktype).time(:,2);
+  addbeg = newmrk(1) <= info.score(info.rater).marker(i_mrk).time(:,1) & newmrk(2) >= info.score(info.rater).marker(i_mrk).time(:,1);
+  addend = newmrk(1) <= info.score(info.rater).marker(i_mrk).time(:,2) & newmrk(2) >= info.score(info.rater).marker(i_mrk).time(:,2);
   
 end
 
 if any(addbeg)
-  info.score(info.rater).marker(mrktype).time(addbeg,1) = newmrk(1);
+  info.score(info.rater).marker(i_mrk).time(addbeg,1) = newmrk(1);
   
 elseif any(addend)
-  info.score(info.rater).marker(mrktype).time(addend,2) = newmrk(2);
+  info.score(info.rater).marker(i_mrk).time(addend,2) = newmrk(2);
   
 else
-  info.score(info.rater).marker(mrktype).time = [info.score(info.rater).marker(mrktype).time; newmrk];
+  info.score(info.rater).marker(i_mrk).time = [info.score(info.rater).marker(i_mrk).time; newmrk];
   
 end
 %-----------------%
@@ -223,15 +226,5 @@ setappdata(h0, 'info', info);
 
 cb_plotdata(h0)
 %-----------------%
-%-------------------------------------%
-
-%-------------------------------------%
-%-Get Marker type
-function mrktype = get_markertype(mrk_h)
-
-mrk_str = get(mrk_h, 'str');
-mrk_val = get(mrk_h, 'val');
-
-mrktype = find(strcmp(opt.marker.name, mrk_str{mrk_val}));
 %-------------------------------------%
 %---------------------------------------------------------%

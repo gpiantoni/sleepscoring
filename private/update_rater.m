@@ -26,13 +26,7 @@ if isempty(info.score(info.rater).rater)
   set(h.menu.score.statistics, 'enable', 'off')
   set(h.panel.hypno.h, 'Title', 'Recording')
   %-------%
-  
-  %-------%
-  % delete popupmarker
-  delete(h.panel.info.popupscore)
-  delete(h.panel.info.popupmarker)
-  %-------%
-  
+ 
 else
   
   %-------%

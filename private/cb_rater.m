@@ -47,6 +47,15 @@ switch get(h, 'label')
     rater = nrater + 1;
     %-----------------%
     
+    %-----------------%
+    %-add default markers
+    opt = getappdata(h0, 'opt');
+    for i = 1:numel(opt.marker.name)
+        score(rater).marker(i).name = opt.marker.name{i};
+        score(rater).marker(i).time = [];
+    end
+    %-----------------%
+    
   case 'Rename Rater'
     
     %-----------------%
@@ -86,7 +95,7 @@ switch get(h, 'label')
     score(:, rater) = score_merge(score(:, logical(to_merge)));
     %-----------------%
     
-  case 'Delete Current Score'
+  case 'Delete Current Score' % TODO: should remove popupscore
     
     %-----------------%
     ConfirmDel = questdlg('Are you sure that you want to delete the current score?', ...
@@ -108,7 +117,7 @@ switch get(h, 'label')
     end
     %-----------------%
     
-  case 'Import Score from FASST' % to do
+  case 'Import Score from FASST' % TODO
     
     %-----------------%
     %-prompt

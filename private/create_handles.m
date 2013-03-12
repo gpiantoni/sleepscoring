@@ -109,7 +109,7 @@ h.panel.info.s1 = uicontrol(h.panel.info.h, 'sty', 'toggle', 'uni', 'norm', ...
 %-------%
 %-empty handles, they'll create by score_popup
 h.panel.info.popupscore = [];
-h.panel.info.popupmarker = []; % XXX: marker
+h.panel.info.popupmarker = [];
 %-------%
 %-----------------%  
 %-------------------------------------%

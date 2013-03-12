@@ -5,6 +5,14 @@ function score_popup(info, opt)
 %
 % Called by
 %  - prepare_info_opt
+%  - cb_readplotdata
+
+%-delete in any case (useful when the last rater was deleted)
+delete(opt.h.panel.info.popupscore)
+delete(opt.h.panel.info.popupmarker)
+
+opt.h.panel.info.popupscore = [];
+opt.h.panel.info.popupmarker = [];
 
 %-------------------------------------%
 %-only with real scores
@@ -22,20 +30,20 @@ if ~isempty(info.score(info.rater).rater)
   
   %-----------------%
   %-score
-  delete(opt.h.panel.info.popupscore)
   opt.h.panel.info.popupscore = uicontrol(opt.h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
     'pos', [.05 .1 .9 .1], 'str', stages, 'val', i_score, 'call', @cb_score);
   %-----------------%
   
   %-----------------%
-  %-markers (XXX: MARKER)
-  delete(opt.h.panel.info.popupmarker) % delete in case it already exists
+  %-markers
   opt.h.panel.info.popupmarker = uicontrol(opt.h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
     'pos', [.05 .25 .9 .1], 'str', {info.score(info.rater).marker.name}, 'val', opt.marker.i, 'call', @cb_marker);
   %-----------------%
   
-  drawnow
 end
+drawnow
+
+setappdata(opt.h.main, 'opt', opt) % to pass the newly created indeces
 %-------------------------------------%
 
 %---------------------------------------------------------%
@@ -60,11 +68,11 @@ cb_readplotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%
-function cb_marker(h, eventdata) % XXX: marker
+function cb_marker(h, eventdata)
 
 h0 = get_parent_fig(h);
 opt = getappdata(h0, 'opt');
-opt.marker.i = get(h0, 'val');
+opt.marker.i = get(h, 'val');
 setappdata(h0, 'opt', opt)
 %-------------------------------------%
 %---------------------------------------------------------%

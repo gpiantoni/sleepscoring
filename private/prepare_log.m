@@ -115,7 +115,7 @@ log = [log '        ' str_score];
 %-----------------%
 %-markers
 for m = 1:numel(score.marker)
-  if ~isempty(score.marker.time)
+  if ~isempty(score.marker(m).time)
     
     str_mrk = ['     ' score.marker(m).name];
     for i = 1:size(score.marker(m).time,1)

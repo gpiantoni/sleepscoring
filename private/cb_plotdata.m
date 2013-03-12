@@ -19,7 +19,6 @@ dat = getappdata(h0, 'dat');
 
 %-------------------------------------%
 %-refresh only data window
-
 %-----------------%
 %-plot markers
 plot_marker(info, opt)

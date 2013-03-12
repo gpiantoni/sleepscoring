@@ -47,7 +47,7 @@ opt.epoch = 1;
 
 %-----------------%
 %-channels
-[info opt] = prepare_chan(info, opt);
+[info, opt] = prepare_chan(info, opt);
 %-----------------%
 %-------------------------------------%
 

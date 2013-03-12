@@ -27,8 +27,7 @@ score.rater = rater; % can be empty
 score.wndw = wndw;
 score.score_beg = 1 / info.fsample;
 score.score_end = info.hdr.nSamples / info.fsample;
-score.marker.name = [];
-score.marker.time = [];
+score.marker = [];
 
 score.nepoch = floor((score.score_end - score.score_beg) / wndw);
 score.stage = cell(1, score.nepoch);

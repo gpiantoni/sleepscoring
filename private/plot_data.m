@@ -22,7 +22,7 @@ cnt = 0;
 label = [];
 
 axes(opt.h.axis.data) % needs to be called inside, otherwise it does not work
-delete(get(opt.h.axis.data, 'child'))
+delete(findobj(opt.h.axis.data, 'tag', 'data'))
 
 for i = 1:numel(opt.changrp)
   
@@ -33,30 +33,34 @@ for i = 1:numel(opt.changrp)
     chanindx = ismember(chan, c);
     
     cnt = cnt + 1;
-    ft_plot_vector(timescale, dat(chanindx,:), 'color', linecolor, ...
+    hv = ft_plot_vector(timescale, dat(chanindx,:), 'color', linecolor, ...
       'height', 2, 'vlim', opt.ylim, 'vpos', -1 * cnt); % with height you can control distance between lines
+    set(hv, 'tag', 'data')
     
     %-----------------%
     %-line at zero
     if opt.grid0
-      ft_plot_vector(timescale, zeros(size(timescale)), 'color', linecolor, 'style', ':', ...
+      hv = ft_plot_vector(timescale, zeros(size(timescale)), 'color', linecolor, 'style', ':', ...
         'height', 2, 'vlim', opt.ylim, 'vpos', -1 * cnt);
+      set(hv, 'tag', 'data')
     end
     %-----------------%
     
     %-----------------%
     %- +/- 75uV grid
     if strcmp(opt.changrp(i).chantype, 'eeg') && opt.grid75
-      ft_plot_vector(timescale, p75, 'color', linecolor, 'style', '--', ...
+      hv = ft_plot_vector(timescale, p75, 'color', linecolor, 'style', '--', ...
         'height', 2, 'vlim', opt.ylim, 'vpos', -1 * cnt);
-      ft_plot_vector(timescale, d75, 'color', linecolor, 'style', '--', ...
+      set(hv, 'tag', 'data')
+      hv = ft_plot_vector(timescale, d75, 'color', linecolor, 'style', '--', ...
         'height', 2, 'vlim', opt.ylim, 'vpos', -1 * cnt);
+      set(hv, 'tag', 'data')
     end
     %-----------------%
     
   end
   
-  label = [label opt.changrp(i).chan];  
+  label = [label opt.changrp(i).chan];
   
 end
 
@@ -89,7 +93,7 @@ end
 %-----------------%
 %-plot score on top
 if ~isempty(info.score(info.rater).rater)
-
+  
   stages = {opt.stage.label};
   score = info.score(info.rater).stage{opt.epoch};
   
@@ -98,7 +102,7 @@ if ~isempty(info.score(info.rater).rater)
   end
   i_score = strcmp(stages, score);
   
- ft_plot_box([timescale([1 end]) -opt.scoreheight 0], 'FaceColor', opt.stage(i_score).color)
+  ft_plot_box([timescale([1 end]) -opt.scoreheight 0], 'FaceColor', opt.stage(i_score).color)
   
 end
 %-----------------%
