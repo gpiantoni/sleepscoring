@@ -108,8 +108,13 @@ h.panel.info.s1 = uicontrol(h.panel.info.h, 'sty', 'toggle', 'uni', 'norm', ...
 
 %-------%
 %-empty handles, they'll create by score_popup
-h.panel.info.popupscore = [];
-h.panel.info.popupmarker = [];
+h.panel.info.popupscore = uicontrol(h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
+  'pos', [.05 .1 .9 .1], 'str', {''}, 'val', 1, ... % 'str' and 'val' have default values
+ 'vis', 'off', 'call', @cb_score);
+
+h.panel.info.popupmarker = uicontrol(h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
+  'pos', [.05 .25 .9 .1], 'str', {''}, 'val', 1, ... % 'str' and 'val' have default values
+  'vis', 'off', 'call', @cb_marker); 
 %-------%
 %-----------------%  
 %-------------------------------------%
@@ -369,5 +374,34 @@ info = prepare_log(info, 'closeinfo');
 save_info(info)
 
 delete(h0);
+%-------------------------------------%
+
+%-------------------------------------%
+%-callback: replot figure after changing score
+function cb_score(h, eventdata)
+
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
+
+i_score = get(h, 'val');
+info.score(info.rater).stage{opt.epoch} = opt.stage(i_score).label;
+save_info(info)
+setappdata(h0, 'info', info)
+
+opt.epoch = opt.epoch + 1;
+setappdata(h0, 'opt', opt)
+
+cb_readplotdata(h0)
+%-------------------------------------%
+
+%-------------------------------------%
+%-callback: change value for marker
+function cb_marker(h, eventdata)
+
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
+opt.marker.i = get(h, 'val');
+setappdata(h0, 'opt', opt)
 %-------------------------------------%
 %---------------------------------------------------------%

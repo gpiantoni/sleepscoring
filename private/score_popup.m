@@ -7,13 +7,6 @@ function score_popup(info, opt)
 %  - prepare_info_opt
 %  - cb_readplotdata
 
-%-delete in any case (useful when the last rater was deleted)
-delete(opt.h.panel.info.popupscore)
-delete(opt.h.panel.info.popupmarker)
-
-opt.h.panel.info.popupscore = [];
-opt.h.panel.info.popupmarker = [];
-
 %-------------------------------------%
 %-only with real scores
 if ~isempty(info.score(info.rater).rater)
@@ -30,49 +23,22 @@ if ~isempty(info.score(info.rater).rater)
   
   %-----------------%
   %-score
-  opt.h.panel.info.popupscore = uicontrol(opt.h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
-    'pos', [.05 .1 .9 .1], 'str', stages, 'val', i_score, 'call', @cb_score);
+  set(opt.h.panel.info.popupscore, 'str', stages, ...
+    'val', i_score, 'vis', 'on');
   %-----------------%
   
   %-----------------%
   %-markers
-  opt.h.panel.info.popupmarker = uicontrol(opt.h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
-    'pos', [.05 .25 .9 .1], 'str', {info.score(info.rater).marker.name}, 'val', opt.marker.i, 'call', @cb_marker);
+  set(opt.h.panel.info.popupmarker, 'str', {info.score(info.rater).marker.name}, ...
+    'val', opt.marker.i, 'vis', 'on');
   %-----------------%
+
+else
   
+  %-return to default (for example, if rater was deleted)
+  set(opt.h.panel.info.popupscore, 'str', {''}, 'val', 1, 'vis', 'off');
+  set(opt.h.panel.info.popupmarker, 'str', {''}, 'val', 1, 'vis', 'off');
+
 end
 drawnow
-
-setappdata(opt.h.main, 'opt', opt) % to pass the newly created indeces
 %-------------------------------------%
-
-%---------------------------------------------------------%
-%-CALLBACKS
-%---------------------------------------------------------%
-%-------------------------------------%
-function cb_score(h, eventdata)
-
-h0 = get_parent_fig(h);
-info = getappdata(h0, 'info');
-opt = getappdata(h0, 'opt');
-
-i_score = get(h, 'val');
-info.score(info.rater).stage{opt.epoch} = opt.stage(i_score).label;
-save_info(info)
-setappdata(h0, 'info', info)
-
-opt.epoch = opt.epoch + 1;
-setappdata(h0, 'opt', opt)
-
-cb_readplotdata(h0)
-%-------------------------------------%
-
-%-------------------------------------%
-function cb_marker(h, eventdata)
-
-h0 = get_parent_fig(h);
-opt = getappdata(h0, 'opt');
-opt.marker.i = get(h, 'val');
-setappdata(h0, 'opt', opt)
-%-------------------------------------%
-%---------------------------------------------------------%
