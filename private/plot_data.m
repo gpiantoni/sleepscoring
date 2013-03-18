@@ -23,6 +23,7 @@ label = [];
 
 axes(opt.h.axis.data) % needs to be called inside, otherwise it does not work
 delete(findobj(opt.h.axis.data, 'tag', 'data'))
+delete(findobj(opt.h.axis.data, 'tag', 'topscore'))
 
 for i = 1:numel(opt.changrp)
   
@@ -93,7 +94,7 @@ end
 %-----------------%
 %-plot score on top
 if ~isempty(info.score(info.rater).rater)
-  
+    
   stages = {opt.stage.label};
   score = info.score(info.rater).stage{opt.epoch};
   
@@ -102,7 +103,8 @@ if ~isempty(info.score(info.rater).rater)
   end
   i_score = strcmp(stages, score);
   
-  ft_plot_box([timescale([1 end]) -opt.scoreheight 0], 'FaceColor', opt.stage(i_score).color)
+  hb = ft_plot_box([timescale([1 end]) -opt.scoreheight 0], 'FaceColor', opt.stage(i_score).color);
+  set(hb, 'tag', 'topscore')
   
 end
 %-----------------%
