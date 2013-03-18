@@ -95,7 +95,7 @@ switch get(h, 'label')
     score(:, rater) = score_merge(score(:, logical(to_merge)));
     %-----------------%
     
-  case 'Delete Current Score' % TODO: should remove popupscore
+  case 'Delete Current Score'
     
     %-----------------%
     ConfirmDel = questdlg('Are you sure that you want to delete the current score?', ...
@@ -114,29 +114,6 @@ switch get(h, 'label')
     else
       score(rater) = [];
       rater = nrater - 1;
-    end
-    %-----------------%
-    
-  case 'Import Score from FASST' % TODO
-    
-    %-----------------%
-    %-prompt
-    [filename, pathname] = uigetfile('*.mat', 'Select FASST file');
-    if ~filename; return; end
-    warning off % class to struct warning
-    load([pathname filename], 'D')
-    warning on
-    %-----------------%
-    
-    %-----------------%
-    %-merge the scores
-    if isfield(D.other, 'CRC') && isfield(D.other.CRC, 'score')
-      newscore = D.other.CRC.score;
-      nnewscore = size(newscore,2); % number of new scores
-      
-      score(:, (1:nnewscore) + nrater) = newscore(1:7,:);
-      
-      rater = nrater + 1;
     end
     %-----------------%
     

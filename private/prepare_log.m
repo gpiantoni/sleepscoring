@@ -67,9 +67,6 @@ switch action
     
   case 'Delete Current Score'
     log = [log 'DELETE SCORE']; % original name is not available
-    
-  case 'Import Score from FASST'
-    log = [log 'IMPORTED SCORE FROM FAAST: N.A.'];
     %-----------------%
     
     %-----------------%
