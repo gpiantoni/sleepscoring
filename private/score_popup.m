@@ -29,16 +29,22 @@ if ~isempty(info.score(info.rater).rater)
   
   %-----------------%
   %-markers
-  set(opt.h.panel.info.popupmarker, 'str', {info.score(info.rater).marker.name}, ...
+  set(opt.h.panel.info.marker.popup, 'str', {info.score(info.rater).marker.name}, ...
     'val', opt.marker.i, 'vis', 'on');
+  set(opt.h.panel.info.marker.bb, 'vis', 'on');
+  set(opt.h.panel.info.marker.edit, 'vis', 'on');
+  set(opt.h.panel.info.marker.ff, 'vis', 'on');
   %-----------------%
-
+  
 else
   
   %-return to default (for example, if rater was deleted)
   set(opt.h.panel.info.popupscore, 'str', {''}, 'val', 1, 'vis', 'off');
-  set(opt.h.panel.info.popupmarker, 'str', {''}, 'val', 1, 'vis', 'off');
-
+  set(opt.h.panel.info.marker.popup, 'str', {''}, 'val', 1, 'vis', 'off');
+  set(opt.h.panel.info.marker.bb, 'vis', 'off');
+  set(opt.h.panel.info.marker.edit, 'vis', 'off');
+  set(opt.h.panel.info.marker.ff, 'vis', 'off');
+  
 end
 drawnow
 %-------------------------------------%

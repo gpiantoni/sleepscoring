@@ -107,14 +107,21 @@ h.panel.info.s1 = uicontrol(h.panel.info.h, 'sty', 'toggle', 'uni', 'norm', ...
 %-------%
 
 %-------%
-%-empty handles, they'll create by score_popup
+%-score and marker popup
 h.panel.info.popupscore = uicontrol(h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
-  'pos', [.05 .1 .9 .1], 'str', {''}, 'val', 1, ... % 'str' and 'val' have default values
+  'pos', [.05 .3 .9 .1], 'str', {''}, 'val', 1, ... % 'str' and 'val' have default values
  'vis', 'off', 'call', @cb_score);
 
-h.panel.info.popupmarker = uicontrol(h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
-  'pos', [.05 .25 .9 .1], 'str', {''}, 'val', 1, ... % 'str' and 'val' have default values
+h.panel.info.marker.popup = uicontrol(h.panel.info.h, 'sty', 'popup', 'uni', 'norm', ...
+  'pos', [.05 .15 .9 .1], 'str', {''}, 'val', 1, ... % 'str' and 'val' have default values
   'vis', 'off', 'call', @cb_marker); 
+
+h.panel.info.marker.bb = uicontrol(h.panel.info.h, 'sty', 'push', 'uni', 'norm', ...
+  'pos', [.05 .05 .25 .1], 'str', '<<', 'vis', 'off', 'call', @cb_mbb);
+h.panel.info.marker.edit = uicontrol(h.panel.info.h, 'sty', 'push', 'uni', 'norm', ...
+  'pos', [.35 .05 .30 .1], 'str', 'edit', 'vis', 'off', 'call', @cb_medit);
+h.panel.info.marker.ff = uicontrol(h.panel.info.h, 'sty', 'push', 'uni', 'norm', ...
+  'pos', [.70 .05 .25 .1], 'str', '>>', 'vis', 'off', 'call', @cb_mff);
 %-------%
 %-----------------%  
 %-------------------------------------%
@@ -403,5 +410,29 @@ h0 = get_parent_fig(h);
 opt = getappdata(h0, 'opt');
 opt.marker.i = get(h, 'val');
 setappdata(h0, 'opt', opt)
+%-------------------------------------%
+
+%-------------------------------------%
+%-callback: move to previous epoch with marker
+function cb_mbb(h, eventdata)
+
+% h0 = get_parent_fig(h);
+% opt = getappdata(h0, 'opt');
+% opt.epoch = opt.epoch + 1;
+% setappdata(h0, 'opt', opt);
+
+cb_readplotdata(h0)
+%-------------------------------------%
+
+%-------------------------------------%
+%-callback: move to next epoch with marker
+function cb_mff(h, eventdata)
+
+% h0 = get_parent_fig(h);
+% opt = getappdata(h0, 'opt');
+% opt.epoch = opt.epoch + 1;
+% setappdata(h0, 'opt', opt);
+
+cb_readplotdata(h0)
 %-------------------------------------%
 %---------------------------------------------------------%

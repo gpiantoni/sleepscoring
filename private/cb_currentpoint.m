@@ -20,9 +20,9 @@ if ca == opt.h.axis.data
     
   else
     
-    if isempty(opt.h.panel.info.popupmarker); return; end % no score
+    if isempty(opt.h.panel.info.marker.popup); return; end % no score
     info = getappdata(h0, 'info');
-    i_mrk = get(opt.h.panel.info.popupmarker, 'val');
+    i_mrk = get(opt.h.panel.info.marker.popup, 'val');
     
     %-----------------%
     %-check if the area was already marked
@@ -184,7 +184,7 @@ function make_marker(h0, pos1, pos2)
 
 info = getappdata(h0, 'info');
 opt = getappdata(h0, 'opt');
-i_mrk = get(opt.h.panel.info.popupmarker, 'val');
+i_mrk = get(opt.h.panel.info.marker.popup, 'val');
 newmrk = sort([pos1(1,1) pos2(1,1)]);
 
 %-----------------%
