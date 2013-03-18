@@ -32,7 +32,6 @@ if ~isempty(info.score(info.rater).rater)
   set(opt.h.panel.info.marker.popup, 'str', {info.score(info.rater).marker.name}, ...
     'val', opt.marker.i, 'vis', 'on');
   set(opt.h.panel.info.marker.bb, 'vis', 'on');
-  set(opt.h.panel.info.marker.edit, 'vis', 'on');
   set(opt.h.panel.info.marker.ff, 'vis', 'on');
   %-----------------%
   
@@ -42,7 +41,6 @@ else
   set(opt.h.panel.info.popupscore, 'str', {''}, 'val', 1, 'vis', 'off');
   set(opt.h.panel.info.marker.popup, 'str', {''}, 'val', 1, 'vis', 'off');
   set(opt.h.panel.info.marker.bb, 'vis', 'off');
-  set(opt.h.panel.info.marker.edit, 'vis', 'off');
   set(opt.h.panel.info.marker.ff, 'vis', 'off');
   
 end
