@@ -6,7 +6,7 @@ function cb_shortcuts(h, eventdata)
 % 0 to 9 -> sleep stage, depending on code
 %
 % Called by
-%  - sleepscoring
+%  - create_handles
 
 h0 = get_parent_fig(h);
 info = getappdata(h0, 'info');

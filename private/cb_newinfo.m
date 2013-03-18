@@ -2,7 +2,7 @@ function cb_newinfo(h, eventdata)
 %CB_NEWINFO create GUI to enter information for a new dataset
 %
 % Called by
-%  - sleepscoring
+%  - create_handles
 
 %-------------------------------------%
 %-new figure
