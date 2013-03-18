@@ -416,10 +416,16 @@ setappdata(h0, 'opt', opt)
 %-callback: move to previous epoch with marker
 function cb_mbb(h, eventdata)
 
-% h0 = get_parent_fig(h);
-% opt = getappdata(h0, 'opt');
-% opt.epoch = opt.epoch + 1;
-% setappdata(h0, 'opt', opt);
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
+
+epoch = get_epoch(info, opt);
+% following epoch with markers
+opt.epoch = epoch(find(epoch < opt.epoch, 1, 'last')); 
+if isempty(opt.epoch); return; end
+
+setappdata(h0, 'opt', opt);
 
 cb_readplotdata(h0)
 %-------------------------------------%
@@ -428,11 +434,38 @@ cb_readplotdata(h0)
 %-callback: move to next epoch with marker
 function cb_mff(h, eventdata)
 
-% h0 = get_parent_fig(h);
-% opt = getappdata(h0, 'opt');
-% opt.epoch = opt.epoch + 1;
-% setappdata(h0, 'opt', opt);
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
+
+epoch = get_epoch(info, opt);
+% following epoch with markers
+opt.epoch = epoch(find(epoch > opt.epoch, 1)); 
+if isempty(opt.epoch); return; end
+
+setappdata(h0, 'opt', opt);
 
 cb_readplotdata(h0)
 %-------------------------------------%
+%---------------------------------------------------------%
+
+%---------------------------------------------------------%
+%-SUBFUNCTION
+%---------------------------------------------------------%
+%-------------------------------------%
+%-find epochs with markers
+function epoch = get_epoch(info, opt)
+
+wndw = info.score(info.rater).wndw;
+beginsleep = info.score(info.rater).score_beg;
+
+if isempty(info.score.marker(opt.marker.i).time)
+  epoch = [];
+  return
+end
+
+begmarker = info.score.marker(opt.marker.i).time(:,1);
+
+epoch = (begmarker - beginsleep) / wndw + 1;
+epoch = unique(floor(epoch));
 %---------------------------------------------------------%
