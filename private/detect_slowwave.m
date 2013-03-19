@@ -141,14 +141,14 @@ end
 swcnt = 0;
 SW = [];
 
-for r = 1:numel(datroi.label)
+for r = 1:numel(data.label)
   
-  ft_progress('init', cfg.feedback, ['Looping over ' num2str(numel(datroi.trial)) ' trials'])
+  ft_progress('init', cfg.feedback, ['Looping over ' num2str(numel(data.trial)) ' trials'])
   
-  for trl = 1:numel(datroi.trial);
+  for trl = 1:numel(data.trial);
     
-    ft_progress(trl / numel(datroi.trial))
-    x  = datroi.trial{trl}(r,:);
+    ft_progress(trl / numel(data.trial))
+    x  = data.trial{trl}(r,:);
     
     %-----------------%
     %- 1. less than negthr
@@ -204,16 +204,16 @@ for r = 1:numel(datroi.label)
       
       SW(swcnt).negpeak_val = neg_v;
       SW(swcnt).negpeak_itrl  = sw_zcr(neg_i,2);
-      SW(swcnt).negpeak_iabs  = datroi.sampleinfo(trl, 1) + SW(swcnt).negpeak_itrl;
-      SW(swcnt).negpeak_time  = datroi.time{trl}(SW(swcnt).negpeak_itrl);
+      SW(swcnt).negpeak_iabs  = data.sampleinfo(trl, 1) + SW(swcnt).negpeak_itrl;
+      SW(swcnt).negpeak_time  = data.time{trl}(SW(swcnt).negpeak_itrl);
       
       SW(swcnt).begsw_itrl = sw_zcr(neg_i, 4);
-      SW(swcnt).begsw_iabs = datroi.sampleinfo(trl, 1) + SW(swcnt).begsw_itrl;
-      SW(swcnt).begsw_time = datroi.time{trl}(SW(swcnt).begsw_itrl);
+      SW(swcnt).begsw_iabs = data.sampleinfo(trl, 1) + SW(swcnt).begsw_itrl;
+      SW(swcnt).begsw_time = data.time{trl}(SW(swcnt).begsw_itrl);
       
       SW(swcnt).zcr_itrl = sw_zcr(neg_i, 5) -1;
-      SW(swcnt).zcr_iabs = datroi.sampleinfo(trl, 1) + SW(swcnt).zcr_itrl -1;
-      SW(swcnt).zcr_time = datroi.time{trl}(SW(swcnt).zcr_itrl);
+      SW(swcnt).zcr_iabs = data.sampleinfo(trl, 1) + SW(swcnt).zcr_itrl -1;
+      SW(swcnt).zcr_time = data.time{trl}(SW(swcnt).zcr_itrl);
       
     end
     %-----------------%
@@ -260,7 +260,7 @@ for sw = 1:numel(SW)
   begsw = SW(sw).begsw_itrl;
   endsw = SW(sw).zcr_itrl + cfg.postzcr * data.fsample;
   
-  x  = mean(datroi.trial{SW(sw).trl},1);
+  x  = mean(data.trial{SW(sw).trl},1);
   if endsw > size(x,2)
     endsw = size(x,2);
   end
@@ -273,7 +273,7 @@ for sw = 1:numel(SW)
   SW(sw).pospeak_val = pos_v;
   SW(sw).pospeak_itrl = SW(sw).begsw_itrl + pos_i - 1;
   SW(sw).pospeak_iabs = SW(sw).begsw_iabs + pos_i - 1;
-  SW(sw).pospeak_time = datroi.time{SW(sw).trl}( SW(sw).pospeak_itrl );
+  SW(sw).pospeak_time = data.time{SW(sw).trl}( SW(sw).pospeak_itrl );
 end
 %-----------------%
 

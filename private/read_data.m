@@ -1,4 +1,4 @@
-function dat = read_data(info, opt, hdr)
+function [dat sample] = read_data(info, opt, hdr)
 %READ_DATA read data from disk
 % 
 % INFO
@@ -29,6 +29,7 @@ beginsleep = info.score(info.rater).score_beg;
 
 begsample = (opt.epoch - 1) * wndw * info.fsample + beginsleep * info.fsample;
 endsample = begsample + wndw * info.fsample - 1;
+sample = [begsample endsample];
 %-----------------%
 
 %-------------------------------------%
