@@ -1,7 +1,14 @@
-function save_info
+function save_info(info)
 %SAVE_INFO save dataset information, to be called after each modification
-
-info = getappdata(0, 'info');
+%
+% Called by:
+%  - cb_newinfo
+%  - cb_rater
+%  - cb_shortcuts
+%  - score_popup>cb_score
+%  - sleepscoring
+%  - sleepscoring>cb_openinfo
+%  - sleepscoring>cb_closemain
 
 %-----------------%
 %-save to file

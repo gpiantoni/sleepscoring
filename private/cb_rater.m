@@ -1,15 +1,19 @@
-function cb_rater(h0, eventdata)
+function cb_rater(h, eventdata)
 %CB_RATER deals with all the functions about scoring
+%
+% Called by
+%  - sleepscoring
 
 %-------------------------------------%
 %-INFO about scores
-info = getappdata(0, 'info');
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
 score = info.score;
 rater = info.rater;
 
 %-----------------%
 %-if it's empty, it's the dummy rater. You can't do scoring with this
-if isempty(score{2,1})
+if isempty(score(rater).rater)
   nrater = 0;
 else
   nrater = size(score,2);
@@ -19,7 +23,7 @@ end
 
 %-------------------------------------%
 %-operation depends on button press
-switch get(h0, 'label')
+switch get(h, 'label')
   
   case 'New Rater'
     
@@ -38,9 +42,18 @@ switch get(h0, 'label')
     
     %-----------------%
     %-update score
-    newscore = prepare_score(info, newrater, wndw);
-    score(:, nrater + 1) = newscore;
+    newscore = score_create(info, newrater, wndw);
+    score(nrater + 1) = newscore;
     rater = nrater + 1;
+    %-----------------%
+    
+    %-----------------%
+    %-add default markers
+    opt = getappdata(h0, 'opt');
+    for i = 1:numel(opt.marker.name)
+        score(rater).marker(i).name = opt.marker.name{i};
+        score(rater).marker(i).time = [];
+    end
     %-----------------%
     
   case 'Rename Rater'
@@ -49,19 +62,19 @@ switch get(h0, 'label')
     %-prompt
     prompt = {'Rater Name'};
     name = 'Rename Rater Name';
-    defaultanswer = score(2, rater); % default is the current name
+    defaultanswer = {score(rater).rater}; % default is the current name
     answer = inputdlg(prompt, name, 1, defaultanswer);
     if isempty(answer); return; end
     
-    score(2, rater) = answer(1);
+    score(rater).rater = answer{1};
     %-----------------%
     
   case 'Copy Current Score'
     
     %-----------------%
     %-update score
-    score(:, nrater + 1) = score(:, rater);
-    score{2, nrater + 1} = [score{2, rater} ' (copy)'];
+    score(nrater + 1) = score(rater);
+    score(nrater + 1).rater = [score(rater).rater ' (copy)'];
     
     rater = nrater + 1;
     %-----------------%
@@ -70,7 +83,7 @@ switch get(h0, 'label')
     
     %-----------------%
     %-prompt
-    to_merge = select_merge_score(score(2,:));
+    to_merge = score_merge_select(score(2,:));
     if isempty(to_merge)
       return
     end
@@ -79,7 +92,7 @@ switch get(h0, 'label')
     %-----------------%
     %-update score
     rater = nrater + 1;
-    score(:, rater) = merge_score(score(:, logical(to_merge)));
+    score(:, rater) = score_merge(score(:, logical(to_merge)));
     %-----------------%
     
   case 'Delete Current Score'
@@ -93,35 +106,14 @@ switch get(h0, 'label')
     
     %-----------------%
     %-update score
-    if size(score, 2) == 1 % only one, delete all scoring
-      score = prepare_score(info);
+    info = prepare_log(info, 'score_backup'); % to tests
+    
+    if numel(score) == 1 % only one, delete all scoring
+      score = score_create(info, [], []);
       rater = 1;
     else
-      score(:, rater) = [];
+      score(rater) = [];
       rater = nrater - 1;
-    end
-    %-----------------%
-    
-  case 'Import Score from FASST'
-    
-    %-----------------%
-    %-prompt
-    [filename, pathname] = uigetfile('*.mat', 'Select FASST file');
-    if ~filename; return; end
-    warning off % class to struct warning
-    load([pathname filename], 'D')
-    warning on
-    %-----------------%
-    
-    %-----------------%
-    %-merge the scores
-    if isfield(D.other, 'CRC') && isfield(D.other.CRC, 'score')
-      newscore = D.other.CRC.score;
-      nnewscore = size(newscore,2); % number of new scores
-      
-      score(:, (1:nnewscore) + nrater) = newscore(1:7,:);
-      
-      rater = nrater + 1;
     end
     %-----------------%
     
@@ -129,7 +121,7 @@ switch get(h0, 'label')
     
     %-----------------%
     % name of the rater, called by update_rater
-    rater = find(strcmp(score(2,:), get(h0, 'label')));
+    rater = find(strcmp({score.rater}, get(h, 'label')));
     %-----------------%
     
 end
@@ -139,11 +131,14 @@ end
 %-update info
 info.rater = rater;
 info.score = score;
-info = prepare_log( get(h0, 'label'), info);
+info = prepare_log(info, get(h, 'label'));
 
-setappdata(0, 'info', info)
-save_info()
-update_rater(info)
-cb_readplotdata()
+save_info(info)
+setappdata(h0, 'info', info)
+
+opt = getappdata(h0, 'opt');
+
+update_rater(info, opt.h)
+cb_readplotdata(h0)
 %-------------------------------------%
 

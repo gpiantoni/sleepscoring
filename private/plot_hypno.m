@@ -18,40 +18,47 @@ function plot_hypno(opt, score)
 %    .color: the color used for plotting
 %    .height: the height of the bar
 %
-% SCORE as one-column cell from FASST
+% SCORE 
+%
+% Called by
+%  - cb_plotdata
 
-hold on
+delete(get(opt.h.axis.hypno, 'child'))
 
 %-----------------%
 %-y axes
 st_h = [opt.stage.height];
 [st_h, sst_h] = sort(st_h);
-set(gca, 'ytick', st_h, 'yticklabel', {opt.stage(sst_h).label})
-ylim([st_h(1) st_h(end) + 1]) % 1 is roughly for the arrow
+set(opt.h.axis.hypno, 'ytick', st_h, 'yticklabel', {opt.stage(sst_h).label}, ...
+  'ylim', [st_h(1) st_h(end) + 1]) % 1 is roughly for the arrow
 %-----------------%
 
 %-----------------%
 %-x axes
-xlim(score{4})
-timetick = (1:floor(score{4}(2) / 60 / opt.hypnogrid)); % number of ticks
+set(opt.h.axis.hypno, 'xlim', [score.score_beg score.score_end])
+timetick = (1:floor(score.score_end / 60 / opt.hypnogrid)); % number of ticks
+% timetick = (1:floor( (score.score_end - score.score_beg) / 60 / opt.hypnogrid)); % TODO: why not this?
 timetick_s = timetick * opt.hypnogrid * 60; % in seconds
 
 %-grid
 for i = 1:numel(timetick_s)
-  plot(timetick_s(i) * [1 1], [st_h(1) st_h(end)], '--k')
+  plot(opt.h.axis.hypno, timetick_s(i) * [1 1], [st_h(1) st_h(end)], '--k', 'tag', 'a_hypno')
 end
 
 %-xlabel
 s2hhmm = @(x) datestr(x / 24 / 60 / 60  + opt.beginrec, 'HH:MM'); % convert from seconds to HH:MM format
 timelabel = cellfun(s2hhmm, num2cell(timetick_s), 'uni', 0);
-set(gca, 'xtick', timetick_s, 'xticklabel', timelabel)
+set(opt.h.axis.hypno, 'xtick', timetick_s, 'xticklabel', timelabel)
 %-----------------%
+
+axes(opt.h.axis.hypno)
+hold on
 
 %-----------------%
 %-plot BAR for each stage
 %plotbar as last because it covers the grid
 for i = 1:numel(opt.stage)
-  epochs = find(score{1,1} == opt.stage(i).code);
+  epochs = find(strcmp(score.stage, opt.stage(i).label));
   
   if ~isempty(epochs)
     
@@ -60,17 +67,19 @@ for i = 1:numel(opt.stage)
     % consecutive, it messes up the proportions
     bar_y = [ones(size(epochs)) * opt.stage(i).height NaN];
     epochs(end+1) = epochs(end) + 1;
-    bar_x = epochs * score{3,1} - score{3,1}/2 + score{4}(1); % convert into s
+    bar_x = epochs * score.wndw - score.wndw/2 + score.score_beg; % convert into s
     %-------%
     
-     bar(bar_x, bar_y, 1, 'LineStyle', 'none', 'FaceColor', opt.stage(i).color)
+    bar(bar_x, bar_y, 1, 'LineStyle', 'none', 'FaceColor', opt.stage(i).color)
   end
 end
 %-----------------%
 
+hold on
+
 %-----------------%
 if isfield(opt, 'epoch')
-  epochpos = [(opt.epoch - 1) * score{3,1} (opt.epoch) * score{3,1}] + score{4}(1);
+  epochpos = [(opt.epoch - 1) * score.wndw (opt.epoch) * score.wndw] + score.score_beg;
   xfill = [epochpos mean(epochpos)];
   yfill = st_h(end) + [1 1 0];
   fill(xfill, yfill, opt.arrowcolor)
@@ -79,5 +88,5 @@ end
 
 %-----------------%
 %-expand to full figure
-set(gca, 'Unit','normalized','Position',[0.05 0.1 .9 .9])
+set(opt.h.axis.hypno, 'Unit','normalized','Position',[0.05 0.1 .9 .9])
 %-----------------%

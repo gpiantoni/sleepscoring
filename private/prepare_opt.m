@@ -65,9 +65,9 @@ function opt = prepare_opt(optfile, opt_old)
 %    .data: axis of the data panel
 %    .hypno: axis of hypno panel
 %    .fft: axis of fft panel
-
-% TODO: check opt
-disp('prepare_opt')
+%
+% Called by
+%  - sleepscoring
 
 %-------------------------------------%
 %-get opt
@@ -90,7 +90,7 @@ else
     %-if .m file, move to that directory and run it
     wd = pwd;
     cd(dirname)
-    opt = feval(filename);
+    opt = feval(filename); % feval does not notice the change in the subfunction, only compile it once
     cd(wd)
     %-----------------%
     
@@ -131,13 +131,6 @@ end
 %-if openopt from dropdown menu, keep previous handles information
 if nargin == 2
   opt.h = opt_old.h;
-  opt.axis = opt_old.axis;
 end
 %-----------------%
 %-------------------------------------%
-
-%-----------------%
-%rename OPT
-[~, optname] = fileparts(opt.optfile);
-set(findobj('tag', 'name_opt'), 'str', ['OPT: ' optname]);
-%-----------------%

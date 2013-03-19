@@ -1,11 +1,22 @@
-function prepare_info_opt
+function prepare_info_opt(h0, dummy)
 %PREPARE_INFO_OPT combine information from info, opt and score
-disp('prepare_info_opt')
+%
+% dummy is necessary: if you open optfile in sleepscoring>cb_openopt, it
+% does not make sense to ask if you want to open it
+% 
+% Called by
+%  - cb_newinfo>cb_ok
+%  - sleepscoring
+%  - sleepscoring>cb_openinfo
+%  - sleepscoring>cb_openopt
+
 %-----------------%
-info = getappdata(0, 'info');
-opt = getappdata(0, 'opt');
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
 %-----------------%
 
+%-------------------------------------%
+%-update OPT if necessary
 %-----------------%
 %-assign optfile to info if it doesn't exist (for new datasets)
 if ~isfield(info, 'optfile')
@@ -15,7 +26,7 @@ end
 
 %-----------------%
 %-if the opt files are different in the info and opt, let the user choose
-if ~strcmp(info.optfile, opt.optfile)
+if nargin == 1 && ~strcmp(info.optfile, opt.optfile)
   opt_info = ['in the dataset: ' info.optfile];
   opt_opt = ['in the option: ' opt.optfile];
   
@@ -34,84 +45,74 @@ end
 
 opt.epoch = 1;
 
-%-------------------------------------%
-%-CHANNELS
 %-----------------%
-%-INFO: rename channels
-if isempty(setdiff(info.label, info.hdr.label)) % it they haven't been renamed yet
-  for i = 1:size(opt.renamelabel,1)
-    
-    i_lbl = strcmp(info.label, opt.renamelabel{i,1});
-    if any(i_lbl)
-      info.label{i_lbl} = opt.renamelabel{i,2};
-    else
-      warning(['could not find channel ' opt.renamelabel{i,1} ', so not renamed to ' opt.renamelabel{i,2}])
-    end
-  end
-end
-%-----------------%
-
-%-----------------%
-%-OPT: check that channels are present and sort them
-for i = 1:numel(opt.changrp)
-  [~, chanidx] = intersect(info.label, opt.changrp(i).chan);
-  
-  %-------%
-  if numel(chanidx) ~= numel(opt.changrp(i).chan)
-    nochan = setdiff(opt.changrp(i).chan, info.label);
-    nochan = sprintf(' %s,', nochan{:});
-    error(sprintf(['You want channels which are not in the data: ' nochan '\nBe careful with channame.m and the channel groups in opt_default.m']))
-  end
-  %-------%
-  
-  opt.changrp(i).chan = info.label(sort(chanidx))';
-end
+%-channels
+[info, opt] = prepare_chan(info, opt);
 %-----------------%
 %-------------------------------------%
 
+%---------------------------------------------------------%
+%-FIGURE
 %-------------------------------------%
-%-GUI
-%-----------------%
-setappdata(0, 'info', info)
-setappdata(0, 'opt', opt)
-%-----------------%
+%-information
+setappdata(h0, 'info', info)
+setappdata(h0, 'opt', opt)
+%-------------------------------------%
 
-%-----------------%
-popup_score(info, opt)
-update_rater(info)
-%-----------------%
+%-------------------------------------%
+%-INFO TEXT
+set(opt.h.panel.info.infoname, 'str', info.infofile)
+[~, filename] = fileparts(info.dataset);
+set(opt.h.panel.data.h, 'title', filename)
 
-%-----------------%
-%-working GUI
-set(findobj('label', 'Sleep Score'), 'enable', 'on')
-delete(findobj('label', 'Channel Selection'))
-delete(findobj('label', 'Filter'))
-delete(findobj('label', 'Reference'))
+[~, optname] = fileparts(opt.optfile);
+set(opt.h.panel.info.optname, 'str', ['OPT: ' optname]);
+%-------------------------------------%
+
+%-------------------------------------%
+%-enable PLOT
+set(opt.h.axis.data, 'vis', 'on')
+set(opt.h.axis.fft, 'vis', 'on')
+set(opt.h.axis.hypno, 'vis', 'on')
+
+set(h0, 'windowbuttonDownFcn', @cb_currentpoint)
+%-------------------------------------%
+
+%-------------------------------------%
+%-SCORING HELP
+score_popup(info, opt)
+update_rater(info, opt.h)
+%-------------------------------------%
+
+%-------------------------------------%
+%-enable MENU
+set(opt.h.menu.score.h, 'enable', 'on')
+set(opt.h.menu.chan.h, 'enable', 'on')
+set(opt.h.menu.filt.h, 'enable', 'on')
+set(opt.h.menu.ref.h, 'enable', 'on')
 
 %-----------------%
 %-CHAN SELECTION
-m_chan = uimenu(opt.h.main, 'label', 'Channel Selection');
+delete(get(opt.h.menu.chan.h, 'children'))
 for i = 1:numel(opt.changrp)
-  uimenu(m_chan, 'label', opt.changrp(i).chantype, 'call', @cb_select_channel);
+  uimenu(opt.h.menu.chan.h, 'label', opt.changrp(i).chantype, 'call', @cb_select_channel);
 end
 %-----------------%
 
 %-----------------%
 %-FILTER
-m_filt = uimenu(opt.h.main, 'label', 'Filter');
+delete(get(opt.h.menu.filt.h, 'children'))
 for i = 1:numel(opt.changrp)
-  uimenu(m_filt, 'label', opt.changrp(i).chantype, 'call', @cb_select_filter);
+  uimenu(opt.h.menu.filt.h, 'label', opt.changrp(i).chantype, 'call', @cb_select_filter);
 end
 %-----------------%
 
 %-----------------%
 %-REFERENCE
-m_ref = uimenu(opt.h.main, 'label', 'Reference');
+delete(get(opt.h.menu.ref.h, 'children'))
 for i = 1:numel(opt.changrp)
-  uimenu(m_ref, 'label', opt.changrp(i).chantype, 'call', @cb_select_reference);
+  uimenu(opt.h.menu.ref.h, 'label', opt.changrp(i).chantype, 'call', @cb_select_reference);
 end
 %-----------------%
-
-set(opt.h.main, 'windowbuttonDownFcn', @cb_currentpoint)
-%-----------------%
 %-------------------------------------%
+%---------------------------------------------------------%

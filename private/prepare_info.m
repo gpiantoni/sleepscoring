@@ -1,4 +1,4 @@
-function info = prepare_info(info)
+function [info hdr] = prepare_info(info)
 %PREPARE_INFO create info based on dataset
 %
 % Input is info.dataset and info.infofile
@@ -16,7 +16,11 @@ function info = prepare_info(info)
 %
 % This function is always followed by prepare_info_opt, which takes the
 % input from info and opt, and uses them together
-disp('prepare_info')
+%
+% Called by
+%  - cb_newinfo
+%  - sleepscoring
+%  - sleepscoring>cb_openinfo
 
 %-----------------%
 %-read INFO first, if no dataset
@@ -31,10 +35,10 @@ if ~isfield(info, 'dataset')
   info.infofile = infofile;
   %-------%
   
-  info = prepare_log('openinfo', info);
+  info = prepare_log(info, 'openinfo');
 
 else
-  info = prepare_log('newinfo', info);
+  info = prepare_log(info, 'newinfo');
   
 end
 %-----------------%
@@ -66,7 +70,6 @@ info = find_dataset(info);
 %-HDR (read it every time)
 hdr = ft_read_header(info.dataset);
 info.hdr = rmfield(hdr, 'orig'); % this is really large,  but it's needed by ft_read_data
-setappdata(0, 'hdr', hdr)
 %-----------------%
 
 %-----------------%
@@ -114,7 +117,7 @@ info.label = hdr.label;
 %-----------------%
 %-SCORE
 if ~isfield(info, 'score')
-  info.score = prepare_score(info);
+   info.score = score_create(info, [], []);
 end
 %-----------------%
 
@@ -123,12 +126,4 @@ end
 if ~isfield(info, 'rater')
   info.rater = 1;
 end
-%-----------------%
-
-%-----------------%
-%-INFO TEXT
-set(findobj('tag', 'name_info'), 'str', info.infofile)
-
-[~, filename] = fileparts(info.dataset);
-set(findobj('tag', 'p_data'), 'title', filename)
 %-----------------%

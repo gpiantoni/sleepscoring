@@ -12,6 +12,20 @@ if n_rater == 1
 end
 %---------------------------%
 
+%---------------------------%
+%-remove not-score at the beginning and at the end
+% they indicate lights-off and lights-on
+for r = 1:n_rater
+  
+  i_nan = find(~strcmp(score(r).stage, stage(1).label), 1) - 1;
+  score(r).stage(1:i_nan) = deal({''});
+
+  i_nan = find(~strcmp(score(r).stage, stage(1).label), 1, 'last') + 1;
+  score(r).stage(i_nan:end) = deal({''});
+
+end
+%---------------------------%
+
 %-------------------------------------%
 %-cohen's kappa
 tab_size = 3;
@@ -24,26 +38,31 @@ fprintf('\nInter-rater agreement (Cohen''s kappa)\n\n')
 %-name of the rater
 fprintf('\t\t\t')
 for r = 1:n_rater
-  fprintf(tab(score{2,r}, tab_size))
+  fprintf(tab(score(r).rater, tab_size))
 end
 fprintf('\n')
 %-----------------%
 
+c = cell(n_rater);
 for r1 = 1:n_rater
-  fprintf(tab(score{2,r1}, tab_size))
+  fprintf(tab(score(r1).rater, tab_size))
   
   for r2 = 1:n_rater
     
-    if r1 > r2
+    if r1 < r2
       
-      if score{3,r1} == score{3,r2}
-        fprintf('% 10.2f \t\t', kappa(score{1,r1}, score{1,r2}))
+      if score(r1).score_beg == score(r2).score_beg && ...
+          score(r1).wndw == score(r2).wndw
+
+        fprintf('% 8.2f \t\t', kappa(score(r1).stage, score(r2).stage))
+        
       else
         fprintf('  diff wndw\t\t') % different scoring windows
+        
       end
       
     else
-      fprintf('\t\t\t')
+      fprintf('    -\t\t\t')
     end
     
   end
@@ -59,28 +78,24 @@ tab_size = 2; % number of tabs for realignment
 for r1 = 1:n_rater
   for r2 = r1+1:n_rater
     fprintf('\n---------------------------\n')
-    fprintf('%s - %s\n', score{2,r1}, score{2,r2})
+    fprintf('%s - %s\n', score(r1).rater, score(r2).rater)
     
-    if score{3,r1} == score{3,r2}
+    if score(r1).wndw ~= score(r2).wndw
+      fprintf('Scoring window is different between two raters:\n%s % 3ds and %s % 3ds\n', ...
+        score(r1).rater, score(r1).wndw, score(r2).rater, score(r2).wndw)
       
-      score1 = score{1, r1};
-      score2 = score{1, r2};
-      stagecode = [stage.code];
+    elseif score(r1).score_beg ~= score(r2).score_beg 
+      fprintf('Beginning of the score is different between two raters:\n%s % 3ds and %s % 3ds\n', ...
+        score(r1).rater, score(r1).score_beg, score(r2).rater, score(r2).score_beg)
       
-      %-------%
-      %-unique identifier, instead of nan
-      betternan = max([stagecode]) + 1;
-      score1(isnan(score1)) = betternan;
-      score2(isnan(score2)) = betternan;
-      stagecode(isnan(stagecode)) = betternan;
-      %-------%
+    else
       
       %-----------------%
       %-matrix where each column corresponds to stage
       c = zeros(n_stage);
       for s1 = 1:n_stage
         for s2 = 1:n_stage
-          c(s1,s2) = numel(find(score1 == stagecode(s1) & score2 == stagecode(s2)));
+          c(s1,s2) = numel(find(strcmp(score(r1).stage, stage(s1).label) & strcmp(score(r2).stage, stage(s2).label)));
         end
       end
       %-----------------%
@@ -108,12 +123,7 @@ for r1 = 1:n_rater
       %-------%
       %-----------------%
       
-    else
-      fprintf('Scoring window is different between two raters:\n%s % 3ds and %s % 3ds\n', ...
-        score{2,r1}, score{3,r1}, score{2,r2}, score{3,r2})
-      
     end
-    
         
   end
   
@@ -131,13 +141,12 @@ fprintf('\n---------------------------\n')
 function k = kappa(a, b)
 
 s = unique([a b]); % unique stages (cells in the c matrix)
-s(isnan(s)) = []; % no NaN, not scored epochs
-
+s = setdiff(s, {''}); % remove empty marker
 c = zeros(numel(s));
 
 for i1 = 1:numel(s)
   for i2 = 1:numel(s)
-    c(i1,i2) = numel(find(a == s(i1) & b == s(i2)));
+    c(i1,i2) = numel(find(strcmp(a, s(i1)) & strcmp(b, s(i2))));
   end
 end
 

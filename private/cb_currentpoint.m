@@ -1,71 +1,64 @@
 function cb_currentpoint(h, eventdata)
-%---------------------------------------------------------%
-%-CB_CURRENTPOINT
-%---------------------------------------------------------%
+%CB_CURRENTPOINT detect position of current point and act
+%
+% Called by
+%  - sleepscoring
 
-tag = get(gca, 'tag');
-pos = get(gca, 'currentpoint');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
+ca = gca;
+pos = get(ca, 'currentpoint');
 
-if strcmp(tag, 'a_dat')
+if ca == opt.h.axis.data
   
   %-------------------------------------%
   %-main data
-  if strcmp(get(h,'SelectionType'),'normal')
+  if strcmp(get(h, 'SelectionType'),'normal')
     
     set(h, 'WindowButtonMotionFcn', {@cb_box, pos})
     set(h, 'WindowButtonUpFcn', @cb_wbup)
     
   else
     
+    if isempty(opt.h.panel.info.marker.popup); return; end % no score
+    info = getappdata(h0, 'info');
+    i_mrk = get(opt.h.panel.info.marker.popup, 'val');
     
-    popup_str = get(findobj('tag', 'popupmarker'), 'str');
-    popup_val = get(findobj('tag', 'popupmarker'), 'val');
-    if isempty(popup_str); return; end % no score
+    %-----------------%
+    %-check if the area was already marked
+    if isempty(info.score(info.rater).marker(i_mrk).time)
+      posmrk = false;
+    else
+      mkrtime = info.score(info.rater).marker(i_mrk).time;
+      posmrk = pos(1,1) >= mkrtime(:,1) & pos(1,1) <= mkrtime(:,2);
+    end
+    %-----------------%
     
-    popup = popup_str{popup_val};
-    
-    if numel(popup) > 13 && ...
-        strcmp(popup(1:13), 'sleep scoring')
+    if any(posmrk)
       
-      score_retime(pos, popup)
+      %-----------------%
+      %-delete old mark if inside
+      info.score(info.rater).marker(i_mrk).time(posmrk,:) = [];
+      save_info(info)
+      setappdata(h0, 'info', info);
+      
+      cb_plotdata(h0)
+      %-----------------%
       
     else
-      
-      %-----------------%
-      %-check if mark already exists
-      info = getappdata(0, 'info');
-      mrktype = get_markertype;
-      if isempty(info.score{mrktype,info.rater})
-        posmrk = false;
-      else
-        posmrk = pos(1,1) >= info.score{mrktype,info.rater}(:,1) & pos(1,1) <= info.score{mrktype,info.rater}(:,2);
-      end
-      %-----------------%
-      
-      if any(posmrk)
         
-        %-----------------%
-        %-delete old mark if inside
-        info.score{mrktype,info.rater}(posmrk,:) = [];
-        setappdata(0, 'info', info);
-        save_info()
-        cb_plotdata()
-        %-----------------%
-        
-      else
-        %-----------------%
-        %-make new mark
-        set(h, 'WindowButtonMotionFcn', {@cb_range, pos})
-        set(h, 'WindowButtonUpFcn', {@cb_marker, pos})
-        %-----------------%
-      end
+      %-----------------%
+      %-make new mark
+      set(h, 'WindowButtonMotionFcn', {@cb_range, pos})
+      set(h, 'WindowButtonUpFcn', {@cb_marker, pos})
+      %-----------------%
       
     end
     
   end
   %-------------------------------------%
   
-elseif strcmp(tag, 'a_hypno')
+elseif ca == opt.h.axis.hypno
   
   %-------------------------------------%
   %-hypnogram
@@ -76,16 +69,16 @@ elseif strcmp(tag, 'a_hypno')
   if pos(2,1) >= xlim(1) && pos(2,1) <= xlim(2) && ...
       pos(2,2) >= ylim(1) && pos(2,2) <= ylim(2)
     
-    info = getappdata(0, 'info');
-    opt = getappdata(0, 'opt');
-    wndw = info.score{3,info.rater};
-    beginsleep = info.score{4,info.rater}(1); 
+    info = getappdata(h0, 'info');
+    opt = getappdata(h0, 'opt');
+    wndw = info.score(info.rater).wndw;
+    beginsleep = info.score(info.rater).score_beg;
     
     pnt = pos(2,1) - beginsleep;
     opt.epoch = round(pnt / wndw);
-    setappdata(0, 'opt', opt)
+    setappdata(h0, 'opt', opt)
     
-    cb_readplotdata()
+    cb_readplotdata(h0)
     
   end
   %-----------------%
@@ -100,12 +93,11 @@ end
 %-------------------------------------%
 %-callback: when mouse is moving
 function cb_box(h0, eventdata, pos1)
-% TODO: this does not take into account the scaling
 
-opt = getappdata(0, 'opt');
-pos2 = get(gca, 'CurrentPoint');
+opt = getappdata(h0, 'opt');
+pos2 = get(opt.h.axis.data, 'CurrentPoint');
 
-delete(findobj('tag', 'Selecting'))
+delete(findobj(opt.h.axis.data, 'tag', 'Selecting'))
 
 %-----------------%
 %-black line
@@ -119,7 +111,7 @@ set(p_l, 'tag', 'Selecting', 'Color', 'k', 'LineWidth', 2)
 %-----------------%
 %-text
 seltxt = sprintf('%1.2f s\n%1.1f uV', ...
-                abs(pos2(1,1) - pos1(1,1)), abs((pos2(1,2) - pos1(1,2)) * opt.ylim(2)));
+  abs(pos2(1,1) - pos1(1,1)), abs((pos2(1,2) - pos1(1,2)) * opt.ylim(2)));
 p_txt = ft_plot_text(pos1(1,1), pos1(1,2), seltxt);
 set(p_txt, 'tag', 'Selecting', 'BackgroundColor', [0 0 0], 'Color', [1 1 1])
 
@@ -129,26 +121,27 @@ drawnow
 
 %-------------------------------------%
 %-when click is released
-function cb_wbup(h0, eventdata)
+function cb_wbup(h, eventdata)
 
-if strcmp(get(h0, 'SelectionType'), 'normal')
+if strcmp(get(h, 'SelectionType'), 'normal')
+
+  h0 = get_parent_fig(h);
+  delete(findobj(h0, 'tag', 'Selecting')) % I guess it takes more time to get opt than to search the whole figure
+  set(h,'WindowButtonMotionFcn', '')
+  set(h,'WindowButtonUpFcn', '')
   
-  delete(findobj('tag', 'Selecting'))
-  set(h0,'WindowButtonMotionFcn', '')
-  set(h0,'WindowButtonUpFcn', '')
-  
-  plot_fft()
 end
 %-------------------------------------%
 
 %-------------------------------------%
 %-callback: when mouse is moving
-function cb_range(h0, eventdata, pos1)
+function cb_range(h, eventdata, pos1)
 
-opt = getappdata(0, 'opt');
-pos2 = get(gca, 'CurrentPoint');
+h0 = get_parent_fig(h);
+opt = getappdata(h0, 'opt');
+pos2 = get(opt.h.axis.data, 'CurrentPoint');
 
-delete(findobj('tag', 'sel_marker'))
+delete(findobj(opt.h.axis.data, 'tag', 'sel_marker'))
 
 %-----------------%
 %-range on yaxis
@@ -168,16 +161,17 @@ drawnow
 
 %-------------------------------------%
 %-callback: when click is released
-function cb_marker(h0, eventdata, pos1)
+function cb_marker(h, eventdata, pos1)
 
+h0 = get_parent_fig(h);
 pos2 = get(gca, 'CurrentPoint');
 
-delete(findobj('tag', 'sel_marker'))
-set(h0,'WindowButtonMotionFcn', '')
-set(h0,'WindowButtonUpFcn', '')
+delete(findobj(h0, 'tag', 'sel_marker'))
+set(h, 'WindowButtonMotionFcn', '')
+set(h, 'WindowButtonUpFcn', '')
 
 if abs(diff([pos1(1,1), pos2(1,1)])) > .05 % has to be at least 50ms long
-  make_marker(pos1, pos2)
+  make_marker(h0, pos1, pos2)
 end
 %-------------------------------------%
 %---------------------------------------------------------%
@@ -186,10 +180,11 @@ end
 %-SUBFUNCTIONS
 %-------------------------------------%
 %-make marker as artifact or other
-function make_marker(pos1, pos2)
+function make_marker(h0, pos1, pos2)
 
-info = getappdata(0, 'info');
-mrktype = get_markertype;
+info = getappdata(h0, 'info');
+opt = getappdata(h0, 'opt');
+i_mrk = get(opt.h.panel.info.marker.popup, 'val');
 newmrk = sort([pos1(1,1) pos2(1,1)]);
 
 %-----------------%
@@ -201,48 +196,16 @@ if newmrk(2) > xlim(2); newmrk(2) = xlim(2); end
 
 %-----------------%
 %-make windows longer if new marker includes part of older marker
-% TODO: With this implementation, it's impossible to "connect" two existing marks and to make one bigger on both sides
-if isempty(info.score{mrktype,info.rater})
-  addbeg = false;
-  addend = false;
-  
-else
-  addbeg = newmrk(1) <= info.score{mrktype,info.rater}(:,1) & newmrk(2) >= info.score{mrktype,info.rater}(:,1);
-  addend = newmrk(1) <= info.score{mrktype,info.rater}(:,2) & newmrk(2) >= info.score{mrktype,info.rater}(:,2);
-  
-end
-
-if any(addbeg)
-  info.score{mrktype,info.rater}(addbeg,1) = newmrk(1);
-  
-elseif any(addend)
-  info.score{mrktype,info.rater}(addend,2) = newmrk(2);
-  
-else
-  info.score{mrktype,info.rater} = [info.score{mrktype,info.rater}; newmrk];
-  
-end
+mrk = info.score(info.rater).marker(i_mrk).time;
+info.score(info.rater).marker(i_mrk).time = merge_intervals([mrk; newmrk]);
 %-----------------%
 
 %-----------------%
 %-save info and replot
-setappdata(0, 'info', info);
-save_info()
-cb_plotdata()
+save_info(info)
+setappdata(h0, 'info', info);
+
+cb_plotdata(h0)
 %-----------------%
-%-------------------------------------%
-
-%-------------------------------------%
-%-Get Marker type
-function mrktype = get_markertype
-
-mrk_h = findobj('tag', 'popupmarker');
-mrk_str = get(mrk_h, 'str');
-mrk_val = get(mrk_h, 'val');
-
-opt = getappdata(0, 'opt');
-
-mrktype = find(strcmp(opt.marker.name, mrk_str{mrk_val}));
-mrktype = mrktype + 4; % row in FASST score
 %-------------------------------------%
 %---------------------------------------------------------%

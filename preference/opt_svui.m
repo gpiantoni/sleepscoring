@@ -50,7 +50,7 @@ opt.height.u = 1 - opt.marg.u - opt.marg.d; % height of objects above
 %-------------------------------------%
 % Choose scoring standard
 % hypnogram_RK for Rechtschaffen & Kales
-% hypnogram_aasm2007 for AASM 2007 (does not have "movement time" nor "stage 3"
+% hypnogram_aasm2007 for AASM 2007 (does not have "movement time" nor "stage 3")
 stage = hypnogram_RK;
 opt.stage = stage;
 
@@ -69,13 +69,10 @@ opt.short.previous = 'j';
 %-------------------------------------%
 %-MARKERS (cannot be modified in GUI)
 %-------------------------------------%
-% 'artifacts' 'movements'  'events of interest' are hardcoded in FAAST score
-% there are saved in the 5th, 6th or 7th column respectively of FASST score
-% beginning and end of sleep scoring matches FAAST score{4,1}
-opt.marker.selcolor = [.7 .7 .7]; % color used for selection
-opt.marker.name = {'artifacts' 'movements'  'events of interest' 'sleep scoring begins (!)' 'sleep scoring ends (!)'};
+opt.marker.selcolor = [.7 .7 .7]; % color used for selection, cannot be modified in the GUI
 opt.marker.i = 1; % default index of opt.marker.name
-opt.marker.color = {[1 .5 1] [.5 1 1] [1 1 .5] '' ''}; % the # of opt.marker.color should match the # of opt.marker.name
+opt.marker.name = {'movement' 'arousal' 'artifact'}; % TODO: modify names in GUI
+opt.marker.color = {[1 .5 1] [.5 1 1] [1 1 .5] [.5 .5 1] [.5 1 .5] [1 .5 .5] [1 0 0] [0 1 0] [0 0 1]}; % colors, if not enough, they are reused (cannot be modified in GUI)
 %-------------------------------------%
 
 %-------------------------------------%
