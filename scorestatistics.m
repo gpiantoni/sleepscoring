@@ -28,6 +28,13 @@ opt = prepare_opt(info.optfile);
 %-------------------------------------%
 
 %-------------------------------------%
+%-remove empty score, it's actually the default "not scored" usually
+for r = 1:numel(info.score)
+  info.score(r).stage(cellfun(@isempty, info.score(r).stage)) = {opt.stage(1).label};
+end
+%-------------------------------------%
+
+%-------------------------------------%
 %-report single rater
 report_rater(info, opt.stage)
 %-------------------------------------%

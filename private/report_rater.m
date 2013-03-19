@@ -3,8 +3,6 @@ function report_rater(info, stage)
 
 %-------------------------------------%
 %-prepare input
-wakefulness_code = [0 6]; % which code corresponds to wakefulness (wake/movement)
-
 tab_size = 3;
 tab = @(x)[x repmat('\t', 1, tab_size - floor(numel(x)/8))];
 
@@ -12,11 +10,8 @@ score = info.score;
 n_stage = numel(stage);
 n_rater = size(score,2);
 
-%-----------------%
-%-get markers
-opt = prepare_opt(info.optfile); % for the names of the markers
-i_mrk = find(cellfun(@isempty, strfind(opt.marker.name, 'sleep scoring'))); % index of the actual markers
-%-----------------%
+mrk = arrayfun(@(x) {x.marker.name}, score, 'uni', false);
+mrk = unique([mrk{:}]);
 %-------------------------------------%
 
 %-------------------------------------%
@@ -26,35 +21,33 @@ i_mrk = find(cellfun(@isempty, strfind(opt.marker.name, 'sleep scoring'))); % in
 % of the scoring window. Another way is to mark the epochs of no interest
 % as "NaN" (so, not scored). When computing total recording time and sleep
 % efficiency, we need to take into account both possible ways.
-epoch_dur = [score{3,:}]; % duration of each epoch
+epoch_dur = [score.wndw]; % duration of each epoch
 
 info_time = info.beginrec * 24 * 60 * 60; % absolute time of the beginning of the EEG, convert to seconds
 
 %-----------------%
 %-calculate beginning
-rec_begin_end = cat(1, score{4,:})'; % in seconds
-rec_begin = rec_begin_end(1,:); % 1) proper way, sleep is marked using right-click on sleep scoring
-i_first_notnan = nan(1,n_rater);
+i_first_notnan = zeros(1,n_rater);
 for r = 1:n_rater
-  i_notnan = find(~isnan(score{1,r}), 1);
+  i_notnan = find(~strcmp(score(r).stage, stage(1).label), 1); % where "stage(1).label" is the default score
   if i_notnan
-    i_first_notnan(1,r) = i_notnan - 1; % index of the first non-nan
+    i_first_notnan(r) = i_notnan - 1; % index of the first non-nan
   end
 end
-rec_begin = rec_begin + i_first_notnan .* epoch_dur;
+rec_begin = [score.score_beg] + i_first_notnan .* epoch_dur;
 rec_begin_abs = rec_begin + info_time; % in absolute terms
 %-----------------%
 
 %-----------------%
 %-calculate end
-i_last_notnan = nan(1,n_rater);
+i_last_notnan = zeros(1,n_rater);
 for r = 1:n_rater
-  i_notnan = find(~isnan(score{1,r}), 1, 'last');
+  i_notnan = find(~strcmp(score(r).stage, stage(1).label), 1, 'last');
   if i_notnan
-    i_last_notnan(1,r) = i_notnan; % index of the first non-nan
+    i_last_notnan(r) = i_notnan; % index of the first non-nan
   end
 end
-rec_end = rec_begin_end(1,:) + i_last_notnan .* epoch_dur;
+rec_end = [score.score_beg] + i_last_notnan .* epoch_dur;
 rec_end_abs = rec_end + info_time; % in absolute terms
 %-----------------%
 
@@ -66,22 +59,21 @@ rec_time = rec_end - rec_begin;
 %-collect scores, across raters
 ep = zeros(n_stage, n_rater); % n of epochs in each stage
 l = nan(n_stage, n_rater); % latency
-mrk_n = zeros(numel(i_mrk), n_rater); % number of markers
-mrk_d = zeros(numel(i_mrk), n_rater); % duration of markers
+mrk_n = zeros(numel(mrk), n_rater); % number of markers
+mrk_d = zeros(numel(mrk), n_rater); % duration of markers
 
 for r = 1:n_rater;
+  
+  effectivescore = score(r).stage(i_first_notnan(r)+1:i_last_notnan(r));
   
   %-----------------%
   %-count number of epochs in each stage
   for s = 1:n_stage
     
-    if ~isnan(stage(s).code)
-      f = find(score{1, r} == stage(s).code);
-      
-      if ~isempty(f)
-        ep(s, r) = numel(f);
-        l(s, r) = f(1);
-      end
+    f = find(strcmp(effectivescore, stage(s).label));
+    if ~isempty(f)
+      ep(s, r) = numel(f);
+      l(s, r) = f(1) - 1;
     end
     
   end
@@ -95,9 +87,10 @@ for r = 1:n_rater;
   
   %-----------------%
   %-markers
-  for i = i_mrk
-    mrk_n(i,r) = size(score{i + 4,r},1);
-    mrk_d(i,r) = sum(diff(score{i + 4,r}, [], 2));
+  for i = 1:numel(mrk)
+    i_mrk = strcmp({score(r).marker.name}, mrk{i});
+    mrk_n(i,r) = size(score(r).marker(i_mrk).time,1);
+    mrk_d(i,r) = sum(diff(score(r).marker(i_mrk).time, [], 2));
   end
   %-----------------%
   
@@ -106,21 +99,11 @@ end
 
 %-------------------------------------%
 %-compute sleep parameters
-%-----------------%
-%-find index of sleep epochs
-% not scored
-[~, i_notscored] = find(isnan([stage.code])); % NaN is always "not sleep"
-% wakefulness
-[~, i_wake] = intersect([stage.code], wakefulness_code);
-% sleep
-i_sleep = setdiff(1:n_stage, [i_wake i_notscored]);
-%-----------------%
-
-ep_sleep = ep(i_sleep, :);
-l_sleep = l(i_sleep, :);
+ep_sleep = ep(~[stage.awake], :);
+l_sleep = l(~[stage.awake], :);
 
 tst = sum(ep_sleep);
-sl = min(l_sleep) - epoch_dur - i_first_notnan .* epoch_dur;
+sl = min(l_sleep);
 efficiency = tst ./ rec_time * 100;
 %-------------------------------------%
 
@@ -128,14 +111,13 @@ efficiency = tst ./ rec_time * 100;
 %-stage-specific parameters
 %-----------------%
 %-REM latency from sleep onset
-[~, i_rem] = intersect({stage.label}, {'rem' 'REM' 'REM Sleep' 'REM sleep'}); % find rem sleep
+[~, i_rem] = intersect({stage.label}, {'rem' 'REM' 'REM Sleep' 'REM sleep' 'REMSleep' 'REMsleep'}); % find rem sleep
 l_rem = l(i_rem,:) - min(l_sleep);
 %-----------------%
 
 %-----------------%
 %-WASO Stage W during TST minus sleep latency
-ep_wake = sum(ep(i_wake,:),1);
-waso = ep_wake - sl;
+waso = sum(ep([stage.awake],:),1);
 %-----------------%
 %-------------------------------------%
 
@@ -146,7 +128,7 @@ waso = ep_wake - sl;
 %-name of the rater
 fprintf('\t\t\t')
 for r = 1:n_rater
-  fprintf(tab(score{2,r}))
+  fprintf(tab(score(r).rater))
 end
 fprintf('\n\n')
 %-----------------%
@@ -228,21 +210,17 @@ fprintf('\n\n')
 %-stages duration and percentage
 for s = 1:n_stage
   
-  if ~isnan(stage(s).code) % not meaningful for NOT SCORED
-    
-    fprintf(tab(stage(s).label))
-    for r = 1:n_rater
-      fprintf(tab(s2hhmm(ep(s, r))))
-    end
-    fprintf('\n')
-    
-    fprintf([' Percent \t\t'])
-    for r = 1:n_rater
-      fprintf('% 10.2f%%\t\t', ep(s, r) / tst(1,r) * 100)
-    end
-    fprintf('\n')
-    
+  fprintf(tab(stage(s).label))
+  for r = 1:n_rater
+    fprintf(tab(s2hhmm(ep(s, r))))
   end
+  fprintf('\n')
+  
+  fprintf([' Percent \t\t'])
+  for r = 1:n_rater
+    fprintf('% 10.2f%%\t\t', ep(s, r) / tst(1,r) * 100)
+  end
+  fprintf('\n')
   
 end
 fprintf('\n')
@@ -250,8 +228,8 @@ fprintf('\n')
 
 %-----------------%
 %-markers
-for i = i_mrk
-  fprintf('%s (num)\t\t', opt.marker.name{i})
+for i = 1:numel(mrk)
+  fprintf('%s (num)\t\t', mrk{i})
   fprintf('% 7d\t\t\t', mrk_n(i,:))
   fprintf('\n')
   

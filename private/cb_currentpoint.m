@@ -196,27 +196,8 @@ if newmrk(2) > xlim(2); newmrk(2) = xlim(2); end
 
 %-----------------%
 %-make windows longer if new marker includes part of older marker
-% TODO: With this implementation, it's impossible to "connect" two existing marks and to make one bigger on both sides
-if isempty(info.score(info.rater).marker(i_mrk).time)
-  addbeg = false;
-  addend = false;
-  
-else
-  addbeg = newmrk(1) <= info.score(info.rater).marker(i_mrk).time(:,1) & newmrk(2) >= info.score(info.rater).marker(i_mrk).time(:,1);
-  addend = newmrk(1) <= info.score(info.rater).marker(i_mrk).time(:,2) & newmrk(2) >= info.score(info.rater).marker(i_mrk).time(:,2);
-  
-end
-
-if any(addbeg)
-  info.score(info.rater).marker(i_mrk).time(addbeg,1) = newmrk(1);
-  
-elseif any(addend)
-  info.score(info.rater).marker(i_mrk).time(addend,2) = newmrk(2);
-  
-else
-  info.score(info.rater).marker(i_mrk).time = [info.score(info.rater).marker(i_mrk).time; newmrk];
-  
-end
+mrk = info.score(info.rater).marker(i_mrk).time;
+info.score(info.rater).marker(i_mrk).time = merge_intervals([mrk; newmrk]);
 %-----------------%
 
 %-----------------%
