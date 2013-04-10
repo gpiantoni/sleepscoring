@@ -1,4 +1,4 @@
-function [info opt] = prepare_chan(info, opt)
+function [info, opt] = prepare_chan(info, opt)
 %PREPARE_CHAN prepare channels, by renaming what's necessary
 %
 % Called by:
@@ -7,13 +7,15 @@ function [info opt] = prepare_chan(info, opt)
 %-----------------%
 %-INFO: rename channels
 if isempty(setdiff(info.label, info.hdr.label)) % it they haven't been renamed yet
-  for i = 1:size(opt.renamelabel,1)
-    
-    i_lbl = strcmp(info.label, opt.renamelabel{i,1});
-    if any(i_lbl)
-      info.label{i_lbl} = opt.renamelabel{i,2};
-    else
-      warning(['could not find channel ' opt.renamelabel{i,1} ', so not renamed to ' opt.renamelabel{i,2}])
+  if isfield(opt, 'renamelabel')
+    for i = 1:size(opt.renamelabel,1)
+      
+      i_lbl = strcmp(info.label, opt.renamelabel{i,1});
+      if any(i_lbl)
+        info.label{i_lbl} = opt.renamelabel{i,2};
+      else
+        warning(['could not find channel ' opt.renamelabel{i,1} ', so not renamed to ' opt.renamelabel{i,2}])
+      end
     end
   end
 end

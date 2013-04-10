@@ -1,13 +1,13 @@
-function [SW] = detect_slowwave(cfg, data)
+function [det, SW] = detect_slowwave(cfg, data)
 %DETECT_SLOWWAVE detect slow waves following Massimini, 2004
 % based on 3 criteria:
 % 1. less than negthr
 % 2. distance between zero-crossing
 % 3. peak-to-peak (if cfg.p2p is not empty)
-% 
+%
 % Use as:
 %    [SW] = detect_slowwave(cfg, data)
-% 
+%
 %  (optional)
 %  .preproc = struct which is passed to ft_preprocessing ft_preprocessing(cfg.preproc, data)
 %             If not specified, it's low-pass filter at 4 Hz and high-pass filter at 0.25 HZ
@@ -26,7 +26,7 @@ function [SW] = detect_slowwave(cfg, data)
 %             negative peak (two numbers in ms, [-.2 .2])
 %  .trvl.dist: distance in s between the negative peaks of various
 %              electrodes to consider them in the main wave
-% 
+%
 %  .feedback = 'textbar' (see ft_progress)
 %
 % data
@@ -88,7 +88,7 @@ if ~isfield(cfg, 'negthr'); cfg.negthr = -40; end
 if ~isfield(cfg, 'zcr'); cfg.zcr = [.2 1]; end
 if ~isfield(cfg, 'p2p'); cfg.p2p = 75; end
 if ~isfield(cfg, 'postzcr'); cfg.postzcr = 1; end
-if ~isfield(cfg, 'feedback'); cfg.feedback = 'textbar'; end
+if ~isfield(cfg, 'feedback'); cfg.feedback = 'none'; end
 if ~isfield(cfg, 'trvl'); cfg.trvl = []; end
 if ~isfield(cfg.trvl, 'negthr'); cfg.trvl.negthr = -30; end
 if ~isfield(cfg.trvl, 'wnw'); cfg.trvl.wnw = [-.05 .2]; end
@@ -134,6 +134,14 @@ if ~isempty(cfg.preproc)
   
 end
 %-----------------%
+
+%-----------------%
+%-define roi
+if isfield(cfg, 'roi')
+  mont = prepare_montage(cfg.roi, data.label);
+  data = ft_apply_montage(data, mont, 'feedback', 'none');
+end
+%-----------------%
 %---------------------------%
 
 %---------------------------%
@@ -142,92 +150,83 @@ swcnt = 0;
 SW = [];
 
 for r = 1:numel(data.label)
+  x  = data.trial{1}(r,:);
   
-  ft_progress('init', cfg.feedback, ['Looping over ' num2str(numel(data.trial)) ' trials'])
+  %-----------------%
+  %- 1. less than negthr
+  npeaks = find(x < cfg.negthr);
+  %-----------------%
   
-  for trl = 1:numel(data.trial);
-    
-    ft_progress(trl / numel(data.trial))
-    x  = data.trial{trl}(r,:);
-    
-    %-----------------%
-    %- 1. less than negthr
-    npeaks = find(x < cfg.negthr);
-    %-----------------%
-    
-    %-----------------%
-    %- 2. distance between zero-crossing
-    zcr = [0 diff(sign(x))]; % find all zero crossing
+  %-----------------%
+  %- 2. distance between zero-crossing
+  zcr = [0 diff(sign(x))]; % find all zero crossing
+  
+  %-------%
+  %-negative peaks with zero crossing
+  % np_zcr contains all the info for all the npeaks. Afterwards we discard
+  % all the negative peaks that are part of the same slow wave (i.e. have
+  % common zero-crossings
+  np_zcr = nan(numel(npeaks), 5);
+  %-------%
+  
+  for i = 1:numel(npeaks)
     
     %-------%
-    %-negative peaks with zero crossing
-    % np_zcr contains all the info for all the npeaks. Afterwards we discard
-    % all the negative peaks that are part of the same slow wave (i.e. have
-    % common zero-crossings
-    np_zcr = nan(numel(npeaks), 5);
+    %-previous zero-crossing
+    zdwn = find( zcr(1:npeaks(i)) < 0, 1, 'last'); % preceding zero crossing
+    zup = npeaks(i) + find( zcr(npeaks(i):end) > 0, 1, 'first'); % following zero crossing
     %-------%
     
-    for i = 1:numel(npeaks)
+    %-------%
+    %-distance between crossing is between cfg.zcr (default .3 1s)
+    if ~isempty(zup) && ~isempty(zdwn) && ...
+        (zup - zdwn)/data.fsample >= cfg.zcr(1) && ...
+        (zup - zdwn)/data.fsample <= cfg.zcr(2)
       
-      %-------%
-      %-previous zero-crossing
-      zdwn = find( zcr(1:npeaks(i)) < 0, 1, 'last'); % preceding zero crossing
-      zup = npeaks(i) + find( zcr(npeaks(i):end) > 0, 1, 'first'); % following zero crossing
-      %-------%
-      
-      %-------%
-      %-distance between crossing is between cfg.zcr (default .3 1s)
-      if ~isempty(zup) && ~isempty(zdwn) && ...
-          (zup - zdwn)/data.fsample >= cfg.zcr(1) && ...
-          (zup - zdwn)/data.fsample <= cfg.zcr(2)
-        
-        np_zcr(i, :) = [i npeaks(i) x(npeaks(i)) zdwn zup];
-      end
-      %-------%
-      
+      np_zcr(i, :) = [i npeaks(i) x(npeaks(i)) zdwn zup];
     end
+    %-------%
     
-    np_zcr(isnan(np_zcr(:,1)), :) = []; % delete empty rows at the end
-    %-----------------%
-    
-    %-----------------%
-    %-clean up duplicate peaks and call them slow waves
-    [~, ~, unegw] = unique(np_zcr(:,4:5), 'rows'); % unique negative wave (check which peaks are in common to one slow wave)
-    
-    for sw = 1:numel( unique( unegw))
-      swcnt = swcnt + 1;
-      SW(swcnt).trl = trl;
-      
-      sw_zcr = np_zcr(unegw == sw, :);
-      
-      [neg_v, neg_i] = min(sw_zcr(:,3));
-      
-      SW(swcnt).negpeak_val = neg_v;
-      SW(swcnt).negpeak_itrl  = sw_zcr(neg_i,2);
-      SW(swcnt).negpeak_iabs  = data.sampleinfo(trl, 1) + SW(swcnt).negpeak_itrl;
-      SW(swcnt).negpeak_time  = data.time{trl}(SW(swcnt).negpeak_itrl);
-      
-      SW(swcnt).begsw_itrl = sw_zcr(neg_i, 4);
-      SW(swcnt).begsw_iabs = data.sampleinfo(trl, 1) + SW(swcnt).begsw_itrl;
-      SW(swcnt).begsw_time = data.time{trl}(SW(swcnt).begsw_itrl);
-      
-      SW(swcnt).zcr_itrl = sw_zcr(neg_i, 5) -1;
-      SW(swcnt).zcr_iabs = data.sampleinfo(trl, 1) + SW(swcnt).zcr_itrl -1;
-      SW(swcnt).zcr_time = data.time{trl}(SW(swcnt).zcr_itrl);
-      
-    end
-    %-----------------%
   end
-  ft_progress('close')
   
+  np_zcr(isnan(np_zcr(:,1)), :) = []; % delete empty rows at the end
+  %-----------------%
 end
 
+%-----------------%
+%-clean up duplicate peaks and call them slow waves
+[~, ~, unegw] = unique(np_zcr(:,4:5), 'rows'); % unique negative wave (check which peaks are in common to one slow wave)
+
+for sw = 1:numel( unique( unegw))
+  swcnt = swcnt + 1;
+  
+  sw_zcr = np_zcr(unegw == sw, :);
+  
+  [neg_v, neg_i] = min(sw_zcr(:,3));
+  
+  SW(swcnt).negpeak_val = neg_v;
+  SW(swcnt).negpeak_itrl  = sw_zcr(neg_i,2);
+  SW(swcnt).negpeak_iabs  = data.sampleinfo(1, 1) + SW(swcnt).negpeak_itrl;
+  SW(swcnt).negpeak_time  = data.time{1}(SW(swcnt).negpeak_itrl);
+  
+  SW(swcnt).begsw_itrl = sw_zcr(neg_i, 4);
+  SW(swcnt).begsw_iabs = data.sampleinfo(1, 1) + SW(swcnt).begsw_itrl;
+  SW(swcnt).begsw_time = data.time{1}(SW(swcnt).begsw_itrl);
+  
+  SW(swcnt).zcr_itrl = sw_zcr(neg_i, 5) -1;
+  SW(swcnt).zcr_iabs = data.sampleinfo(1, 1) + SW(swcnt).zcr_itrl -1;
+  SW(swcnt).zcr_time = data.time{1}(SW(swcnt).zcr_itrl);
+  
+end
+%-----------------%
+
 if isempty(SW)
+  det = [];
   return
 end
 
 %-----------------%
-%-remove duplicates 
+%-remove duplicates
 %-------%
 %-pure duplicates
 % (because of padding the same data is used in two consecutive trials, for example)
@@ -260,7 +259,7 @@ for sw = 1:numel(SW)
   begsw = SW(sw).begsw_itrl;
   endsw = SW(sw).zcr_itrl + cfg.postzcr * data.fsample;
   
-  x  = mean(data.trial{SW(sw).trl},1);
+  x  = mean(data.trial{1},1);
   if endsw > size(x,2)
     endsw = size(x,2);
   end
@@ -273,14 +272,16 @@ for sw = 1:numel(SW)
   SW(sw).pospeak_val = pos_v;
   SW(sw).pospeak_itrl = SW(sw).begsw_itrl + pos_i - 1;
   SW(sw).pospeak_iabs = SW(sw).begsw_iabs + pos_i - 1;
-  SW(sw).pospeak_time = data.time{SW(sw).trl}( SW(sw).pospeak_itrl );
+  SW(sw).pospeak_time = data.time{1}( SW(sw).pospeak_itrl );
 end
 %-----------------%
 
 %-----------------%
 if ~isempty(cfg.p2p)
-    SWkeep = ([SW.pospeak_val] - [SW.negpeak_val]) >= cfg.p2p;
-    SW = SW(SWkeep);
+  SWkeep = ([SW.pospeak_val] - [SW.negpeak_val]) >= cfg.p2p;
+  SW = SW(SWkeep);
 end
 %-----------------%
 %---------------------------%
+
+det = [[SW.negpeak_time]' [SW.pospeak_time]'];

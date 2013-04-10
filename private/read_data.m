@@ -1,4 +1,4 @@
-function [dat sample] = read_data(info, opt, hdr)
+function [dat, sample] = read_data(info, opt, hdr)
 %READ_DATA read data from disk
 % 
 % INFO

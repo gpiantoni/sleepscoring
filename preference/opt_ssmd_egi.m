@@ -8,7 +8,7 @@ opt = [];
 % Here you can rename channels, to give more meaningful names. 
 % The first column is the labels read from the header file and the
 % second column is the labels used in the analysis. The final labels will be
-% stored in CFG.
+% stored in CFG. DO NOT GIVE TWO CHANNELS THE SAME NAME
 %-----------------%
 %-scalp EEG
 opt.renamelabel = {'E36', 'F3';
@@ -35,7 +35,7 @@ opt.renamelabel = {'E36', 'F3';
                    'Body Position', 'dummy_2';
                    'Resp. Effort Chest', 'dummy_3';
                    'Resp. Effort Abdomen', 'dummy_4';
-                   's2_unknown265', 'dummy_1';
+                   's2_unknown265', 'dummy_5';
                    };
 %-----------------%
 %-------------------------------------%
