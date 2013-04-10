@@ -30,10 +30,6 @@ function sleepscoring(info, opt)
 %   SLEEPSCORING(INFO, OPT) where OPT is the "opt" variable from a previous
 %                           analysis 
 
-%TODO:
-% - automatic detection of SW and spindles
-% - automatic scoring
-
 %---------------------------------------------------------%
 %-GUI FUNCTION
 %---------------------------------------------------------%

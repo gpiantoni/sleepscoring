@@ -1,10 +1,14 @@
-function report_rater(info, stage)
+function output = report_rater(info, stage, tocsv)
 %REPORT_RATER report info for each single rater
 
 %-------------------------------------%
 %-prepare input
-tab_size = 3;
-tab = @(x)[x repmat('\t', 1, tab_size - floor(numel(x)/8))];
+if ~tocsv
+  tab_size = 3;
+  tab = @(x)[x repmat('\t', 1, tab_size - floor(numel(x)/8))];
+else
+  tab = @(x)[x ','];
+end
 
 score = info.score;
 n_stage = numel(stage);
@@ -126,118 +130,120 @@ waso = sum(ep([stage.awake],:),1);
 % each \t is every 8 characters
 %-----------------%
 %-name of the rater
-fprintf('\t\t\t')
+output = tab('');
 for r = 1:n_rater
-  fprintf(tab(score(r).rater))
+  output = [output tab(score(r).rater)];
 end
-fprintf('\n\n')
+output = [output '\n\n'];
 %-----------------%
 
 %-----------------%
 %-Lights out clock time
-fprintf(['Lights out:\t\t'])
+output = [output tab('Lights out:')];
 for r = 1:n_rater
-  fprintf(tab(s2hhmm(rec_begin_abs(1,r))))
+  output = [output tab(s2hhmm(rec_begin_abs(1,r)))];
 end
-fprintf('\n')
+output = [output '\n'];
 %-----------------%
 
 %-----------------%
 %-Lights on clock time
-fprintf(['Lights on:\t\t'])
+output = [output tab('Lights on:')];
 for r = 1:n_rater
   % don't use clock_score(2,r) but use the last epoch which was scored as non-nan
-  fprintf(tab(s2hhmm(rec_end_abs(1,r))))
+  output = [output tab(s2hhmm(rec_end_abs(1,r)))];
 end
-fprintf('\n\n')
+output = [output '\n\n'];
 %-----------------%
 
 %-----------------%
 %-Total sleep time (TST)
-fprintf(['Total Sleep Time:\t'])
+output = [output tab('Total Sleep Time:')];
 for r = 1:n_rater
-  fprintf(tab(s2hhmm(tst(1,r))))
+  output = [output tab(s2hhmm(tst(1,r)))];
 end
-fprintf('\n')
+output = [output '\n'];
 %-----------------%
 
 %-----------------%
 %-Total recording time ("lights out" to "lights on")
-fprintf(['Recording Time:\t\t'])
+output = [output tab('Recording Time:')];
 for r = 1:n_rater
-  fprintf(tab(s2hhmm(rec_time(1,r))))
+  output = [output tab(s2hhmm(rec_time(1,r)))];
 end
-fprintf('\n\n')
+output = [output '\n\n'];
 %-----------------%
 
 %-----------------%
 %-Sleep latency (SL; lights out to first epoch of any sleep)
-fprintf(['Sleep Latency:\t\t'])
+output = [output tab('Sleep Latency:')];
 for r = 1:n_rater
-  fprintf(tab(s2hhmm(sl(1,r))))
+  output = [output tab(s2hhmm(sl(1,r)))];
 end
-fprintf('\n')
+output = [output '\n'];
 %-----------------%
 
 %-----------------%
 %-Sleep latency (SL; lights out to first epoch of any sleep)
-fprintf(['REM Latency:\t\t'])
+output = [output tab('REM Latency:')];
 for r = 1:n_rater
-  fprintf(tab(s2hhmm(l_rem(1,r))))
+  output = [output tab(s2hhmm(l_rem(1,r)))];
 end
-fprintf('\n\n')
+output = [output '\n\n'];
 %-----------------%
 
 %-----------------%
 %-WASO (Wake after sleep onset)
-fprintf(['WASO:\t\t\t'])
+output = [output tab('WASO:')];
 for r = 1:n_rater
-  fprintf(tab(s2hhmm(waso(1,r))))
+  output = [output tab(s2hhmm(waso(1,r)))];
 end
-fprintf('\n')
+output = [output '\n'];
 %-----------------%
 
 %-----------------%
 %-WASO (Wake after sleep onset)
-fprintf(['Efficiency:\t\t'])
+output = [output tab('Efficiency:')];
 for r = 1:n_rater
-  fprintf('% 10.2f%%\t\t', efficiency(1,r))
+  output = [output sprintf(tab('% 10.2f%%'), efficiency(1,r))];
 end
-fprintf('\n\n')
+output = [output '\n\n'];
 %-----------------%
 
 %-----------------%
 %-stages duration and percentage
 for s = 1:n_stage
   
-  fprintf(tab(stage(s).label))
+  output = [output tab(stage(s).label)];
   for r = 1:n_rater
-    fprintf(tab(s2hhmm(ep(s, r))))
+    output = [output tab(s2hhmm(ep(s, r)))];
   end
-  fprintf('\n')
+  output = [output '\n'];
   
-  fprintf([' Percent \t\t'])
+  output = [output tab(' Percent ')];
   for r = 1:n_rater
-    fprintf('% 10.2f%%\t\t', ep(s, r) / tst(1,r) * 100)
+    output = [output sprintf(tab('% 10.2f%%'), ep(s, r) / tst(1,r) * 100)];
   end
-  fprintf('\n')
+  output = [output '\n'];
   
 end
-fprintf('\n')
+output = [output '\n'];
 %-----------------%
 
 %-----------------%
 %-markers
 for i = 1:numel(mrk)
-  fprintf('%s (num)\t\t', mrk{i})
-  fprintf('% 7d\t\t\t', mrk_n(i,:))
-  fprintf('\n')
+  output = [output sprintf(tab('%s (num)'), mrk{i})];
+  output = [output sprintf(tab('% 7d'), mrk_n(i,:))];
+  output = [output '\n'];
   
-  fprintf('  - (dur)\t\t')
-  fprintf('% 10.2fs\t\t', mrk_d(i,:))
-  fprintf('\n')
+  output = [output tab('  - (dur)')];
+  output = [output sprintf(tab('% 10.2fs'), mrk_d(i,:))];
+  output = [output '\n'];
 end
 %-----------------%
+
+output = strrep(output, '%', '%%'); % escape "escape char"
 %-------------------------------------%
 
 %-------------------------------------%

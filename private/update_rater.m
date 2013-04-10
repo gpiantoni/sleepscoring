@@ -24,6 +24,7 @@ if isempty(info.score(info.rater).rater)
   set(h.menu.score.merge, 'enable', 'off')
   set(h.menu.score.delete, 'enable', 'off')
   set(h.menu.score.statistics, 'enable', 'off')
+  set(h.menu.score.statistics_file, 'enable', 'off')
   set(h.panel.hypno.h, 'Title', 'Recording')
   %-------%
  
@@ -37,6 +38,7 @@ else
   set(h.menu.score.merge, 'enable', 'on')
   set(h.menu.score.delete, 'enable', 'on')
   set(h.menu.score.statistics, 'enable', 'on')
+  set(h.menu.score.statistics_file, 'enable', 'on')
   %-------%
   
   %-------%

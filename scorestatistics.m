@@ -1,12 +1,40 @@
 function scorestatistics(varargin)
 %SCORESTATISTICS compute statistics on the sleep scoring
 %
+% Use as:
+%   scorestatistics(info) % one dataset
+% or 
+%   scorestatistics(info1, info2) % multiple datasets
+% or 
+%   scorestatistics('/path/to/sleepscoring.mat') % one dataset
+% or 
+%   scorestatistics('/path/to/sleepscoring.mat', '/path/to/csvfile.csv') % write to csvfile.csv
+%
 % Sleep is scored according to R&K or ASSM 2007.
 
 %-------------------------------------%
 %-check input
+%-----------------%
+%-check if the last input is a text file or directory
+tocsv = false;
+if ischar(varargin{end}) && ...
+    ~strcmp(varargin{end}(end-3:end), '.mat')
+  
+  tocsv = true;
+  csvfile = varargin{end};
+  
+  [~, ~, ext] = fileparts(csvfile);
+  if strcmp(ext, '')
+    fprintf('added extension ''csv''\n')
+    csvfile = [csvfile '.csv'];
+  end
+  
+  varargin(end) = [];
 
-for i = 1:nargin
+end
+%-----------------%
+
+for i = 1:numel(varargin)
   
   if ischar(varargin{i})
     load(varargin{i}, 'info')
@@ -15,7 +43,7 @@ for i = 1:nargin
   
 end
 
-if nargin == 1
+if numel(varargin) == 1
   info = varargin{1};
 else
   info = concat_score(varargin{:});
@@ -36,10 +64,23 @@ end
 
 %-------------------------------------%
 %-report single rater
-report_rater(info, opt.stage)
+output = report_rater(info, opt.stage, tocsv);
+if tocsv
+  
+  fid = fopen(csvfile, 'w+');
+  fprintf(fid, output);
+  fclose(fid);
+  
+  fprintf('writing score statistics to file %s\n', csvfile)
+  
+else
+  fprintf(output)
+end
 %-------------------------------------%
 
 %-------------------------------------%
 %-interscore agreement
-report_comparison_raters(info.score, opt.stage);
+if ~tocsv
+  report_comparison_raters(info.score, opt.stage);
+end
 %-------------------------------------%
