@@ -3,11 +3,11 @@ function det = detect_example(cfg, data)
 %
 
 if ~isfield(cfg, 'thr')
-  cfg.thr = 100;
+  cfg.thr = 200;
 end
 
 s = any(data.trial{1} > cfg.thr);
 
-ds = diff([s false]);
-b = [find(ds == 1)' find(ds == -1)'];
+ds = diff([false s false]);
+b = [find(ds == 1)' find(ds == -1)'-1];
 det = data.time{1}(b);

@@ -119,6 +119,7 @@ info.label = hdr.label;
 if ~isfield(info, 'score')
    info.score = score_create(info, [], []);
 end
+info = convert_score_cell2struct(info);
 %-----------------%
 
 %-----------------%

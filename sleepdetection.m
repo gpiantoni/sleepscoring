@@ -121,7 +121,10 @@ for i = 1:numel(cfg.method)
   %---------------------------%
 
   %-------------------------------------%
-  for e = epch
+  ft_progress('init', 'textbar', '');
+  for i_e = 1:numel(epch)
+    e = epch(i_e);
+    ft_progress(i_e/numel(epch), 'Processing epoch %d', i_e);
     
     %---------------------------%
     %-read data
@@ -156,8 +159,10 @@ for i = 1:numel(cfg.method)
     %---------------------------%
     
   end
+  ft_progress('close')
   
-  info.score(rater).marker(i_mrk).time = merge_intervals(info.score(rater).marker(i_mrk).time);
+  % too slow
+  % info.score(rater).marker(i_mrk).time = merge_intervals(info.score(rater).marker(i_mrk).time);
   %-------------------------------------%
   
 end
