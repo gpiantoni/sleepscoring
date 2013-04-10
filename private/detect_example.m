@@ -8,6 +8,6 @@ end
 
 s = any(data.trial{1} > cfg.thr);
 
-ds = diff(s);
+ds = diff([s false]);
 b = [find(ds == 1)' find(ds == -1)'];
 det = data.time{1}(b);
