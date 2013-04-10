@@ -6,4 +6,15 @@ function cb_statistics(h, eventdata)
 
 h0 = get_parent_fig(h);
 info = getappdata(h0, 'info');
-scorestatistics(info)
+
+if strcmp(get(h, 'label'), 'Score Statistics (to file) ...')
+  
+  [filename, pathname] = uiputfile('*.csv', 'Save Score Statistics to CSV File');
+  csvfile = fullfile(pathname, filename);
+  scorestatistics(info, csvfile)
+  
+else
+  scorestatistics(info)
+  
+end
+

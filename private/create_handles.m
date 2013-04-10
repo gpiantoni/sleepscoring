@@ -147,6 +147,7 @@ h.menu.score.copy = uimenu(h.menu.score.h, 'label', 'Copy Current Score', 'call'
 h.menu.score.merge = uimenu(h.menu.score.h, 'label', 'Merge Scores', 'call', @cb_rater, 'enable', 'off');
 h.menu.score.delete = uimenu(h.menu.score.h, 'label', 'Delete Current Score', 'call', @cb_rater, 'enable', 'off');
 h.menu.score.statistics = uimenu(h.menu.score.h, 'label', 'Score Statistics', 'sep', 'on', 'call', @cb_statistics);
+h.menu.score.statistics_file = uimenu(h.menu.score.h, 'label', 'Score Statistics (to file) ...', 'call', @cb_statistics);
 %-----------------%
 
 h.menu.chan.h = uimenu(h.main, 'label', 'Channel Selection', 'enable', 'off');
