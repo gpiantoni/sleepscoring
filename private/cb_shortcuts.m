@@ -12,6 +12,14 @@ h0 = get_parent_fig(h);
 info = getappdata(h0, 'info');
 opt = getappdata(h0, 'opt');
 
+%-----------------%
+%-don't call shortcuts if user edits the epoch number or the y lim
+if h == opt.h.panel.info.epoch || ...
+    h == opt.h.panel.info.ylimval
+  return
+end
+%-----------------%
+
 switch eventdata.Key
   
   case opt.short.next
@@ -37,7 +45,7 @@ switch eventdata.Key
   case {opt.stage.shortcut}
     
     if ~isempty(info.score(info.rater).rater) % no scoring without score sheet
-
+      
       %-----------------%
       %-sleep scoring
       i_score = find(strcmp({opt.stage.shortcut}, eventdata.Key));
