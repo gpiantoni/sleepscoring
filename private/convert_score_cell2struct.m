@@ -39,11 +39,11 @@ for r = 1:size(score_old,2) % loop over raters
   score(r).score_end = score_old{4,r}(2);
   
   score(r).marker(1).name = 'movement';
-  score(r).marker(1).time = score_old{5,r} / info.fsample; % from samples to ms
+  score(r).marker(1).time = score_old{5,r};
   score(r).marker(2).name = 'arousal';
-  score(r).marker(2).time = score_old{6,r} / info.fsample; % from samples to ms
+  score(r).marker(2).time = score_old{6,r};
   score(r).marker(3).name = 'artifact';
-  score(r).marker(3).time = score_old{7,r} / info.fsample; % from samples to ms
+  score(r).marker(3).time = score_old{7,r};
   
   score(r).stage = cell(1, score(r).nepoch);
   
