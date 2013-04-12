@@ -1,4 +1,6 @@
 
+load /path/to/sleep_recording.mat
+
 info = getappdata(gcf, 'info');
 opt = getappdata(gcf, 'opt');
 hdr = getappdata(gcf, 'hdr');
@@ -12,6 +14,6 @@ cfg.method.ref = {'E190'};
 cfg.method.cfg.thr = 100;
 cfg.method.Fhp = .3;
 
-a = sleepdetection(cfg, info, opt, hdr);
+info1 = sleepdetection(cfg, info, opt, hdr);
 
-sleepscoring(a, opt)
+sleepscoring(info1, opt)
