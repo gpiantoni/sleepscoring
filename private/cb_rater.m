@@ -43,7 +43,7 @@ switch get(h, 'label')
     %-----------------%
     %-update score
     newscore = score_create(info, newrater, wndw);
-    score(nrater + 1) = newscore;
+    score = [score newscore];
     rater = nrater + 1;
     %-----------------%
     
