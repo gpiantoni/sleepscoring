@@ -43,7 +43,7 @@ for i_mrk = 1:numel(info.score(info.rater).marker)
       %-----------------%
       %-range
       hold on
-      i_col = mod(numel(opt.marker.color), i_mrk) + 1;
+      i_col = mod(i_mrk, numel(opt.marker.color)) + 1;
       h_f = fill(mrk(j,[1 1 2 2]), yrange([1 2 2 1]), opt.marker.color{i_col});
       set(h_f, 'tag', 'marker')
       %-----------------%
