@@ -44,8 +44,8 @@ x = dat(opt.fft.i_chan, :);
 
 %-----------------%
 %-find the chantype of the channel (so, it has the same color)
-strcmpchan = @(x) any(strcmp(x, chan(opt.fft.i_chan)));
-chantype = cellfun(strcmpchan, {opt.changrp.chan}); % chantype of the channel for fft
+n_changrp = cumsum(cellfun(@numel, {opt.changrp.chan}));
+chantype = find(opt.fft.i_chan <= n_changrp, 1);
 % TODO: maybe we can use scaling as well
 %-----------------%
 
