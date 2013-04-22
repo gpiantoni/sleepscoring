@@ -146,8 +146,14 @@ h.menu.score.rename = uimenu(h.menu.score.h, 'label', 'Rename Rater', 'call', @c
 h.menu.score.copy = uimenu(h.menu.score.h, 'label', 'Copy Current Score', 'call', @cb_rater, 'enable', 'off');
 h.menu.score.merge = uimenu(h.menu.score.h, 'label', 'Merge Scores', 'call', @cb_rater, 'enable', 'off');
 h.menu.score.delete = uimenu(h.menu.score.h, 'label', 'Delete Current Score', 'call', @cb_rater, 'enable', 'off');
-h.menu.score.statistics = uimenu(h.menu.score.h, 'label', 'Score Statistics', 'sep', 'on', 'call', @cb_statistics);
-h.menu.score.statistics_file = uimenu(h.menu.score.h, 'label', 'Score Statistics (to file) ...', 'call', @cb_statistics);
+%-----------------%
+
+%-----------------%
+%-REVIEW
+h.menu.rev.h = uimenu(h.main, 'label', 'Review', 'enable', 'off');
+h.menu.rev.statistics = uimenu(h.menu.rev.h, 'label', 'Score Statistics', 'call', @cb_statistics);
+h.menu.rev.statistics_file = uimenu(h.menu.rev.h, 'label', 'Score Statistics (to file) ...', 'call', @cb_statistics);
+h.menu.rev.marker = uimenu(h.menu.rev.h, 'label', 'Marker Times', 'call', @cb_markertime);
 %-----------------%
 
 h.menu.chan.h = uimenu(h.main, 'label', 'Channel Selection', 'enable', 'off');
