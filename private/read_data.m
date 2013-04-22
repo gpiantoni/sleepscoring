@@ -55,32 +55,39 @@ raw = ft_read_data(info.dataset, 'header', hdr, ...
 nSamples = endsample - begsample + 1;
 dat = zeros(numel(chan), nSamples);
 
+i_chan = 0;
+
 for i = 1:numel(opt.changrp)
   
   %-----------------%
-  %-reference data
-  r_chan = ismember(chan_raw, opt.changrp(i).chan);
+  %-index of the channels in raw
+  i_chan = (1:numel(opt.changrp(i).chan)) + i_chan(end);
+  %-----------------%
+  
+  %-----------------%
+  %-read data (assign correct position in the output dat matrix)
+  for c = 1:numel(opt.changrp(i).chan)
+    dat_idx = i_chan(c);
+    raw_idx = strcmp(opt.changrp(i).chan{c}, chan_raw);
+    dat(dat_idx,:) = raw(raw_idx, :);
+  end
+  %-----------------%
+  
+  %-----------------%
+  %-re-reference
   if ~isempty(opt.changrp(i).ref)
     r_ref = ismember(chan_raw, opt.changrp(i).ref);
-  else
-    r_ref = false(size(chan_raw));
+    ref = mean(raw(r_ref, :));
+    
+    for c = i_chan
+      dat(c,:) = dat(c,:) - ref;
+    end
   end
-  
-  r = r_chan | r_ref;
-  chan_in_reref = ismember(find(r), find(r_chan));
-  ref_in_reref = ismember(find(r), find(r_ref));
-  
-  chan_reref = chan_raw(r); % channels in reref
-  reref = raw(r,:);
   %-----------------%
   
   %-----------------%
-  %-reref
-  if any(r_ref)
-    reref = ft_preproc_rereference(reref, ref_in_reref);
-  end
-  
-  reref = reref(chan_in_reref,:) * opt.changrp(i).scaling; % reassignment of REREF with only channels of interest
+  %-scaling
+  dat(i_chan,:) = dat(i_chan,:) * opt.changrp(i).scaling;
   %-----------------%
   
   %-----------------%
@@ -89,16 +96,13 @@ for i = 1:numel(opt.changrp)
   Flp = opt.changrp(i).Flp;
   
   if ~isempty(Fhp)
-    reref = ft_preproc_highpassfilter(reref, info.fsample, Fhp, 2);
+    dat(i_chan,:) = ft_preproc_highpassfilter(dat(i_chan,:), info.fsample, Fhp, 2);
   end
   
   if ~isempty(Flp)
-    reref = ft_preproc_lowpassfilter(reref, info.fsample, Flp);
+    dat(i_chan,:) = ft_preproc_lowpassfilter(dat(i_chan,:), info.fsample, Flp);
   end
   %-----------------%
-  
-  [dat_chan] = ismember(chan, opt.changrp(i).chan);
-  dat(dat_chan, :) = reref; % TODO: This only works because chan and chan_reref are sorting in the same way
-  
+
 end
 %-------------------------------------%
