@@ -25,13 +25,14 @@ axes(opt.h.axis.data) % needs to be called inside, otherwise it does not work
 delete(findobj(opt.h.axis.data, 'tag', 'data'))
 delete(findobj(opt.h.axis.data, 'tag', 'topscore'))
 
+n_changrp = [0 cellfun(@numel, {opt.changrp.chan})];
+
 for i = 1:numel(opt.changrp)
   
   linecolor = opt.changrp(i).linecolor;
   
-  for c = opt.changrp(i).chan
-    
-    chanindx = ismember(chan, c);
+  begin_changrp = sum(n_changrp(1:i));
+  for chanindx = (1:numel(opt.changrp(i).chan)) + begin_changrp
     
     cnt = cnt + 1;
     hv = ft_plot_vector(timescale, dat(chanindx,:), 'color', linecolor, ...
