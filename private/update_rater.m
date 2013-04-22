@@ -1,4 +1,4 @@
-function update_rater(info, h)
+function update_rater(info, opt)
 %UPDATE_RATER update the rater dropdown menu
 % It's a subfunction of cb_rater, but it's called by prepare_info_opt as
 % well (in case, the info contains already a score)
@@ -6,6 +6,8 @@ function update_rater(info, h)
 % Called by
 %  - cb_rater
 %  - prepare_info_opt
+
+h = opt.h;
 
 %-----------------%
 %-activate menu rater
@@ -49,8 +51,11 @@ else
       set(h_m, 'check', 'on')
       set(h.panel.hypno.h, 'Title', ['Hypnogram: ' info.score(i).rater])
     end
-    %-------%
+    
   end
-  %-----------------%
+  %-------%
+  
+  enable_marker(info, opt)
   
 end
+%-----------------%

@@ -411,8 +411,12 @@ cb_readplotdata(h0)
 function cb_marker(h, eventdata)
 
 h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
 opt = getappdata(h0, 'opt');
 opt.marker.i = get(h, 'val');
+
+enable_marker(info, opt)
+
 setappdata(h0, 'opt', opt)
 %-------------------------------------%
 
@@ -429,6 +433,8 @@ epoch = get_epoch(info, opt);
 opt.epoch = epoch(find(epoch < opt.epoch, 1, 'last')); 
 if isempty(opt.epoch); return; end
 
+enable_marker(info, opt)
+
 setappdata(h0, 'opt', opt);
 
 cb_readplotdata(h0)
@@ -444,32 +450,13 @@ opt = getappdata(h0, 'opt');
 
 epoch = get_epoch(info, opt);
 % following epoch with markers
-opt.epoch = epoch(find(epoch > opt.epoch, 1)); 
+opt.epoch = epoch(find(epoch > opt.epoch, 1));
 if isempty(opt.epoch); return; end
+
+enable_marker(info, opt)
 
 setappdata(h0, 'opt', opt);
 
 cb_readplotdata(h0)
 %-------------------------------------%
-%---------------------------------------------------------%
-
-%---------------------------------------------------------%
-%-SUBFUNCTION
-%---------------------------------------------------------%
-%-------------------------------------%
-%-find epochs with markers
-function epoch = get_epoch(info, opt)
-
-wndw = info.score(info.rater).wndw;
-beginsleep = info.score(info.rater).score_beg;
-
-if isempty(info.score(info.rater).marker(opt.marker.i).time)
-  epoch = [];
-  return
-end
-
-begmarker = info.score(info.rater).marker(opt.marker.i).time(:,1);
-
-epoch = (begmarker - beginsleep) / wndw + 1;
-epoch = unique(floor(epoch));
 %---------------------------------------------------------%

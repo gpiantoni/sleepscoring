@@ -81,7 +81,7 @@ set(h0, 'windowbuttonDownFcn', @cb_currentpoint)
 %-------------------------------------%
 %-SCORING HELP
 score_popup(info, opt)
-update_rater(info, opt.h)
+update_rater(info, opt)
 %-------------------------------------%
 
 %-------------------------------------%
