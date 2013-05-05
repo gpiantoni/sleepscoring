@@ -101,6 +101,16 @@ switch ft_filetype(info.dataset)
     %-read score as well from FASST
     info.score = hdr.orig.other.CRC.score;
     
+  case 'edf'
+    if isfield(hdr, 'orig') && isfield(hdr.orig, 'T0') && numel(hdr.orig.T0) == 6
+      info.beginrec = datenum(hdr.orig.T0);
+      
+    else
+      info.beginrec = 0;
+      warning(['file format EDF does not have a valid T0 field to reconstruct the time of the recording'])
+
+    end
+    
   otherwise
     info.beginrec = 0;
     warning(['file format ' ft_filetype(info.dataset) ' not recognized. Time of the recording will not be correct'])

@@ -47,7 +47,7 @@ chan_raw = chan_raw(si_raw);
 
 raw = ft_read_data(info.dataset, 'header', hdr, ...
   'begsample', begsample, 'endsample', endsample, 'chanindx', i_raw, ...
-  'cache', false); % cache true might be faster but it does not read the whole dataset
+  'cache', false, 'checkboundary', false); % cache true might be faster but it does not read the whole dataset
 %-------------------------------------%
 
 %-------------------------------------%

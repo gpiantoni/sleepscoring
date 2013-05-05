@@ -26,7 +26,7 @@ score = [];
 score.rater = rater; % can be empty
 score.wndw = wndw;
 score.score_beg = 1 / info.fsample;
-score.score_end = info.hdr.nSamples / info.fsample;
+score.score_end = info.hdr.nSamples * info.hdr.nTrials / info.fsample;
 score.marker = [];
 
 score.nepoch = floor((score.score_end - score.score_beg) / wndw);
