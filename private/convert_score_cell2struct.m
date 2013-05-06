@@ -3,6 +3,8 @@ function info = convert_score_cell2struct(info)
 %
 % Called by
 %  - prepare_info
+%  - scorestatistics
+%  - scorewriting
 
 %-----------------%
 %-struct format already

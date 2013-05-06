@@ -34,20 +34,34 @@ if ischar(varargin{end}) && ...
 end
 %-----------------%
 
+%-----------------%
+%-load from file
 for i = 1:numel(varargin)
   
   if ischar(varargin{i})
     load(varargin{i}, 'info')
     varargin{i} = info;
+    
   end
   
 end
+%-----------------%
 
+%-----------------%
+%-convert to new format
+for i = 1:numel(varargin)
+  varargin{i} = convert_score_cell2struc(varargin{i});
+end
+%-----------------%
+
+%-----------------%
+%-concatenate if necessary
 if numel(varargin) == 1
   info = varargin{1};
 else
-  info = concat_score(varargin{:});
+  info = score_concat(varargin{:});
 end
+%-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
