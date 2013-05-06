@@ -11,6 +11,13 @@ function scorewriting(varargin)
 %   scorestatistics('/path/to/sleepscoring.mat', '/path/to/csvfile.csv') % write to csvfile.csv
 %
 % It reports the scores in a table only for the rater specified in info.rater
+% Before the table with scores, it reports the following information:
+%   - name of the mat file
+%   - name of the recording file
+%   - date of the recording
+%   - time of the recording
+%   - name of the rater
+%   - duration of the time window used for scoring
 %
 % Sleep is scored according to R&K or ASSM 2007.
 
@@ -84,18 +91,29 @@ end
 if ~tocsv
   tab_size = 3;
   tab = @(x)[x repmat('\t', 1, tab_size - floor(numel(x)/8))];
+  sepa = '\n';
 else
   tab = @(x)[x ','];
+  sepa = ',';
 end
 %-----------------%
 
+%-----------------%
+%-header info
+output = [info.infofile, sepa, info.dataset, sepa, ... 
+  datestr(info.beginrec, 'dd-mmm-yyyy'), sepa, datestr(info.beginrec, 'HH:MM:SS'), sepa, ...
+  info.score(info.rater).rater, sepa, sprintf('% 3d', info.score(info.rater).wndw), '\n'];
+%-----------------%
+
+%-----------------%
 score = info.score(info.rater);
-output = '';
+
 for i = 1:numel(score.stage)
   epoch_beg = info.beginrec + (score.score_beg + (i - 1) * score.wndw) /60 /60 /24;
   output = [output tab(datestr(epoch_beg, 'dd-mmm-yyyy')) ...
     tab(datestr(epoch_beg, 'HH:MM:SS')) tab(score.stage{i}) '\n'];
 end
+%-----------------%
 %-------------------------------------%
 
 %-------------------------------------%
