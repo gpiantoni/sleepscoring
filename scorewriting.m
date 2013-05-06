@@ -111,7 +111,7 @@ score = info.score(info.rater);
 for i = 1:numel(score.stage)
   epoch_beg = info.beginrec + (score.score_beg + (i - 1) * score.wndw) /60 /60 /24;
   output = [output tab(datestr(epoch_beg, 'dd-mmm-yyyy')) ...
-    tab(datestr(epoch_beg, 'HH:MM:SS')) tab(score.stage{i}) '\n'];
+    tab(datestr(epoch_beg, 'HH:MM:SS')) score.stage{i} '\n'];
 end
 %-----------------%
 %-------------------------------------%
