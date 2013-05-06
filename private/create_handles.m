@@ -153,6 +153,8 @@ h.menu.score.delete = uimenu(h.menu.score.h, 'label', 'Delete Current Score', 'c
 h.menu.rev.h = uimenu(h.main, 'label', 'Review', 'enable', 'off');
 h.menu.rev.statistics = uimenu(h.menu.rev.h, 'label', 'Score Statistics', 'call', @cb_statistics);
 h.menu.rev.statistics_file = uimenu(h.menu.rev.h, 'label', 'Score Statistics (to file) ...', 'call', @cb_statistics);
+h.menu.rev.score = uimenu(h.menu.rev.h, 'label', 'Score', 'call', @cb_scorefile);
+h.menu.rev.score_file = uimenu(h.menu.rev.h, 'label', 'Score (to file) ...', 'call', @cb_scorefile);
 h.menu.rev.marker = uimenu(h.menu.rev.h, 'label', 'Marker Times', 'call', @cb_markertime);
 %-----------------%
 
@@ -458,5 +460,23 @@ enable_marker(info, opt)
 setappdata(h0, 'opt', opt);
 
 cb_readplotdata(h0)
+%-------------------------------------%
+
+%-------------------------------------%
+function cb_scorefile(h, eventdata)
+
+h0 = get_parent_fig(h);
+info = getappdata(h0, 'info');
+
+if strcmp(get(h, 'label'), 'Score (to file) ...')
+  
+  [filename, pathname] = uiputfile('*.csv', 'Save Score of Current Rater to CSV File');
+  csvfile = fullfile(pathname, filename);
+  scorewriting(info, csvfile)
+  
+else
+  scorewriting(info)
+  
+end
 %-------------------------------------%
 %---------------------------------------------------------%
