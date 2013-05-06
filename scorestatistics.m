@@ -50,7 +50,7 @@ end
 %-----------------%
 %-convert to new format
 for i = 1:numel(varargin)
-  varargin{i} = convert_score_cell2struc(varargin{i});
+  varargin{i} = convert_score_cell2struct(varargin{i});
 end
 %-----------------%
 
