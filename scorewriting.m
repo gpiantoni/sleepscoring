@@ -113,18 +113,25 @@ end
 if ~tocsv
   tab_size = 3;
   tab = @(x)[x repmat('\t', 1, tab_size - floor(numel(x)/8))];
-  sepa = '\n';
+
 else
   tab = @(x)[x ','];
-  sepa = ',';
+
 end
 %-----------------%
 
 %-----------------%
 %-header info
-output = [info.infofile, sepa, info.dataset, sepa, ... 
-  datestr(info.beginrec, 'dd-mmm-yyyy'), sepa, datestr(info.beginrec, 'HH:MM:SS'), sepa, ...
-  info.score(rater).rater, sepa, sprintf('% 3d', info.score(info.rater).wndw), '\n'];
+[rec_dur, rec_time] = calculate_rec_time(info, opt.stage);
+
+output = [tab('info file') info.infofile '\n' ...
+  tab('dataset') info.dataset  '\n' ...
+  tab('recording start date') datestr(info.beginrec, 'dd-mmm-yyyy')  '\n' ...
+  tab('recording start time') datestr(info.beginrec, 'HH:MM:SS')  '\n' ...
+  tab('rater') info.score(rater).rater  '\n' ...
+  tab('scoring window length') sprintf('% 2ds', info.score(rater).wndw)  '\n' ...
+  tab('Lights off') datestr(rec_time(1,rater)/24 /60 /60, 'HH:MM:SS') '\n' ...
+  tab('Lights on') datestr(rec_time(2,rater)/24 /60 /60, 'HH:MM:SS') '\n'];
 %-----------------%
 
 %-----------------%
