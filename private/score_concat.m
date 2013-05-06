@@ -1,4 +1,11 @@
-function out = concat_score(varargin)
+function out = score_concat(varargin)
+%SCORE_CONCAT concatenate in time the scores
+%
+% Called by
+%  - scorestatistics
+%  - scorewriting
+
+error(sprintf('Sorry, this function has not be implemented yet for the struct format of the score\nPlease, contact gio@gpiantoni.com'))
 
 %-------------------------------------%
 %-check input
