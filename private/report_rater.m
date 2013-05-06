@@ -13,50 +13,12 @@ end
 score = info.score;
 n_stage = numel(stage);
 n_rater = size(score,2);
+epoch_dur = [score.wndw]; % duration of each epoch
 
 mrk = arrayfun(@(x) {x.marker.name}, score, 'uni', false);
 mrk = unique([mrk{:}]);
-%-------------------------------------%
 
-%-------------------------------------%
-%-calculate recording time
-% The correct way to identify the beginning of the scoring period ("lights
-% out") is by right-clicking on the sleep epochs and define the beginning
-% of the scoring window. Another way is to mark the epochs of no interest
-% as "NaN" (so, not scored). When computing total recording time and sleep
-% efficiency, we need to take into account both possible ways.
-epoch_dur = [score.wndw]; % duration of each epoch
-
-info_time = info.beginrec * 24 * 60 * 60; % absolute time of the beginning of the EEG, convert to seconds
-
-%-----------------%
-%-calculate beginning
-i_first_notnan = zeros(1,n_rater);
-for r = 1:n_rater
-  i_notnan = find(~strcmp(score(r).stage, stage(1).label), 1); % where "stage(1).label" is the default score
-  if i_notnan
-    i_first_notnan(r) = i_notnan - 1; % index of the first non-nan
-  end
-end
-rec_begin = [score.score_beg] + i_first_notnan .* epoch_dur;
-rec_begin_abs = rec_begin + info_time; % in absolute terms
-%-----------------%
-
-%-----------------%
-%-calculate end
-i_last_notnan = zeros(1,n_rater);
-for r = 1:n_rater
-  i_notnan = find(~strcmp(score(r).stage, stage(1).label), 1, 'last');
-  if i_notnan
-    i_last_notnan(r) = i_notnan; % index of the first non-nan
-  end
-end
-rec_end = [score.score_beg] + i_last_notnan .* epoch_dur;
-rec_end_abs = rec_end + info_time; % in absolute terms
-%-----------------%
-
-%-calculate recording time
-rec_time = rec_end - rec_begin;
+[rec_dur, rec_time, i_notnan] = calculate_rec_time(info, stage);
 %-------------------------------------%
 
 %-------------------------------------%
@@ -68,7 +30,7 @@ mrk_d = zeros(numel(mrk), n_rater); % duration of markers
 
 for r = 1:n_rater;
   
-  effectivescore = score(r).stage(i_first_notnan(r)+1:i_last_notnan(r));
+  effectivescore = score(r).stage(i_notnan(1,r)+1:i_notnan(2,r));
   
   %-----------------%
   %-count number of epochs in each stage
@@ -108,7 +70,7 @@ l_sleep = l(~[stage.awake], :);
 
 tst = sum(ep_sleep);
 sl = min(l_sleep);
-efficiency = tst ./ rec_time * 100;
+efficiency = tst ./ rec_dur * 100;
 %-------------------------------------%
 
 %-------------------------------------%
@@ -139,9 +101,9 @@ output = [output '\n\n'];
 
 %-----------------%
 %-Lights out clock time
-output = [output tab('Lights out:')];
+output = [output tab('Lights off:')];
 for r = 1:n_rater
-  output = [output tab(s2hhmm(rec_begin_abs(1,r)))];
+  output = [output tab(s2hhmm(rec_time(1,r)))];
 end
 output = [output '\n'];
 %-----------------%
@@ -151,7 +113,7 @@ output = [output '\n'];
 output = [output tab('Lights on:')];
 for r = 1:n_rater
   % don't use clock_score(2,r) but use the last epoch which was scored as non-nan
-  output = [output tab(s2hhmm(rec_end_abs(1,r)))];
+  output = [output tab(s2hhmm(rec_time(2,r)))];
 end
 output = [output '\n\n'];
 %-----------------%
@@ -169,7 +131,7 @@ output = [output '\n'];
 %-Total recording time ("lights out" to "lights on")
 output = [output tab('Recording Time:')];
 for r = 1:n_rater
-  output = [output tab(s2hhmm(rec_time(1,r)))];
+  output = [output tab(s2hhmm(rec_dur(1,r)))];
 end
 output = [output '\n\n'];
 %-----------------%
