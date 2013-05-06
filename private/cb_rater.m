@@ -83,7 +83,7 @@ switch get(h, 'label')
     
     %-----------------%
     %-prompt
-    to_merge = score_merge_select(score(2,:));
+    to_merge = score_merge_select({score.rater});
     if isempty(to_merge)
       return
     end
@@ -92,7 +92,7 @@ switch get(h, 'label')
     %-----------------%
     %-update score
     rater = nrater + 1;
-    score(:, rater) = score_merge(score(:, logical(to_merge)));
+    score = [score score_merge(score(logical(to_merge)))];
     %-----------------%
     
   case 'Delete Current Score'
