@@ -153,9 +153,9 @@ h.menu.score.delete = uimenu(h.menu.score.h, 'label', 'Delete Current Score', 'c
 h.menu.rev.h = uimenu(h.main, 'label', 'Review', 'enable', 'off');
 h.menu.rev.statistics = uimenu(h.menu.rev.h, 'label', 'Score Statistics', 'call', @cb_statistics);
 h.menu.rev.statistics_file = uimenu(h.menu.rev.h, 'label', 'Score Statistics (to file) ...', 'call', @cb_statistics);
-h.menu.rev.score = uimenu(h.menu.rev.h, 'label', 'Score', 'call', @cb_scorefile);
+h.menu.rev.score = uimenu(h.menu.rev.h, 'label', 'Score', 'sep', 'on', 'call', @cb_scorefile);
 h.menu.rev.score_file = uimenu(h.menu.rev.h, 'label', 'Score (to file) ...', 'call', @cb_scorefile);
-h.menu.rev.marker = uimenu(h.menu.rev.h, 'label', 'Marker Times', 'call', @cb_markertime);
+h.menu.rev.marker = uimenu(h.menu.rev.h, 'label', 'sep', 'on', 'Marker Times', 'call', @cb_markertime);
 %-----------------%
 
 h.menu.chan.h = uimenu(h.main, 'label', 'Channel Selection', 'enable', 'off');
