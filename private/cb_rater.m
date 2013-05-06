@@ -138,7 +138,7 @@ setappdata(h0, 'info', info)
 
 opt = getappdata(h0, 'opt');
 
-update_rater(info, opt.h)
+update_rater(info, opt)
 cb_readplotdata(h0)
 %-------------------------------------%
 
