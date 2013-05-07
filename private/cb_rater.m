@@ -36,6 +36,17 @@ switch get(h, 'label')
     if isempty(answer); return; end
     
     newrater = answer{1};
+    %-input validation
+    if isempty(newrater); 
+      warning('Name of the rater cannot be empty')
+      return
+    end
+    
+    if any(strcmp({score.rater}, newrater))
+      warning('This rater''s name exists already')
+      return
+    end
+    
     wndw = textscan(answer{2}, '%f');
     wndw = wndw{1};
     %-----------------%
@@ -43,7 +54,11 @@ switch get(h, 'label')
     %-----------------%
     %-update score
     newscore = score_create(info, newrater, wndw);
-    score = [score newscore];
+    if numel(score) == 1 && isempty(score(1).rater)
+      score = newscore;
+    else
+      score = [score newscore];
+    end
     rater = nrater + 1;
     %-----------------%
     
