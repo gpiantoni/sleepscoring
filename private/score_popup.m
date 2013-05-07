@@ -29,10 +29,18 @@ if ~isempty(info.score(info.rater).rater)
   
   %-----------------%
   %-markers
-  set(opt.h.panel.info.marker.popup, 'str', {info.score(info.rater).marker.name}, ...
-    'val', opt.marker.i, 'vis', 'on');
-  set(opt.h.panel.info.marker.bb, 'vis', 'on');
-  set(opt.h.panel.info.marker.ff, 'vis', 'on');
+  if isempty(info.score(info.rater).marker)
+    set(opt.h.panel.info.marker.popup, 'str', {''}, 'val', 1, 'vis', 'off');
+    set(opt.h.panel.info.marker.bb, 'vis', 'off');
+    set(opt.h.panel.info.marker.ff, 'vis', 'off');
+    
+  else
+    set(opt.h.panel.info.marker.popup, 'str', {info.score(info.rater).marker.name}, ...
+      'val', opt.marker.i, 'vis', 'on');
+    set(opt.h.panel.info.marker.bb, 'vis', 'on');
+    set(opt.h.panel.info.marker.ff, 'vis', 'on');
+    
+  end
   %-----------------%
   
 else
