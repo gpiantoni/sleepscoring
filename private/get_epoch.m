@@ -10,7 +10,8 @@ function epoch = get_epoch(info, opt)
 wndw = info.score(info.rater).wndw;
 beginsleep = info.score(info.rater).score_beg;
 
-if isempty(info.score(info.rater).marker(opt.marker.i).time)
+if isempty(info.score(info.rater).marker) || ...
+    isempty(info.score(info.rater).marker(opt.marker.i).time)
   epoch = [];
   return
 end
