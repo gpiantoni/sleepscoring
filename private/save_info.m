@@ -18,7 +18,8 @@ if isfield(info, 'infofile')
   if fid ~= -1
     fclose(fid);
     save(info.infofile, 'info')
-    if strcmp(getenv('USER'), system(['stat -c %U ' info.infofile]))
+    [~, username] = system(['stat -c %U ' info.infofile]);
+    if strcmp(getenv('USER'), username)
       system(['chmod a+rw ' info.infofile]);
     end
     
