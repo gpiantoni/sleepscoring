@@ -18,6 +18,9 @@ if isfield(info, 'infofile')
   if fid ~= -1
     fclose(fid);
     save(info.infofile, 'info')
+    if strcmp(getenv('USER'), system(['stat -c %U ' info.infofile]))
+      system(['chmod a+rw ' info.infofile]);
+    end
     
   else
     warndlg(['could not save ' info.infofile ', probably you don''t have write permissions'], 'problems saving score')
