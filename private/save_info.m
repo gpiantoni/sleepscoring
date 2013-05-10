@@ -20,7 +20,7 @@ if isfield(info, 'infofile')
     save(info.infofile, 'info')
     
   else
-    warning(['could not save ' info.infofile ', probably you don''t have write permissions'])
+    warndlg(['could not save ' info.infofile ', probably you don''t have write permissions'], 'problems saving score')
     
   end
   
