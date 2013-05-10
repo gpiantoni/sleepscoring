@@ -10,8 +10,10 @@ info = getappdata(h0, 'info');
 if strcmp(get(h, 'label'), 'Score Statistics (to file) ...')
   
   [filename, pathname] = uiputfile('*.csv', 'Save Score Statistics to CSV File');
-  csvfile = fullfile(pathname, filename);
-  scorestatistics(info, csvfile)
+  if filename
+    csvfile = fullfile(pathname, filename);
+    scorestatistics(info, csvfile)
+  end
   
 else
   scorestatistics(info)

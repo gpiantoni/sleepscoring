@@ -471,8 +471,10 @@ info = getappdata(h0, 'info');
 if strcmp(get(h, 'label'), 'Score (to file) ...')
   
   [filename, pathname] = uiputfile('*.csv', 'Save Score of Current Rater to CSV File');
-  csvfile = fullfile(pathname, filename);
-  scorewriting(info, csvfile)
+  if filename
+    csvfile = fullfile(pathname, filename);
+    scorewriting(info, csvfile)
+  end
   
 else
   scorewriting(info)
