@@ -51,7 +51,7 @@ opt.height.u = 1 - opt.marg.u - opt.marg.d; % height of objects above
 % Choose scoring standard
 % hypnogram_RK for Rechtschaffen & Kales
 % hypnogram_aasm2007 for AASM 2007 (does not have "movement time" nor "stage 3")
-stage = hypnogram_RK;
+stage = hypnogram_aasm2007;
 opt.stage = stage;
 
 opt.hypnogrid = 30; % will create a grid every X minutes in hypnogram
@@ -115,7 +115,7 @@ opt.fft.i_chan = 1;
 %-------------------------------------%
 %-the same channel cannot belong to two groups at the same time
 opt.changrp(1).chantype = 'eeg'; % cannot be modified in GUI
-opt.changrp(1).chan = {'F3' 'F4' 'C3' 'C4' 'O3' 'O4'};  % can be modified in GUI
+opt.changrp(1).chan = {'F3' 'F4' 'C3' 'C4' 'O3'};  % can be modified in GUI
 opt.changrp(1).ref = {'LM' 'RM'};  % can be modified in GUI
 opt.changrp(1).Fhp = 0.3; % cannot be modified in GUI
 opt.changrp(1).Flp = 35; % cannot be modified in GUI
