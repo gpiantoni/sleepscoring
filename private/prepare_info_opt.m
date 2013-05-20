@@ -46,6 +46,11 @@ end
 opt.epoch = 1;
 
 %-----------------%
+%-FIX SCORE if necessary
+info = convert_score_cell2struct(info);
+%-----------------%
+
+%-----------------%
 %-channels
 [info, opt] = prepare_chan(info, opt);
 %-----------------%
