@@ -128,7 +128,7 @@ switch get(h, 'label')
       info_fasst.score = D.other.CRC.score;
       info_fasst = convert_score_cell2struct(info_fasst);  
       if numel(score) == 1 && isempty(score(1).rater)
-        score = [score info_fasst.score];
+        score = info_fasst.score;
       else
         score = [score info_fasst.score];
       end

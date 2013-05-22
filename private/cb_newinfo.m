@@ -23,7 +23,7 @@ uicontrol(h1, 'sty', 'push', 'uni', 'norm', 'tag', 'datasetdir', ...
   'call', @cb_uigetdir);
 
 uicontrol(h1, 'sty', 'text', 'uni', 'norm', ...
-  'pos', [.55 .8  .4 .1], 'str', 'File to read (f.e. FASST)');
+  'pos', [.55 .8  .4 .1], 'str', 'File to read (f.e. RAW, FASST)');
 
 uicontrol(h1, 'sty', 'push', 'uni', 'norm', 'tag', 'datasetfile', ...
   'pos', [.55 .7 .4 .15], 'str', '(click to select)', ...
@@ -74,7 +74,7 @@ end
 %-----------------%
 %-cb_uigetfile
 function cb_uigetfile(h, eventdata)
-[filename pathname] = uigetfile;
+[filename pathname] = uigetfile({'*.*', 'Any file with recordings'}, 'Select Dataset file');
 
 if filename
   
