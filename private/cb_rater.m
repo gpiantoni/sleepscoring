@@ -110,6 +110,29 @@ switch get(h, 'label')
     score = [score score_merge(score(logical(to_merge)))];
     %-----------------%
     
+  case 'Import Score from FASST'
+    
+    %-----------------%
+    %-prompt
+    [filename, pathname] = uigetfile('*.mat', 'Select FASST file');
+    if ~filename; return; end
+    warning off % class to struct warning
+    load([pathname filename], 'D')
+    warning on
+    %-----------------%
+    
+    %-----------------%
+    %-merge the scores
+    if isfield(D.other, 'CRC') && isfield(D.other.CRC, 'score')
+      info_fasst = info;
+      info_fasst.score = D.other.CRC.score;
+      info_fasst = convert_score_cell2struct(info_fasst);      
+      score = [score info_fasst.score];
+      
+      rater = nrater + 1;
+    end
+    %-----------------%
+    
   case 'Delete Current Score'
     
     %-----------------%

@@ -65,6 +65,9 @@ switch action
   case 'Merge Scores'
     log = [log 'MERGE RATERS INTO: ' info.score(info.rater).rater];
     
+  case 'Import Score from FASST'
+    log = [log 'IMPORTED SCORE FROM FAAST: N.A.'];
+    
   case 'Delete Current Score'
     log = [log 'DELETE SCORE']; % original name is not available
     %-----------------%

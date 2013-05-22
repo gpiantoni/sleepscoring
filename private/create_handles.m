@@ -145,6 +145,7 @@ h.menu.score.new = uimenu(h.menu.score.h, 'label', 'New Rater', 'sep', 'on', 'ca
 h.menu.score.rename = uimenu(h.menu.score.h, 'label', 'Rename Rater', 'call', @cb_rater, 'enable', 'off');
 h.menu.score.copy = uimenu(h.menu.score.h, 'label', 'Copy Current Score', 'call', @cb_rater, 'enable', 'off');
 h.menu.score.merge = uimenu(h.menu.score.h, 'label', 'Merge Scores', 'call', @cb_rater, 'enable', 'off');
+h.menu.score.fasst = uimenu(h.menu.score.h, 'label', 'Import Score from FASST', 'call', @cb_rater);
 h.menu.score.delete = uimenu(h.menu.score.h, 'label', 'Delete Current Score', 'call', @cb_rater, 'enable', 'off');
 %-----------------%
 
