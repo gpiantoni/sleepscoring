@@ -32,6 +32,9 @@ if ~isfield(info, 'dataset')
   % the location of the file with the new filename.
   infofile = info.infofile;
   load(infofile, 'info')
+  if isempty(info)
+    error('there is no variable called ''info'', this does not seem a valid sleepscoring file')
+  end
   info.infofile = infofile;
   %-------%
   
