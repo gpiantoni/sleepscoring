@@ -107,7 +107,9 @@ switch ft_filetype(info.dataset)
     end
     
     %-read score as well from FASST
-    info.score = hdr.orig.other.CRC.score;
+    if ~isfield(info, 'score')
+      info.score = hdr.orig.other.CRC.score;
+    end
     
   case 'edf'
     if isfield(hdr, 'orig') && isfield(hdr.orig, 'T0') && numel(hdr.orig.T0) == 6
