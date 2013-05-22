@@ -27,14 +27,19 @@ function [info hdr] = prepare_info(info)
 if ~isfield(info, 'dataset')
   
   %-------%
+  %-check if it exists
+  isinfo = whos('-file', info.infofile, 'info');
+  if isempty(isinfo)
+    error('there is no variable called ''info'', this does not seem a valid sleepscoring file')
+  end
+  %-------%
+  
+  %-------%
   %-The infofile work-around is bc sometimes you move the file in the
   % different folder but this is not saved into the structure. Now it updates
   % the location of the file with the new filename.
   infofile = info.infofile;
   load(infofile, 'info')
-  if isempty(info)
-    error('there is no variable called ''info'', this does not seem a valid sleepscoring file')
-  end
   info.infofile = infofile;
   %-------%
   
