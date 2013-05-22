@@ -19,7 +19,7 @@ opt = getappdata(h0, 'opt');
 %-update OPT if necessary
 %-----------------%
 %-assign optfile to info if it doesn't exist (for new datasets)
-if ~isfield(info, 'optfile')
+if nargin == 2 || ~isfield(info, 'optfile')
   info.optfile = opt.optfile;
 end
 %-----------------%
