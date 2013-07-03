@@ -83,7 +83,7 @@ l_rem = l(i_rem,:) - min(l_sleep);
 
 %-----------------%
 %-WASO Stage W during TST minus sleep latency
-waso = sum(ep([stage.awake],:),1);
+waso = sum(ep([stage.awake],:),1) - sl;
 %-----------------%
 %-------------------------------------%
 
@@ -182,9 +182,11 @@ for s = 1:n_stage
   end
   output = [output '\n'];
   
-  output = [output tab(' Percent ')];
-  for r = 1:n_rater
-    output = [output sprintf(tab('% 10.2f%%'), ep(s, r) / tst(1,r) * 100)];
+  if ~stage(s).awake
+    output = [output tab(' Percent of TST ')];
+    for r = 1:n_rater
+      output = [output sprintf(tab('% 10.2f%%'), ep(s, r) / tst(1,r) * 100)];
+    end
   end
   output = [output '\n'];
   
