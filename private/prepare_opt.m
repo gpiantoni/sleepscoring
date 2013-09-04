@@ -9,7 +9,7 @@ function opt = prepare_opt(optfile, opt_old)
 %-channels
 %  .renamelabel: two-column cell, the first column is the labels read from
 %                the header file and the second column is the labels used
-%                in the analysis. The final labels will be stored in CFG 
+%                in the analysis. The final labels will be stored in CFG
 %  .changrp:
 %    .chantype
 %    .chan: cells with channels
@@ -84,40 +84,44 @@ else
   %-read from file
   [dirname, filename, ext] = fileparts(optfile);
   
-  if strcmp(ext, '.m') % if it's the .m file like opt_svui
+  fid = fopen(optfile, 'r');
+  if fid ~= -1
+    fclose(fid);
     
-    %-----------------%
-    %-if .m file, move to that directory and run it
-    wd = pwd;
-    cd(dirname)
-    opt = feval(filename); % feval does not notice the change in the subfunction, only compile it once
-    cd(wd)
-    %-----------------%
-    
-  elseif strcmp(ext, '.mat')
-    
-    %-----------------%
-    %-opt saved from previous analysis
-    fid = fopen(optfile, 'r');
-    if fid ~= -1
-      fclose(fid);
+    if strcmp(ext, '.m') % if it's the .m file like opt_svui
+      
+      %-----------------%
+      %-if .m file, move to that directory and run it
+      wd = pwd;
+      cd(dirname)
+      opt = feval(filename); % feval does not notice the change in the subfunction, only compile it once
+      cd(wd)
+      %-----------------%
+      
+    elseif strcmp(ext, '.mat')
+      
+      %-----------------%
+      %-opt saved from previous analysis
       load(optfile, 'opt')
+      %-----------------%
       
-    else
-      warning(['could not load ' optfile ', probably you don''t have read permissions. Using previous option file'])
-      
-      if nargin == 2
-        opt = opt_old;
-        
-      else
-        opt = prepare_opt([fileparts(fileparts(mfilename('fullpath'))) filesep 'preference' filesep 'opt_ssmd_egi.m']);
-        
-      end
     end
     
-    %-----------------%
+  else
     
+    %-----------------%
+    %-if it doesn't exist
+    warning(['could not load ' optfile ', probably you don''t have read permissions. Using previous option file'])
+    
+    if nargin == 2
+      opt = opt_old;
+      
+    else
+      opt = prepare_opt([fileparts(fileparts(mfilename('fullpath'))) filesep 'preference' filesep 'opt_ssmd_egi.m']);
+      
+    end
   end
+  %-----------------%
   
   opt.optfile = optfile;
   %---------------------------%
