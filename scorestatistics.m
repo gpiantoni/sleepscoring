@@ -17,7 +17,8 @@ function scorestatistics(varargin)
 %-----------------%
 %-check if the last input is a text file or directory
 tocsv = false;
-if ischar(varargin{end}) && ...
+if numel(varargin) > 2 && ... % this to catch [scorestatistics /path/to/info1] and [scorestatistics /path/to/info1 /path/to/csv] but it doesn't catch [scorestatistics /path/to/info1 /path/to/info2 /path/to/csv]
+  ischar(varargin{end}) && ...
     ~strcmp(varargin{end}(end-3:end), '.mat')
   
   tocsv = true;
