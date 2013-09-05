@@ -1,9 +1,14 @@
 function out = score_concat(varargin)
 %SCORE_CONCAT concatenate in time the scores
-%
+% It concatenates the epochs using the same scheme to divide up the epochs.
+% Therefore, it should be expected that there is some difference between
+% the window that was scored and the window which is used for the
+% calculation. This difference should never be larger than the length of
+% the window. This difference is not taken into account when the score
+% statistics are calculated.
 % 
-% the absolute timing of the markers is not correct (but the duration is
-% correct)
+% The absolute timing of the markers is not correct (but the duration is
+% correct), so that the sleep statistics for the markers are correct.
 % 
 % Called by
 %  - scorestatistics
