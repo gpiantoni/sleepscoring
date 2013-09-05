@@ -1,11 +1,13 @@
 function out = score_concat(varargin)
 %SCORE_CONCAT concatenate in time the scores
 %
+% 
+% the absolute timing of the markers is not correct (but the duration is
+% correct)
+% 
 % Called by
 %  - scorestatistics
 %  - scorewriting
-
-error(sprintf('Sorry, this function has not be implemented yet for the struct format of the score\nPlease, contact gio@gpiantoni.com'))
 
 %-------------------------------------%
 %-check input
@@ -25,7 +27,7 @@ info = info(s);
 %-----------------%
 %-max distance
 if diff([info.beginrec]) > 1
-  error('the time difference between recordings is more than one day')
+  error('The time difference between recordings is more than one day')
 end
 %-----------------%
 %-------------------------------------%
@@ -38,10 +40,14 @@ out.optfile = info(1).optfile; % take one as example
 
 %-----------------%
 %-check raters that are common to all the datasets
-raters = info(1).score(2,:);
+raters = {info(1).score.rater};
 for r = 2:numel(info)
-  raters = intersect(raters, info(r).score(2,:));
+  raters = intersect(raters, {info(r).score.rater});
 end
+
+if numel(raters) > 1; S = 's'; else S = ''; end
+fprintf('Found %d rater%s in all the datasets: %s\n', ...
+  numel(raters), S, sprintf(' %s ', raters{:}))
 %-----------------%
 
 %---------------------------%
@@ -51,57 +57,86 @@ for r = 1:numel(raters)
   
   %-----------------%
   %-name and index of the rater
-  out.score{2,r} = raters{r};
+  out.score(r).rater = raters{r};
+  fprintf('\nRATER: %s\n', out.score(r).rater)
   
+  i_r = [];
   for i = 1:numel(info)
-    i_r(i) = find(strcmp(info(i).score(2,:), raters{r})); % index of the rater
+    i_r(i) = find(strcmp({info(i).score.rater}, raters{r})); % index of the rater
   end
   %-----------------%
   
-  out.score{3,r} = info(1).score{3, i_r(1)}; % assume they all use the same scoring window
-
+  %-----------------%
+  %-windows length
+  wndw = [];
+  for i = 1:numel(info)
+    wndw(i) = info(i).score(i_r(i)).wndw;
+  end
+  
+  if numel(unique(wndw)) ~= 1
+    error('Scoring window length is different (%s), cannot merge the files', ...
+      sprintf(' %ds', wndw));
+  end
+  out.score(r).wndw = wndw(1);
+  %-----------------%
+  
   %-----------------%
   %-calculate begin and end 
-  rec_begin = info(1).score{4, i_r(1)}(1);
+  rec_begin = info(1).score(i_r(1)).score_beg;
   rec_diff = (info(end).beginrec - info(1).beginrec) * 24 * 60 * 60; % difference between beginning of first and last recording, in s
-  rec_end = rec_diff + info(end).score{4, i_r(end)}(2); % add the duration of the last recording
+  rec_end = rec_diff + info(end).score(i_r(end)).score_end; % add the duration of the last recording
   
-  out.score{4,r} = [rec_begin rec_end];
+  out.score(r).score_beg = rec_begin;
+  out.score(r).score_end = rec_end;
   %-----------------%
   
   %-----------------%
-  %-other info (TODO if necessary)
-  out.score{5,r} = [];
-  out.score{6,r} = [];
-  out.score{7,r} = [];
-  %-----------------%
-  
-  %-----------------%
-  n_epochs = ceil( diff(out.score{4,r}) / 30 );
-  out.score{1,r} = NaN(1, n_epochs);
-  
-  rec_begin_abs = info(1).score{4, i_r(1)}(1) + info(1).beginrec;
+  %-markers 
+  marker = {};
   for i = 1:numel(info)
-    info_begin_abs = info(i).score{4, i_r(i)}(1) + info(i).beginrec;
+    marker = union(marker, {info(i).score(i_r(i)).marker.name});
+  end
+  
+  for m = 1:numel(marker)
+    out.score(r).marker(m).name = marker{m};
+    out.score(r).marker(m).time = [];
+    for i = 1:numel(info)
+      i_m = find(strcmp({info(i).score(i_r(i)).marker.name}, marker{m}));
+      out.score(r).marker(m).time = [out.score(r).marker(m).time; 
+                                     info(i).score(i_r(i)).marker(i_m).time];
+    end
+  end
+  %-----------------%
+  
+  %-----------------%
+  n_epochs = ceil((out.score(r).score_end - out.score(r).score_beg) / wndw(1) );
+  out.score(r).stage = cell(1, n_epochs);
+  
+  rec_begin_abs = info(1).score(i_r(1)).score_beg + info(1).beginrec;
+  for i = 1:numel(info)
+    info_begin_abs = info(i).score(i_r(i)).score_beg + info(i).beginrec;
     diff_begin = (info_begin_abs - rec_begin_abs) * 24 * 60 * 60;
     
     %-------%
     %-get first epoch
-    diff_epoch = diff_begin / out.score{3,r};
-    mod_epoch = mod(diff_begin, out.score{3,r});
+    diff_epoch = diff_begin / wndw(1);
+    mod_epoch = mod(diff_begin, wndw(1));
     fprintf('Distance between epoch beginning and sleep scoring window is % 6.3f\n', ...
       mod_epoch)
     diff_epoch = round(diff_epoch);
     %-------%
     
-    n_scored = numel(info(i).score{1,i_r(i)});
+    n_scored = numel(info(i).score(i_r(i)).stage);
     
-    out.score{1,r}(1, diff_epoch + (1:n_scored)) = info(i).score{1, i_r(i)};
+    out.score(r).stage(1, diff_epoch + (1:n_scored)) = info(i).score(i_r(i)).stage;
     
   end
   %-----------------%
   
 end
-
 %---------------------------%
+
+if numel(raters) > 1
+  fprintf('\nWarning: after scores merging, the order of the raters might be different\n\n')
+end
 %-------------------------------------%
