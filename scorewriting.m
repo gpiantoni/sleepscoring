@@ -102,6 +102,10 @@ if ~isempty(rater_name)
   end
   
 else
+  if ~isfield(info, 'rater')
+    error('Specify the name of the rater (%s)', ...
+      sprintf(' %s', info.score.rater))
+  end
   rater = info.rater;
   
 end

@@ -35,6 +35,11 @@ end
 %-------------------------------------%
 %-create output variable
 % only keep fields that are used later on
+out.dataset = sprintf('%s; ', info.dataset);
+out.dataset = out.dataset(1:end-2);
+out.infofile = sprintf('%s; ', info.infofile);
+out.infofile = out.infofile(1:end-2);
+
 out.beginrec = info(1).beginrec; % first recording
 out.optfile = info(1).optfile; % take one as example
 
