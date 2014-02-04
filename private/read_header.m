@@ -16,6 +16,7 @@ else
     hdr = ft_read_header(info.dataset);
     info.hdr = rmfield(hdr, 'orig'); % this is really large,  but it's needed by ft_read_data
     info.label = hdr.label;
+    info.fsample = hdr.Fs;
 end
 
 
