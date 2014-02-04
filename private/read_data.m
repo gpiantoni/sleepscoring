@@ -22,6 +22,9 @@ function [dat, sample] = read_data(info, opt, hdr)
 % Called by
 %  - cb_readplotdata
 
+persistent psetObj
+
+
 %-----------------%
 %-samples to read
 wndw = info.score(info.rater).wndw;
@@ -45,9 +48,18 @@ chan_raw = unique([chan ref]);
 chan_raw = chan_raw(si_raw);
 %-----------------%
 
-raw = ft_read_data(info.dataset, 'header', hdr, ...
-  'begsample', begsample, 'endsample', endsample, 'chanindx', i_raw, ...
-  'cache', false, 'checkboundary', false); % cache true might be faster but it does not read the whole dataset
+% my hack for .pset files (clean this up later!)
+[~, ~, file_type] = fileparts(info.dataset);
+if strcmpi(file_type, '.pseth'),
+    if isempty(psetObj),
+       psetObj = pset.load(info.dataset);           
+    end
+    raw = psetObj(i_raw, begsample:endsample);
+else
+    raw = ft_read_data(info.dataset, 'header', hdr, ...
+        'begsample', begsample, 'endsample', endsample, 'chanindx', i_raw, ...
+        'cache', false, 'checkboundary', false); % cache true might be faster but it does not read the whole dataset
+end
 %-------------------------------------%
 
 %-------------------------------------%

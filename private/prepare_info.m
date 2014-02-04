@@ -76,13 +76,8 @@ info = find_dataset(info);
 
 %-----------------%
 %-HDR (read it every time)
-hdr = ft_read_header(info.dataset);
-info.hdr = rmfield(hdr, 'orig'); % this is really large,  but it's needed by ft_read_data
-%-----------------%
-
-%-----------------%
-%-FSAMPLE
-info.fsample = hdr.Fs;
+% my hack for .pset/.pseth files
+[info, hdr] = read_header(info);
 %-----------------%
 
 %-----------------%
@@ -121,17 +116,16 @@ switch ft_filetype(info.dataset)
 
     end
     
-  otherwise
-    info.beginrec = 0;
-    warning(['file format ' ft_filetype(info.dataset) ' not recognized. Time of the recording will not be correct'])
-    
+    otherwise
+        [~, ~, ext] = fileparts(info.dataset);
+        if strcmpi(ext, '.pseth')
+            info.beginrec = hdr.time_origin;
+        else
+            info.beginrec = 0;
+            warning(['file format ' ft_filetype(info.dataset) ' not recognized. Time of the recording will not be correct'])
+        end
+        
 end
-%-----------------%
-
-%-----------------%
-%-INFO
-% use original labels, prepare_info_opt will change the labels
-info.label = hdr.label;
 %-----------------%
 
 %-----------------%
