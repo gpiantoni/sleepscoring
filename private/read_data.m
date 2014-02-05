@@ -24,7 +24,6 @@ function [dat, sample] = read_data(info, opt, hdr)
 
 persistent psetObj
 
-
 %-----------------%
 %-samples to read
 wndw = info.score(info.rater).wndw;
