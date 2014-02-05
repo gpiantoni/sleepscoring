@@ -42,6 +42,10 @@ tmp = getappdata(h0, 'tmp');
 if ~isempty(tmp) && tmp.epoch == opt.epoch
   dat = tmp.dat;
 else
+  
+  % There is a persistent variable in read_data that is used to speed up
+  % the reading of .pset/.pseth files
+  clear read_data;    
   dat = read_data(info, opt, hdr);
 end
 setappdata(h0, 'dat', dat);
