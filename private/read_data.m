@@ -47,7 +47,7 @@ chan_raw = unique([chan ref]);
 chan_raw = chan_raw(si_raw);
 %-----------------%
 
-% my hack for .pset files (clean this up later!)
+% my hack for .pseth/.pset files
 [~, ~, file_type] = fileparts(info.dataset);
 if strcmpi(file_type, '.pseth'),
     if isempty(psetObj),
@@ -57,7 +57,12 @@ if strcmpi(file_type, '.pseth'),
 else
     raw = ft_read_data(info.dataset, 'header', hdr, ...
         'begsample', begsample, 'endsample', endsample, 'chanindx', i_raw, ...
-        'cache', false, 'checkboundary', false); % cache true might be faster but it does not read the whole dataset
+        'cache', false, 'checkboundary', false, ...
+        'sequential', true); 
+    % cache true might be faster but it does not read the whole dataset
+    % sequential will be ignored by standard Fieldtrip, but the
+    % enhance-mff-read branch of germangh/fieldtrip will read the file
+    % faster if sequential=true
 end
 %-------------------------------------%
 
