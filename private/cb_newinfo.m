@@ -9,7 +9,7 @@ function cb_newinfo(h, eventdata)
 % h1 is the handle of the new figure
 h0 = get_parent_fig(h);
 opt = getappdata(h0, 'opt');
-
+% fileparts(mfilename('fullpath')) filesep 'preference' filesep 'opt_ssmd_egi.m'
 h1 = figure;
 set(h1, 'tag', 'newinfo', 'Menubar', 'none', 'name', 'New Dataset')
 
@@ -39,13 +39,20 @@ uicontrol(h1, 'sty', 'push', 'uni', 'norm', 'tag', 'infofile', ...
 uicontrol(h1, 'sty', 'text', 'uni', 'norm', ...
   'pos', [.05 .3  .9 .1], 'str', 'Load option (preference) file:');
 
+[opt_dir, opt_name, ext] = fileparts(opt.optfile);
+if strcmp(opt_name, 'opt_default')
+    optfile = '(click to select)';
+else
+    optfile = [opt_dir, filesep, opt_name, ext];
+end
+
 uicontrol(h1, 'sty', 'push', 'uni', 'norm', 'tag', 'optfile', ...
-  'pos', [.05 .2  .9 .15], 'str', opt.optfile, ...
-  'call', @cb_uigetopt);
+  'pos', [.05 .2  .9 .15], 'str', optfile, ...
+  'call', {@cb_uigetopt, opt_dir});
 
 uicontrol(h1, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.75 .05 .1 .1], 'str', 'OK', ...
-  'call', {@cb_ok h0}); % pass the index of the main figure
+  'call', {@cb_ok, h0}); % pass the index of the main figure
 
 uicontrol(h1, 'sty', 'push', 'uni', 'norm', ...
   'pos', [.85 .05 .1 .1], 'str', 'cancel', ...
@@ -98,12 +105,11 @@ end
 
 %-----------------%
 %-cb_uigetopt
-function cb_uigetopt(h, eventdata)
-optfile = get(h, 'str');
+function cb_uigetopt(h, eventdata, opt_dir)
 
 wd = pwd;
-cd(fileparts(optfile))
-[filename pathname] = uigetfile({'*.mat;*.m', 'Option file (*.m, *.mat)'}, 'Select OPT file');
+cd(opt_dir)
+[filename, pathname] = uigetfile({'*.mat;*.m', 'Option file (*.m, *.mat)'}, 'Select OPT file');
 cd(wd)
 
 if filename
@@ -138,7 +144,7 @@ if ~isempty(info.dataset) && ...
   opt = prepare_opt(optfile, opt_old);
   setappdata(h0, 'opt', opt)
 
-  prepare_info_opt(h0)
+  prepare_info_opt(h0, opt)
   cb_readplotdata(h0)
   %-------%
   

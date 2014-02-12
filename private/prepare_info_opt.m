@@ -18,9 +18,36 @@ opt = getappdata(h0, 'opt');
 %-------------------------------------%
 %-update OPT if necessary
 %-----------------%
-%-assign optfile to info if it doesn't exist (for new datasets)
-if nargin == 2 || ~isfield(info, 'optfile')
+%-assign optfile to info for new datasets
+if nargin == 2
   info.optfile = opt.optfile;
+elseif ~isfield(info, 'optfile')
+    error('This should not happen: please email gio@gpiantoni.com about this, sorry')
+end
+%-----------------%
+
+%-----------------%
+%-try to read optfile in info, even if slightly different
+if ~exist(info.optfile, 'file')
+    [~, optname, ext] = fileparts(info.optfile);
+    optfile = [fileparts(fileparts(mfilename('fullpath'))) ...
+               filesep 'preference' ...
+               filesep optname ext];
+    if exist(optfile, 'file')
+        info.optfile = optfile;
+    else
+        error(sprintf(['could not find optfile, \n' ...
+              'please specify both info and opt file with the syntax:\n' ...
+              'sleepscoring(''/path/to/score.mat'', ''/path/to/optfile.m'')']))
+    end
+end
+%-----------------%
+
+%-----------------%
+%-if opt file is the default, don't consider it
+[~, optname] = fileparts(opt.optfile);
+if strcmp(optname, 'opt_default')
+    opt.optfile = info.optfile;
 end
 %-----------------%
 
@@ -34,14 +61,13 @@ if nargin == 1 && ~strcmp(info.optfile, opt.optfile)
     'Option File to Use', ...
     opt_info, opt_opt, opt_info);
   
-  if strcmp(opt_chosen, opt_info) % in info, load the one present in info
-    opt = prepare_opt(info.optfile, opt);
-  else
+  if ~strcmp(opt_chosen, opt_info)
     info.optfile = opt.optfile;
   end
   
 end
 %-----------------%
+opt = prepare_opt(info.optfile, opt);
 
 opt.epoch = 1;
 

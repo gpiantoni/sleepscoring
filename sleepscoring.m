@@ -11,19 +11,19 @@ function sleepscoring(info, opt)
 %    the dataset, as it's stored in a .MAT file as structure. It's saved
 %    every time you modify it (f.e. by changing sleep scoring).
 % 2- OPT contains all the information about visualization, it can be stored
-%    in a .m file (such as "opt_svui.m") or in a .MAT file as structure.
+%    in a .m file (such as "opt_default.m") or in a .MAT file as structure.
 %    See PREPARE_OPT for more information
 %    This structure is NOT saved automatically. 
 %
 % Use as:
-%   SLEEPSCORING uses default "opt_svui.m" in folder "preferences"
+%   SLEEPSCORING uses default "opt_default.m" in folder "preferences"
 % 
-%   SLEEPSCORING(INFO) where INFO contains at least a field called 
-%                     .dataset which points to the dataset to read
-%                     If you specify a .infofile, it'll save the INFO
-%                     variable in the file .infofile.
+%   SLEEPSCORING(INFO) where INFO contains at least:
+%                     .dataset : path to the dataset to read
+%                     .infofile : where to save the information
+%                     .optfile : path to optfile
 %
-%   SLEEPSCORING(INFO, OPT) where OPT is a file similar to "opt_svui.m",
+%   SLEEPSCORING(INFO, OPT) where OPT is a file similar to "opt_default.m",
 %                           but modified by you for your parameters 
 %   SLEEPSCORING(INFO, OPT) where OPT is a .MAT file with a "opt" variable
 %                           saved from a previous analysis 
@@ -42,7 +42,7 @@ if strcmp(ftdir, '')
 end
 
 if nargin < 2 || isempty(opt)
-  opt = [fileparts(mfilename('fullpath')) filesep 'preference' filesep 'opt_ssmd_egi.m']; % default OPT
+  opt = [fileparts(mfilename('fullpath')) filesep 'preference' filesep 'opt_default.m']; % default OPT
 end
 %-------------------------------------%
 
@@ -61,9 +61,12 @@ opt.h = create_handles(opt);
 setappdata(opt.h.main, 'opt', opt)
 
 if nargin > 0 && ischar(info)
-  infofile = info;
+  [infodir, infofile, infoext] = fileparts(info);
+  if strcmp(infodir, '')
+    infodir = pwd;
+  end
   info = [];
-  info.infofile = infofile;
+  info.infofile = [infodir, filesep, infofile, infoext];
 end
 
 if nargin > 0 && (isfield(info, 'dataset') || isfield(info, 'infofile'))
@@ -73,8 +76,12 @@ if nargin > 0 && (isfield(info, 'dataset') || isfield(info, 'infofile'))
   save_info(info)
   setappdata(opt.h.main, 'info', info)
   setappdata(opt.h.main, 'hdr', hdr)
-    
-  prepare_info_opt(opt.h.main)
+  
+  if nargin == 1
+    prepare_info_opt(opt.h.main)
+  elseif nargin == 2
+    prepare_info_opt(opt.h.main, 1)
+  end
   cb_readplotdata(opt.h.main)
   
 end
