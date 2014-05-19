@@ -93,7 +93,7 @@ for i = 1:numel(opt.changrp)
   %-re-reference
   if ~isempty(opt.changrp(i).ref)
     r_ref = ismember(chan_raw, opt.changrp(i).ref);
-    ref = mean(raw(r_ref, :));
+    ref = mean(raw(r_ref, :), 1);
     
     for c = i_chan
       dat(c,:) = dat(c,:) - ref;
