@@ -1,4 +1,4 @@
-function info = sleepdetection(cfg, info, opt, hdr)
+function info = sleepdetection(cfg, info, opt)
 %SLEEPDETECTION detect sleep parameters on info dataset
 %
 % CFG
@@ -10,7 +10,8 @@ function info = sleepdetection(cfg, info, opt, hdr)
 %    .Fhp: freq for high-pass filter (not necessary but advised!)
 %    .Flp: freq for low-pass filter
 %    .cfg: options to pass to the subfunction
-%    .epoch: (logical) index of the epochs OR sleep stages of interest
+%    .epoch: as boolean, OR as vector (indices of the epochs) OR as string 
+%      for sleep stages of interest ('NREM 2' OR {'NREM 2', 'NREM 3'})
 %
 %  .rater: name or index of the rater (otherwise, it uses info.rater)
 %
@@ -23,8 +24,9 @@ function info = sleepdetection(cfg, info, opt, hdr)
 % * indicates obligatory parameter
 
 %---------------------------%
-% [info, hdr] = prepare_info(info);
-if nargin == 2
+[info, hdr] = prepare_info(info);
+
+if nargin <= 2
   opt = prepare_opt(info.optfile);
 elseif ~isfield(opt, 'changrp') || ~isfield(opt.changrp, 'chan')
   opt.changrp.chan = info.label;
@@ -54,6 +56,12 @@ end
 %-----------------------------------------------%`]
 %-loop over detection methods
 for i = 1:numel(cfg.method)
+  
+  %---------------------------%
+  if ~isfield(cfg.method(i), 'cfg')
+    cfg.method(i).cfg = [];
+  end
+  %---------------------------%
   
   %---------------------------%
   %-existing marker or new marker
