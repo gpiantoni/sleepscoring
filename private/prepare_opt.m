@@ -130,11 +130,28 @@ end
 %-------------------------------------%
 
 %-------------------------------------%
+%-compatibility
+%-----------------%
+%-add show event option
+if ~isfield(opt, 'event')
+  opt.event.show = false;
+  opt.event.type = 'ECI_TCPIP_55513';
+end
+%-----------------%
+%-------------------------------------%
+
+%-------------------------------------%
 %-handles (specific to a figure)
 %-----------------%
 %-if openopt from dropdown menu, keep previous handles information
 if nargin == 2
   opt.h = opt_old.h;
+end
+%-----------------%
+
+%-----------------%
+if opt.event.show
+  set(opt.h.menu.event.show, 'checked', 'on')
 end
 %-----------------%
 %-------------------------------------%

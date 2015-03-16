@@ -138,6 +138,12 @@ uimenu(h.menu.file.h, 'label', 'Save OPT', 'call', @cb_saveopt);
 %-----------------%
 
 %-----------------%
+%-EVENT
+h.menu.event.h = uimenu(h.main, 'label', 'Events', 'enable', 'off');
+h.menu.event.show = uimenu(h.menu.event.h, 'label', 'Show', 'checked', 'off', 'call', @cb_event_show);
+%-----------------%
+
+%-----------------%
 %-SCORE
 h.menu.score.h = uimenu(h.main, 'label', 'Sleep Score', 'enable', 'off');
 h.menu.score.rater = uimenu(h.menu.score.h, 'label', 'Rater', 'enable', 'off');
@@ -276,6 +282,27 @@ opt.h = h;
 setappdata(h0, 'opt', opt)
 set(opt.h.panel.info.optname, 'str', ['OPT: ' filename]) 
 %-----------------%
+%-------------------------------------%
+
+%-------------------------------------%
+%-callback: change event checked status
+function cb_event_show(h, eventdata)
+
+h0 = get_parent_fig(h);
+
+opt = getappdata(h0, 'opt');
+if strcmp(get(h, 'checked'), 'on')
+  set(h, 'checked', 'off')
+  opt.event.show = false;
+
+else
+  set(h, 'checked', 'on')
+  opt.event.show = true;
+    
+end
+setappdata(h0, 'opt', opt);
+
+cb_readplotdata(h0)
 %-------------------------------------%
 
 %-------------------------------------%

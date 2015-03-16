@@ -117,6 +117,7 @@ update_rater(info, opt)
 
 %-------------------------------------%
 %-enable MENU
+set(opt.h.menu.event.h, 'enable', 'on')
 set(opt.h.menu.score.h, 'enable', 'on')
 set(opt.h.menu.chan.h, 'enable', 'on')
 set(opt.h.menu.filt.h, 'enable', 'on')
