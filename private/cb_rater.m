@@ -37,7 +37,7 @@ switch get(h, 'label')
     
     newrater = answer{1};
     %-input validation
-    if isempty(newrater); 
+    if isempty(newrater);
       warning('Name of the rater cannot be empty')
       return
     end
@@ -66,8 +66,8 @@ switch get(h, 'label')
     %-add default markers
     opt = getappdata(h0, 'opt');
     for i = 1:numel(opt.marker.name)
-        score(rater).marker(i).name = opt.marker.name{i};
-        score(rater).marker(i).time = [];
+      score(rater).marker(i).name = opt.marker.name{i};
+      score(rater).marker(i).time = [];
     end
     %-----------------%
     
@@ -126,7 +126,7 @@ switch get(h, 'label')
     if isfield(D.other, 'CRC') && isfield(D.other.CRC, 'score')
       info_fasst = info;
       info_fasst.score = D.other.CRC.score;
-      info_fasst = convert_score_cell2struct(info_fasst);  
+      info_fasst = convert_score_cell2struct(info_fasst);
       if numel(score) == 1 && isempty(score(1).rater)
         score = info_fasst.score;
       else
@@ -135,6 +135,26 @@ switch get(h, 'label')
       
       rater = nrater + 1;
     end
+    %-----------------%
+    
+  case 'Import Score from Somnologica'
+    
+    %-----------------%
+    %-prompt
+    [filename, pathname] = uigetfile('*Events.txt', 'Select Somnologica Events file');
+    if ~filename; return; end
+    somno_score = import_somnologica([pathname filename], info);
+    %-----------------%
+    
+    %-----------------%
+    %-merge the scores
+    if numel(score) == 1 && isempty(score(1).rater)
+      score = somno_score;
+    else
+      score = [score somno_score];
+    end
+    
+    rater = nrater + 1;
     %-----------------%
     
   case 'Delete Current Score'

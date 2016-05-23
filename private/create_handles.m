@@ -152,7 +152,9 @@ h.menu.score.rename = uimenu(h.menu.score.h, 'label', 'Rename Rater', 'call', @c
 h.menu.score.copy = uimenu(h.menu.score.h, 'label', 'Copy Current Score', 'call', @cb_rater, 'enable', 'off');
 h.menu.score.merge = uimenu(h.menu.score.h, 'label', 'Merge Scores', 'call', @cb_rater, 'enable', 'off');
 h.menu.score.fasst = uimenu(h.menu.score.h, 'label', 'Import Score from FASST', 'call', @cb_rater);
+h.menu.score.somnologica = uimenu(h.menu.score.h, 'label', 'Import Score from Somnologica', 'call', @cb_rater);
 h.menu.score.delete = uimenu(h.menu.score.h, 'label', 'Delete Current Score', 'call', @cb_rater, 'enable', 'off');
+
 %-----------------%
 
 %-----------------%
