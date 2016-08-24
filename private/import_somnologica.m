@@ -75,7 +75,27 @@ while 1  % read until the end of the file
 end
 %-----------------%
 
-score.nepoch = size(score.stage, 2);
+%-----------------%
+%-make sure that #epochs are not more than #epochs in recordings
+
+% info taken from the recordings
+score_beg = 1 / info.fsample;
+score_end = info.hdr.nSamples * info.hdr.nTrials / info.fsample;
+
+actual_nepoch = floor((score_end - score_beg) / score.wndw);
+
+% info taken from somnologica
+nepoch = size(score.stage, 2);
+
+if nepoch > actual_nepoch
+  warning(['N Epochs in Somnologica: ' num2str(nepoch) ...
+           ', N Epochs in recordings: ' num2str(actual_nepoch) ...
+           ', dropping last ' num2str(nepoch - actual_nepoch) ' epochs'])
+  nepoch = actual_nepoch;
+end
+%-----------------%
+
+score.nepoch = nepoch;
 score.score_end = score.score_beg + score.nepoch * score.wndw;
 
 
