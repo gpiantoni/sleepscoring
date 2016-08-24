@@ -38,8 +38,8 @@ tabs = strfind(s_epoch, sprintf('\t'));
 epoch_dur = str2double(s_epoch(tabs(end):end));
 
 first_epoch_datetime = get_epoch_datetime(s_epoch, str_recdate);
-score_beg = (first_epoch_datetime - info.beginrec) * 24 * 60 * 60;
-score_beg = round(score_beg * info.fsample) / info.fsample;
+score_beg_s = (first_epoch_datetime - info.beginrec) * 24 * 60 * 60;
+score_beg = (round(score_beg_s * info.fsample) + 1) / info.fsample;
 %-----------------%
 
 %-----------------%
