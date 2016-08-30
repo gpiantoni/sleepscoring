@@ -37,7 +37,10 @@ tabs = strfind(s_epoch, sprintf('\t'));
 
 epoch_dur = str2double(s_epoch(tabs(end):end));
 
-first_epoch_datetime = get_epoch_datetime(s_epoch, str_recdate);
+% sometimes there are 3 or 4 tabs (there is an extra column before the timestamp)
+i_col = numel(tabs) - 2; 
+
+first_epoch_datetime = get_epoch_datetime(s_epoch, str_recdate, i_col);
 score_beg_s = (first_epoch_datetime - info.beginrec) * 24 * 60 * 60;
 score_beg = (round(score_beg_s * info.fsample) + 1) / info.fsample;
 %-----------------%
@@ -58,12 +61,12 @@ i = 1;
 TOL = 1 / 24 / 3600;
 while 1  % read until the end of the file
   
-  epoch_datetime = get_epoch_datetime(s_epoch, str_recdate);
+  epoch_datetime = get_epoch_datetime(s_epoch, str_recdate, i_col);
   
   % make sure htat epochs are consecutive
   assert(epoch_datetime - first_epoch_datetime - (i - 1) * epoch_dur / 24 / 3600 < TOL, 'Epochs are not consecutive')
   
-  somno_score = strtrim(s_epoch(tabs(3):tabs(4)));
+  somno_score = strtrim(s_epoch(tabs(i_col + 1):tabs(i_col + 2)));
   score.stage{1, i} = convert_stage_names(somno_score);
   
   s_epoch = fgetl(fid);
@@ -99,15 +102,13 @@ score.nepoch = nepoch;
 score.score_end = score.score_beg + score.nepoch * score.wndw;
 
 
-function epoch_datetime = get_epoch_datetime(s_epoch, str_recdate)
+function epoch_datetime = get_epoch_datetime(s_epoch, str_recdate, i_col)
 HH_THRESHOLD = 12;
 
 tabs = strfind(s_epoch, sprintf('\t'));
+i_epoch = tabs(i_col):tabs(i_col + 1);
 
-% sometimes there are 3 or 4 tabs (there is an extra column before the timestamp)
-i_epoch = numel(tabs) - 2; 
-
-epoch_time = strtrim(s_epoch(tabs(i_epoch):tabs(i_epoch + 1)));
+epoch_time = strtrim(s_epoch(i_epoch));
 epoch_datetime = datenum([str_recdate ' ' epoch_time], 'dd-mm-yy HH:MM:SS');
 if mod(epoch_datetime, 1) < (HH_THRESHOLD / 24)  % if epoch is before HH_THRESHOLD, then use next day
   epoch_datetime = epoch_datetime + 1;
