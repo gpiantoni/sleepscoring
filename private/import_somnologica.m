@@ -104,7 +104,10 @@ HH_THRESHOLD = 12;
 
 tabs = strfind(s_epoch, sprintf('\t'));
 
-epoch_time = strtrim(s_epoch(tabs(2):tabs(3)));
+% sometimes there are 3 or 4 tabs (there is an extra column before the timestamp)
+i_epoch = numel(tabs) - 2; 
+
+epoch_time = strtrim(s_epoch(tabs(i_epoch):tabs(i_epoch + 1)));
 epoch_datetime = datenum([str_recdate ' ' epoch_time], 'dd-mm-yy HH:MM:SS');
 if mod(epoch_datetime, 1) < (HH_THRESHOLD / 24)  % if epoch is before HH_THRESHOLD, then use next day
   epoch_datetime = epoch_datetime + 1;
