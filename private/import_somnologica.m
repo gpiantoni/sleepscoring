@@ -105,11 +105,17 @@ score.score_end = score.score_beg + score.nepoch * score.wndw;
 function epoch_datetime = get_epoch_datetime(s_epoch, str_recdate, i_col)
 HH_THRESHOLD = 12;
 
+if strfind(str_recdate, '-')
+  epoch_parser = 'dd-mm-yy HH:MM:SS';
+else
+  epoch_parser = 'mm/dd/yy HH:MM:SS PM';
+end
+
 tabs = strfind(s_epoch, sprintf('\t'));
 i_epoch = tabs(i_col):tabs(i_col + 1);
-
 epoch_time = strtrim(s_epoch(i_epoch));
-epoch_datetime = datenum([str_recdate ' ' epoch_time], 'dd-mm-yy HH:MM:SS');
+
+epoch_datetime = datenum([str_recdate ' ' epoch_time], epoch_parser);
 if mod(epoch_datetime, 1) < (HH_THRESHOLD / 24)  % if epoch is before HH_THRESHOLD, then use next day
   epoch_datetime = epoch_datetime + 1;
 end
