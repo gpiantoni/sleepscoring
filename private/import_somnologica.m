@@ -106,9 +106,9 @@ function epoch_datetime = get_epoch_datetime(s_epoch, str_recdate, i_col)
 HH_THRESHOLD = 12;
 
 if strfind(str_recdate, '-')
-  epoch_parser = 'dd-mm-yy HH:MM:SS';
+  epoch_parser = 'dd-mm-yy HH:MM:SS';  % european date format
 else
-  epoch_parser = 'mm/dd/yy HH:MM:SS PM';
+  epoch_parser = 'mm/dd/yy HH:MM:SS PM'; % US date format
 end
 
 tabs = strfind(s_epoch, sprintf('\t'));
@@ -124,15 +124,15 @@ end
 function epoch_score = convert_stage_names(somno_score)
 %CONVERT_STAGE_NAMES  convert stages from Somnologica to sleepscoring
 switch somno_score
-  case 'Wake'
+  case {'Wake', 'SLEEP-S0'}
     epoch_score = 'Wakefulness';
-  case 'REM'
+  case {'REM', 'SLEEP-REM'}
     epoch_score = 'REM';
-  case 'S1'
+  case {'S1', 'SLEEP-S1'}
     epoch_score = 'NREM 1';
-  case 'S2'
+  case {'S2', 'SLEEP-S2'}
     epoch_score = 'NREM 2';
-  case 'S3'
+  case {'S3', 'SLEEP-S3'}
     epoch_score = 'NREM 3';
   otherwise
     epoch_score = 'NOT SCORED';
