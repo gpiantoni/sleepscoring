@@ -87,11 +87,7 @@ for i = 1:numel(cfg.method)
         cfg.method(i).epoch = {cfg.method(i).epoch};
       end
       
-      epch = [];
-      for s = 1:numel(cfg.method(i).epoch)
-        epch = [epch find(strcmp(info.score(rater).stage, cfg.method(i).epoch))];
-      end
-      epch = sort(epch);
+      epch = find(ismember(info.score(rater).stage, cfg.method(i).epoch));
       
     end
     
@@ -163,6 +159,9 @@ for i = 1:numel(cfg.method)
       
     end
     
+    if ~isfield(info.score(rater).marker(i_mrk), 'time')
+      info.score(rater).marker(i_mrk).time = [];
+    end
     info.score(rater).marker(i_mrk).time = [info.score(rater).marker(i_mrk).time; mrk];
     %---------------------------%
     
