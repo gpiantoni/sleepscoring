@@ -155,6 +155,7 @@ for i = 1:numel(cfg.method)
       
     elseif nargout(cfg.method(i).fun) == 2
       [mrk, extra] = feval(cfg.method(i).fun, cfg.method(i).cfg, data);
+      [extra.trl] = deal(e);  % index of the trial
 
       if isfield(info.score(rater).marker(i_mrk), 'extra')
         info.score(rater).marker(i_mrk).extra = [info.score(rater).marker(i_mrk).extra extra];
