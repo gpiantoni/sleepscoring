@@ -6,7 +6,7 @@ function [det, SW] = detect_slowwave(cfg, data)
 % 3. peak-to-peak (if cfg.p2p is not empty)
 %
 % Use as:
-%    [SW] = detect_slowwave(cfg, data)
+%    [det, SW] = detect_slowwave(cfg, data)
 %
 %  (optional)
 %  .preproc = struct which is passed to ft_preprocessing ft_preprocessing(cfg.preproc, data)
@@ -32,6 +32,10 @@ function [det, SW] = detect_slowwave(cfg, data)
 % data
 %    data in fieldtrip format
 %
+% det
+%   time points for start and end of slow waves, in seconds, from beginning
+%   of the recordings, based on negative peak and positive peak
+% 
 % SW
 %    struct for each detected slow wave
 %  .trl = trial it belongs to
