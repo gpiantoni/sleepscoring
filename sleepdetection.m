@@ -87,6 +87,11 @@ for i = 1:numel(cfg.method)
         cfg.method(i).epoch = {cfg.method(i).epoch};
       end
       
+      if all(cellfun(@isempty, info.score(rater).stage))
+        error('There is no sleep score for rater %s', ...
+              info.score(rater).rater)
+      end
+            
       epch = find(ismember(info.score(rater).stage, cfg.method(i).epoch));
       
     end
