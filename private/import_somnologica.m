@@ -95,6 +95,7 @@ if nepoch > actual_nepoch
            ', N Epochs in recordings: ' num2str(actual_nepoch) ...
            ', dropping last ' num2str(nepoch - actual_nepoch) ' epochs'])
   nepoch = actual_nepoch;
+  score.stage = score.stage(1:actual_nepoch);
 end
 %-----------------%
 
