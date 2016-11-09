@@ -58,7 +58,6 @@ cfg1.method = 'mtmfft';
 cfg1.taper = 'hanning';
 cfg1.feedback = 'no';
 cfg1.foilim = cfg.freq;
-cfg1.pad = 'nextpow2';
 freq = ft_freqanalysis(cfg1, data1);
 %-----------------%
 
