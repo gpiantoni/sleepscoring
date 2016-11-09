@@ -23,6 +23,9 @@ function info = sleepdetection(cfg, info, opt)
 %
 % * indicates obligatory parameter
 
+orig_state = warning;
+warning('off', 'all')
+
 %---------------------------%
 [info, hdr] = prepare_info(info);
 
@@ -130,10 +133,9 @@ for i = 1:numel(cfg.method)
   %---------------------------%
 
   %-------------------------------------%
-  ft_progress('init', 'textbar', '');
   for i_e = 1:numel(epch)
     e = epch(i_e);
-    ft_progress(i_e/numel(epch), 'Processing epoch %d', i_e);
+    fprintf('Processing epoch % 6d/% 6d\n', i_e, numel(epch));
     
     %---------------------------%
     %-read data
@@ -155,12 +157,15 @@ for i = 1:numel(cfg.method)
       
     elseif nargout(cfg.method(i).fun) == 2
       [mrk, extra] = feval(cfg.method(i).fun, cfg.method(i).cfg, data);
-      [extra.trl] = deal(e);  % index of the trial
-
-      if isfield(info.score(rater).marker(i_mrk), 'extra')
-        info.score(rater).marker(i_mrk).extra = [info.score(rater).marker(i_mrk).extra extra];
-      else
-        info.score(rater).marker(i_mrk).extra = [];
+      
+      if ~isempty(extra)
+        [extra.trl] = deal(e);  % index of the trial
+        
+        if isfield(info.score(rater).marker(i_mrk), 'extra')
+          info.score(rater).marker(i_mrk).extra = [info.score(rater).marker(i_mrk).extra extra];
+        else
+          info.score(rater).marker(i_mrk).extra = [];
+        end
       end
       
     end
@@ -172,7 +177,6 @@ for i = 1:numel(cfg.method)
     %---------------------------%
     
   end
-  ft_progress('close')
   
   % too slow
   % info.score(rater).marker(i_mrk).time = merge_intervals(info.score(rater).marker(i_mrk).time);
@@ -180,3 +184,5 @@ for i = 1:numel(cfg.method)
   
 end
 %-----------------------------------------------%
+
+warning(orig_state);

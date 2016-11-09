@@ -123,6 +123,7 @@ if ~isempty(cfg.preproc)
   %-filter
   cfg1 = cfg.preproc;
   cfg1.feedback = cfg.feedback;
+  cfg1.showcallinfo = 'no';
   
   data = ft_preprocessing(cfg1, data);
   %-------%

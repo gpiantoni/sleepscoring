@@ -47,6 +47,7 @@ det = [];
 cfg1 = [];
 cfg1.length = cfg.length;
 cfg1.overlap = cfg.overlap;
+cfg1.feedback = 'no';
 data1 = ft_redefinetrial(cfg1, data);
 %-----------------%
 
@@ -55,8 +56,9 @@ data1 = ft_redefinetrial(cfg1, data);
 cfg1 = [];
 cfg1.method = 'mtmfft';
 cfg1.taper = 'hanning';
-cfg1.feedback = 'none';
+cfg1.feedback = 'no';
 cfg1.foilim = cfg.freq;
+cfg1.pad = 'nextpow2';
 freq = ft_freqanalysis(cfg1, data1);
 %-----------------%
 
